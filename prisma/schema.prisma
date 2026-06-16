@@ -40,3 +40,13 @@ model ProductImage {
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+model NovaPoshtaCity {
+  id        Int      @id @default(autoincrement())
+  ref       String   @unique
+  name      String
+  area      String?
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}

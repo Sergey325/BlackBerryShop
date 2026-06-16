@@ -5,6 +5,16 @@
         font-family: "Montserrat", Arial, sans-serif;
     }
 }
+
+@layer components {
+    input {
+        @apply border border-gray-200 rounded-md outline-none transition focus:border-gray-400;
+    }
+}
+html, body, #root {
+    height: 100%;
+}
+
 .react-multi-carousel-list {
     z-index: 0;
 }

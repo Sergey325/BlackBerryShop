@@ -2,7 +2,8 @@ import {IProduct} from "@/app/actions/getProducts";
 import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useState} from "react";
 import qs from "query-string";
-import Accordion from "@/app/components/Accordion";
+import Button from "@/app/components/Button";
+import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
     product: IProduct
@@ -14,6 +15,10 @@ const ChooseVariant = ({product}: Props) => {
     const productNameFromUrl = params?.get("product")
     const selectedSize = params.get("size") ?? product.variants[0].size;
     const selectedColor = params.get("color") ?? product.variants[0].color;
+
+    const cart = useCartStore()
+
+    const [count, setCount] = useState(1);
 
     const uniqueSizes = [...new Set(product.variants.map(v => v.size))];
 
@@ -97,7 +102,35 @@ const ChooseVariant = ({product}: Props) => {
                     )
                 })}
             </div>
+            <div className="flex gap-4 items-center mt-12">
+                <div className="flex gap-1.5 items-center">
+                    <span className="text-2xl lg:text-[36px] font-medium">{product.price}</span>
+                    <span className="text-[13px] lg:text-base lg:pt-1 self-start font-medium">грн</span>
+                </div>
+                <div className="">
+                    <div className="flex items-center border border-gray-300 font-medium text-zinc-700 max-w-min ">
+                        <button onClick={() => setCount(c => Math.max(1, c - 1))} className="px-4 py-2 hover:bg-gray-100 text-xl">−</button>
+                        <span className="text-[15px] px-4">{count}</span>
+                        <button onClick={() => setCount(c => c + 1)} className="px-4 py-2 hover:bg-gray-100 text-xl">+</button>
+                    </div>
+                </div>
+            </div>
+            <div className="flex justify-between mt-4 mb-1">
+                <Button label="Додати до кошика" onClick={() => cart.addItem({
+                    productId: product.id.toString(),
+                    quantity: count,
+                    size: selectedSize,
+                    color: selectedColor,
+                    discount: product.discount || 0,
+                    photoUrl: product.images[0].url,
+                    price: product.price,
+                    productName: product.name,
+                    slug: product.slug || ""
+                })}/>
+                <div className="">
 
+                </div>
+            </div>
         </>
     );
 };
