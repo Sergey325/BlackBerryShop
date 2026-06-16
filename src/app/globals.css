@@ -5,6 +5,16 @@
         font-family: "Montserrat", Arial, sans-serif;
     }
 }
+
+@layer components {
+    input {
+        @apply border border-gray-200 rounded-md outline-none transition focus:border-gray-400;
+    }
+}
+html, body, #root {
+    height: 100%;
+}
+
 .react-multi-carousel-list {
     z-index: 0;
 }
@@ -26,3 +36,26 @@ button.react-multiple-carousel__arrow {
 .carousel-container .react-multiple-carousel__arrow--right {
     right: 0px !important;
 }
+
+/* rid of selection with tap on mobile*/
+* { -webkit-tap-highlight-color: transparent;  }
+
+.no-scroll {
+    overflow: hidden;
+}
+
+
+::-webkit-scrollbar{
+    @apply ml-1 w-1 md:w-2 h-1;
+}
+
+/*Track*/
+::-webkit-scrollbar-track {
+    @apply ml-1 bg-transparent;
+}
+
+/*Handle*/
+::-webkit-scrollbar-thumb {
+    @apply ml-1 bg-[#823D9A] h-[40%];
+}
+

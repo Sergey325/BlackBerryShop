@@ -21,7 +21,6 @@ const StoreClient =({products}: Props)=> {
     }, [params, products]);
 
     const [rating, setRating] = useState(0);
-    const [count, setCount] = useState(1);
 
     const productsDev = [...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products ];
 
@@ -50,28 +49,7 @@ const StoreClient =({products}: Props)=> {
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col p-4 gap-1 w-full">
                         <ChooseVariant product={product}/>
-                        <div className="flex gap-4 items-center mt-12">
-                            <div className="flex gap-1.5 items-center">
-                                <span className="text-2xl lg:text-[36px] font-medium">585</span>
-                                <span className="text-[13px] lg:text-base lg:pt-1 self-start font-medium">грн</span>
-                            </div>
-                            <div className="">
-                                <div className="flex items-center border border-gray-300 font-medium text-zinc-700 max-w-min ">
-                                    <button onClick={() => setCount(c => Math.max(1, c - 1))} className="px-4 py-2 hover:bg-gray-100 text-xl">−</button>
-                                    <span className="text-[15px] px-4">{count}</span>
-                                    <button onClick={() => setCount(c => c + 1)} className="px-4 py-2 hover:bg-gray-100 text-xl">+</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex justify-between mt-4 mb-1">
-                            <button className="relative overflow-hidden group bg-[#823D9A] text-white px-6 py-3 rounded-md  font-semibold flex-1">
-                                <span className="relative z-10">Додати в кошик</span>
-                                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/20 to-transparent -skew-x-25" />
-                            </button>
-                            <div className="">
 
-                            </div>
-                        </div>
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full">
                         <Accordion title={"Способи доставки"} content={["Доставка у відділення - Нова Пошта", "Доставка за адресами (кур'єром) - Нова Пошта"]}/>

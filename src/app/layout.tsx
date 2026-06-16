@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "@/app/components/Header";
+import ClientOnly from "@/app/components/ClientOnly";
+import ToasterProvider from "@/app/Providers/ToasterProvider";
+import BackToTop from "@/app/components/BackToTop";
+import Container from "@/app/components/Container";
+import CartModal from "@/app/components/modals/CartModal";
 
 
 const montserrat = Montserrat({
@@ -18,14 +23,24 @@ export default function RootLayout({
                                      children,
                                    }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="uk" className={`${montserrat.variable} h-full antialiased`}>
+        <html lang="uk" className={`${montserrat.variable} min-h-screen antialiased`}>
             <body className="min-h-full px-2 2xl:px-0 flex flex-col font-(family-name:--font-montserrat) bg-gray-50">
-                <Header />
-                    <main className="flex-1">
-                        <div className="max-w-[1366px] mx-auto w-full">
-                          {children}
+                <ClientOnly>
+                    <ToasterProvider/>
+                    <Header/>
+                    <BackToTop/>
+                    <CartModal/>
+                </ClientOnly>
+                <Container>
+                    <main className="flex-auto">
+                        <div className="mx-auto w-full h-full">
+                            {children}
                         </div>
-                </main>
+                    </main>
+                </Container>
+                <div className="h-15">
+
+                </div>
             </body>
         </html>
     );

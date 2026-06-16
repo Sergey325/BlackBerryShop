@@ -1,3 +1,5 @@
+"use server";
+
 import prisma from "@/app/lib/prisma";
 
 export interface IProductVariant {
@@ -18,7 +20,7 @@ export interface IProductImage {
 export interface IProduct {
     id: number;
     name: string;
-    slug: string;
+    slug: string | null;
     price: number;
     discount: number | null;
     createdAt: Date;

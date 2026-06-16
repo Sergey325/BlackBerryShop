@@ -40,3 +40,71 @@ model ProductImage {
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+model NovaPoshtaCity {
+  id        Int      @id @default(autoincrement())
+  ref       String   @unique
+  name      String
+  area      String?
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  invoiceId   String?     @unique // id от Monobank
+  status      OrderStatus @default(PENDING)
+  totalAmount Float
+
+  // Данные заказчика
+  firstName String
+  lastName  String
+  phone     String
+  email     String?
+  comment   String?
+
+  // Доставка
+  city         String
+  area         String
+  cityRef      String
+  warehouse    String?
+  warehouseRef String?
+
+  // Оплата
+  paymentMethod PaymentMethod
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id      Int   @id @default(autoincrement())
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  name      String
+  price     Float
+  quantity  Int
+  color     String?
+  size      String?
+  imageUrl  String?
+}
+
+enum OrderStatus {
+  PENDING // ожидает оплаты
+  PAID // оплачено
+  PROCESSING // в обработке
+  SHIPPED // отправлено
+  DELIVERED // доставлено
+  CANCELLED // отменено
+  REFUNDED // возврат
+}
+
+enum PaymentMethod {
+  MONOBANK
+  CASH_ON_DELIVERY
+}
