@@ -8,6 +8,7 @@ import {useSearchParams} from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
 import ChooseVariant from "@/app/components/ChooseVariant";
 import Accordion from "@/app/components/Accordion";
+import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
     products: IProduct[]
