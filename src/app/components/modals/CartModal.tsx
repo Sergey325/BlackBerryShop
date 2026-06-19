@@ -6,7 +6,7 @@ import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import {TiDeleteOutline} from "react-icons/ti";
 import Image from "next/image";
-import Counter from "@/app/components/Counter";
+import Counter from "@/app/components/reusable/Counter";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {useRouter} from "next/navigation";
 

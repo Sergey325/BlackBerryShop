@@ -1,5 +1,5 @@
 import {getProducts} from "@/app/actions/getProducts";
-import ClientOnly from "@/app/components/ClientOnly";
+import ClientOnly from "@/app/components/reusable/ClientOnly";
 import StoreClient from "@/app/components/StoreClient";
 import {syncCities} from "@/app/script/syncCities";
 

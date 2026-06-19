@@ -3,12 +3,12 @@
 import Image from "next/image"
 import React, {useCallback, useMemo} from "react";
 import {useRouter} from "next/navigation";
-import ToolTip from "@/app/components/ToolTip";
+import ToolTip from "@/app/components/reusable/ToolTip";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import {TiDeleteOutline} from "react-icons/ti";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {CartItem as CartItemType} from "@/app/types";
-import Counter from "@/app/components/Counter";
+import Counter from "@/app/components/reusable/Counter";
 
 type Props = {
     item: CartItemType

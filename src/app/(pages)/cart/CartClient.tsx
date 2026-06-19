@@ -6,7 +6,7 @@ import CartSummary from "@/app/(pages)/cart/components/CartSummary";
 import axios from "axios";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import NovaPoshtaSelect from "@/app/(pages)/cart/components/NovePoshtaSelect";
-import RadioGroup from "@/app/components/RadioGroup";
+import RadioGroup from "@/app/components/reusable/RadioGroup";
 import {City, Warehouse} from "@/app/types";
 import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
@@ -115,7 +115,7 @@ const CartClient = () => {
 
         },
         {
-            title: "Оплата",
+            title: "Способи оплати",
             content:
                 <div className="text-sm md:text-base font-medium" >
                     <RadioGroup

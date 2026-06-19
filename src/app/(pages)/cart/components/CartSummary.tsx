@@ -1,4 +1,4 @@
-import Button from "@/app/components/Button";
+import Button from "@/app/components/reusable/Button";
 import toast from "react-hot-toast";
 
 type Props = {

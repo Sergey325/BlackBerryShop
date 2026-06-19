@@ -2,7 +2,7 @@
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {IoMdClose} from "react-icons/io";
-import Button from "@/app/components/Button";
+import Button from "@/app/components/reusable/Button";
 import useClickOutside from "@/app/hooks/useClickOutside";
 
 type Props = {
@@ -35,11 +35,12 @@ const Modal = ({
     useClickOutside({ ref: modalRef, onClickOutside: () => handleClose() })
 
     useEffect(() => {
-        if (isOpen) {
-            requestAnimationFrame(() => {
-                setShowModal(true);
-            });
-        }
+        //Avoiding calling setState() directly within an effect
+        const id = requestAnimationFrame(() => {
+            setShowModal(isOpen || false);
+        });
+
+        return () => cancelAnimationFrame(id);
     }, [isOpen]);
 
     useEffect(() => {

@@ -7,12 +7,39 @@ import {useMemo, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
 import ChooseVariant from "@/app/components/ChooseVariant";
-import Accordion from "@/app/components/Accordion";
+import Accordion from "@/app/components/reusable/Accordion";
 import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
     products: IProduct[]
 }
+
+const specifications = [
+    {
+        name: "Матеріал",
+        value: "100% бавовна",
+    },
+    {
+        name: "Модель",
+        value: "Унісекс",
+    },
+    {
+        name: "Розміри",
+        value: "Дитячий, дорослий",
+    },
+    {
+        name: "Сезон",
+        value: "Весна / літо",
+    },
+    {
+        name: "Особливості",
+        value: "Захист від сонця, унікальний дизайн",
+    },
+    {
+        name: "Догляд",
+        value: "Рекомендоване делікатне прання, при температурі не вище 30 градусів",
+    },
+]
 
 const StoreClient =({products}: Props)=> {
     const params = useSearchParams()
@@ -22,6 +49,8 @@ const StoreClient =({products}: Props)=> {
     }, [params, products]);
 
     const [rating, setRating] = useState(0);
+
+    const [tab, setTab] = useState("description");
 
     const productsDev = [...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products ];
 
@@ -52,19 +81,65 @@ const StoreClient =({products}: Props)=> {
                         <ChooseVariant product={product}/>
 
                     </div>
-                    <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full">
-                        <Accordion title={"Способи доставки"} content={["Доставка у відділення - Нова Пошта", "Доставка за адресами (кур'єром) - Нова Пошта"]}/>
+                    <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">
+                        <Accordion title={"Способи доставки"} content={["Доставка у відділення - Нова Пошта"]}/>
                     </div>
-                    <div className="bg-white border border-y-2 border-gray-200 rounded-b-sm flex flex-col gap-2 w-full">
+                    <div className="bg-white border border-y-2 border-gray-200 rounded-b-sm flex flex-col gap-2 w-full p-4">
                         <Accordion
                             title={"Способи оплати"}
                             content={[
-                                "Оплата карткою через Liqpay.com",
+                                "Оплата карткою через Monopay",
                                 "Apple pay, Google pay",
-                                "Оплата післяплатою",
-                                "Оплата на розрахунковий рахунок ФОП"
+                                "Оплата післяплатою (Передплата 150 грн)",
                             ]}
                         />
+                    </div>
+                </div>
+            </div>
+            <div className="bg-white border border-gray-200 flex flex-col justify-center text-base font-semibold  items-center w-full">
+                <div className="bg-white border-b-2 border-gray-200 flex justify-center text-base font-semibold  items-center w-full ">
+                    <div
+                        className={`py-4 text-center w-full border-r border-gray-200`}
+                        // onClick={() => setTab("description")}
+                    >
+                        <span className="hidden md:block">Опис</span>
+                        <span className="block md:hidden">Опис та характеристики</span>
+                    </div>
+                    <div
+                        className={`hidden md:block py-4 text-center w-full border-l border-gray-200`}
+                        // onClick={() => setTab("specifications")}
+                    >
+                        Характеристики
+                    </div>
+                </div>
+                <div className="flex flex-col lg:flex-row w-full">
+                    <div className="flex-1 w-full border-r border-gray-200 p-6 flex flex-col gap-4">
+                        <p className="font-normal text-sm md:text-base lg:text-lg">
+                            Стильна та зручна панамка - ідеальний вибір для сонячних днів.  Добре поєднується як із повсякденними, так і з літніми образами.
+                        </p>
+                        <p className="font-normal text-sm md:text-base lg:text-lg">
+                            Легка тканина забезпечує комфорт у носінні, а продуманий крій допомагає захистити обличчя від сонця.
+                        </p>
+                        <p className="font-normal text-sm md:text-base lg:text-lg">
+                            Добре поєднується як із повсякденними, так і з літніми образами.
+                        </p>
+                    </div>
+                    <div className="flex-1 w-full border-l border-gray-200 p-6 flex flex-col gap-6">
+                        {
+                            specifications.map((p, index) => (
+                                <div key={index} className="">
+                                    <div className="flex flex-row justify-between items-center w-full font-normal text-sm md:text-base">
+                                        <p className="w-2/6">
+                                            {p.name}
+                                        </p>
+                                        <p className="text-right w-4/6 font-medium">
+                                            {p.value}
+                                        </p>
+                                    </div>
+                                    <hr className="border-gray-400 mt-2"/>
+                                </div>
+                            ))
+                        }
                     </div>
                 </div>
             </div>

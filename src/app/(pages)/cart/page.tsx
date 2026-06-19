@@ -1,5 +1,5 @@
-import ClientOnly from "@/app/components/ClientOnly";
-import EmptyState from "@/app/components/EmptyState";
+import ClientOnly from "@/app/components/reusable/ClientOnly";
+import EmptyState from "@/app/components/reusable/EmptyState";
 import CartClient from "@/app/(pages)/cart/CartClient";
 
 

@@ -1,8 +1,8 @@
 "use client"
 
 import {useRouter} from "next/navigation";
-import Heading from "@/app/components/Heading";
-import Button from "@/app/components/Button";
+import Heading from "@/app/components/reusable/Heading";
+import Button from "@/app/components/reusable/Button";
 
 type Props = {
     title?: string

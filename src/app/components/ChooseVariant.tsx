@@ -2,10 +2,10 @@ import {IProduct} from "@/app/actions/getProducts";
 import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useState} from "react";
 import qs from "query-string";
-import Button from "@/app/components/Button";
+import Button from "@/app/components/reusable/Button";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import useCartModal from "@/app/hooks/useCartModal";
-import Counter from "@/app/components/Counter";
+import Counter from "@/app/components/reusable/Counter";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 
 type Props = {
