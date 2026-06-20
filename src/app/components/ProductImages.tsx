@@ -5,6 +5,8 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import {Product, ProductImage} from "@prisma/client";
 import {useState} from "react";
+import { PhotoProvider, PhotoView } from "react-photo-view";
+import "react-photo-view/dist/react-photo-view.css";
 
 type ProductWithImages = Product & {
     images: ProductImage[];
@@ -39,14 +41,13 @@ const ProductImages = ({product}: Props) => {
     const [selectedImage, setSelectedImage] = useState(product.images[0].url)
 
     return (
-        <>
+        <PhotoProvider>
             <div className="block lg:hidden pb-10 w-full">
                 <Carousel
                     responsive={responsive}
                     swipeable
                     draggable
                     arrows
-                    infinite
                     keyBoardControl
                     dotListClass=""
                     customTransition="all 1s"
@@ -55,7 +56,17 @@ const ProductImages = ({product}: Props) => {
                     // removeArrowOnDeviceType={["tablet", "mobile"]}
                     itemClass="carousel-item-padding-40-px">
                     {product.images.map((slide) => (
-                        <Image src={slide.url} key={slide.url} width={250} height={250} priority className="object-contain h-full mx-auto select-none pointer-events-none" alt=""/>
+                        <PhotoView key={slide.url} src={slide.url}>
+                            <Image
+                                src={slide.url}
+                                width={250}
+                                height={250}
+                                priority
+                                className="object-contain h-full mx-auto select-none cursor-zoom-in"
+                                alt={slide.url}
+                            />
+                        </PhotoView>
+                        // <Image src={slide.url} key={slide.url} width={250} height={250} priority className="object-contain h-full mx-auto select-none pointer-events-none" alt=""/>
                     ))}
                 </Carousel>
             </div>
@@ -66,7 +77,6 @@ const ProductImages = ({product}: Props) => {
                     <Carousel
                         responsive={responsiveOption}
                         swipeable
-                        infinite
                         keyBoardControl
                         customTransition="all 0.5s"
                         transitionDuration={500}
@@ -94,8 +104,8 @@ const ProductImages = ({product}: Props) => {
                             <div key={image.url} className="overflow-hidden rounded-sm border-[#823D9A] border-[1.5px]">
                                 <Image
                                     src={image.url}
-                                    priority={true}
                                     width={60} height={60}
+                                    quality={50}
                                     alt="productImageOption"
                                     className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition"
                                     onClick={() => setSelectedImage(image.url)}
@@ -113,9 +123,27 @@ const ProductImages = ({product}: Props) => {
                         quality={100}
                         priority
                     />
+                    {/*<PhotoView src={selectedImage}>*/}
+                    {/*    <Image*/}
+                    {/*        src={selectedImage}*/}
+                    {/*        width={600}*/}
+                    {/*        height={600}*/}
+                    {/*        className="*/}
+                    {/*            object-contain*/}
+                    {/*            aspect-square*/}
+                    {/*            mx-auto*/}
+                    {/*            py-10*/}
+                    {/*            px-3*/}
+                    {/*            cursor-zoom-in*/}
+                    {/*        "*/}
+                    {/*        alt="ProductImage"*/}
+                    {/*        quality={100}*/}
+                    {/*        priority*/}
+                    {/*    />*/}
+                    {/*</PhotoView>*/}
                 </div>
             }
-        </>
+        </PhotoProvider>
     );
 };
 

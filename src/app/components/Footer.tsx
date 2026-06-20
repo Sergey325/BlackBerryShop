@@ -8,30 +8,30 @@ export default function Footer() {
 
     const navigation =
         <div className="flex flex-col gap-3 text-gray-400">
-            <Link href="/about" className="text-sm md:text-base  hover:text-white transition">Про нас</Link>
-            <Link href="/delivery" className="text-sm md:text-base hover:text-white transition">Доставка та оплата</Link>
-            <Link href="/exchange" className="text-sm md:text-base hover:text-white transition">Обмін та повернення</Link>
-            <Link href="/offer" className="text-sm md:text-base hover:text-white transition">Договір публічної оферти</Link>
+            <Link href="/about" className="text-sm md:text-base  hover:text-[#823D9A] transition">Про нас</Link>
+            <Link href="/delivery" className="text-sm md:text-base hover:text-[#823D9A] transition">Доставка та оплата</Link>
+            <Link href="/exchange" className="text-sm md:text-base hover:text-[#823D9A] transition">Обмін та повернення</Link>
+            <Link href="/offer" className="text-sm md:text-base hover:text-[#823D9A] transition">Договір публічної оферти</Link>
         </div>
 
     const contacts =
         <div className="flex flex-col gap-3 text-gray-400">
-            <a href="tel:+380682787526" className="flex items-center gap-2 text-sm md:text-base hover:text-white transition">
-                <MdPhone size={16} />
+            <a href="tel:+380682787526" className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+                <MdPhone className="size-5"/>
                 +38 (068) 278-75-26
             </a>
-            <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm md:text-base hover:text-white transition">
-                <MdEmail size={16} />
+            <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+                <MdEmail className="size-5"/>
                 blackberry.shop.kh@gmail.com
             </a>
             <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm md:text-base hover:text-white transition">
-                <FaInstagram size={16} />
+               className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+                <FaInstagram className="size-5"/>
                 @blackberry.shop.ua
             </a>
             <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm md:text-base hover:text-white transition">
-                <FaTelegram size={16} />
+               className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+                <FaTelegram className="size-5"/>
                 @blackberryshopua
             </a>
         </div>

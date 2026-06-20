@@ -56,7 +56,7 @@ const StoreClient =({products}: Props)=> {
 
 
     return (
-        <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-8 ">
+        <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4 ">
             <div className="border border-gray-200 rounded-sm p-4 w-full bg-white">
                 <p className="text-[28px] font-medium">Панама GIG Ranger Ears з вушками. Tiger Stripe Pink</p>
             </div>

@@ -42,11 +42,11 @@ export default function Header() {
                 </div>
 
                 {/* Десктоп навигация */}
-                <nav className="hidden md:flex items-center text-lg gap-8">
-                    <Link href="/catalog" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>
-                    <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Контакти</Link>
-                    <Link href="/contact" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Умови</Link>
-                </nav>
+                {/*<nav className="hidden md:flex items-center text-lg gap-8">*/}
+                {/*    <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>*/}
+                {/*    /!*<Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Контакти</Link>*!/*/}
+                {/*    /!*<Link href="/contact" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Умови</Link>*!/*/}
+                {/*</nav>*/}
 
                 {/* Десктоп телефон */}
                 <div className="flex gap-6 items-start self-start mr-3">
