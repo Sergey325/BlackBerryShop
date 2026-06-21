@@ -4,29 +4,44 @@ import prisma from "@/app/lib/prisma";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { id, name, price, discount, images, variants } = body;
+        const { id, name, description, price, discount, colors, slug } = body;
+
+        const colorsData = colors?.map((c: {
+            color: string;
+            images: string[];
+            sizes: { size: string; available: boolean }[];
+        }) => ({
+            color: c.color,
+            images: {
+                create: c.images.map((url: string, index: number) => ({
+                    url,
+                    order: index,
+                })),
+            },
+            sizes: {
+                create: c.sizes.map((s) => ({
+                    size: s.size,
+                    available: s.available,
+                })),
+            },
+        }));
 
         if (id) {
+            // удаляем старые цвета (каскадно удалятся их картинки и размеры)
+            await prisma.productColor.deleteMany({
+                where: { productId: id },
+            });
+
             await prisma.product.update({
                 where: { id },
                 data: {
                     name,
+                    description,
+                    slug,
                     price,
                     discount,
-                    images: {
-                        deleteMany: {},
-                        create: images?.map((url: string, index: number) => ({
-                            url,
-                            order: index,
-                        })),
-                    },
-                    variants: {
-                        deleteMany: {},
-                        create: variants?.map((v: { color: string; size: string; available: boolean }) => ({
-                            color: v.color,
-                            size: v.size,
-                            available: v.available,
-                        })),
+                    colors: {
+                        create: colorsData,
                     },
                 },
             });
@@ -34,20 +49,12 @@ export async function POST(request: Request) {
             await prisma.product.create({
                 data: {
                     name,
+                    description,
+                    slug,
                     price,
                     discount,
-                    images: {
-                        create: images?.map((url: string, index: number) => ({
-                            url,
-                            order: index,
-                        })),
-                    },
-                    variants: {
-                        create: variants?.map((v: { color: string; size: string; available: boolean }) => ({
-                            color: v.color,
-                            size: v.size,
-                            available: v.available,
-                        })),
+                    colors: {
+                        create: colorsData,
                     },
                 },
             });
@@ -55,6 +62,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(null, { status: 200 });
     } catch (error) {
+        console.error(error);
         return NextResponse.json(error, { status: 500 });
     }
 }

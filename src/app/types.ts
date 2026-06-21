@@ -19,13 +19,14 @@ export type ContactData = {
 };
 
 export type CartItem = {
-    productId: string;
+    productId: number;
+    productColorId: number;
     productName: string;
-    quantity: number;
-    photoUrl: string;
-    size?: string;
-    color?: string;
+    slug: string;
     price: number;
     discount: number;
-    slug: string;
+    size: string;
+    color: string;
+    photoUrl: string;
+    quantity: number;
 };

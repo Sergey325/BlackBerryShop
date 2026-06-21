@@ -3,17 +3,13 @@
 import Image from "next/image";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import {Product, ProductImage} from "@prisma/client";
-import {useState} from "react";
+import { useEffect, useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
-
-type ProductWithImages = Product & {
-    images: ProductImage[];
-};
+import { IProductColor } from "@/app/actions/getProducts";
 
 type Props = {
-    product: ProductWithImages;
+    productColor: IProductColor;
 };
 
 const responsive = {
@@ -37,8 +33,13 @@ const responsiveOption = {
     },
 }
 
-const ProductImages = ({product}: Props) => {
-    const [selectedImage, setSelectedImage] = useState(product.images[0].url)
+const ProductImages = ({ productColor }: Props) => {
+    const [selectedImage, setSelectedImage] = useState(productColor.images[0]?.url);
+
+    // При смене цвета сбрасываем выбранную картинку на первую новой галереи
+    useEffect(() => {
+        setSelectedImage(productColor.images[0]?.url);
+    }, [productColor.id]);
 
     return (
         <PhotoProvider>
@@ -53,9 +54,8 @@ const ProductImages = ({product}: Props) => {
                     customTransition="all 1s"
                     transitionDuration={500}
                     containerClass="carousel-container"
-                    // removeArrowOnDeviceType={["tablet", "mobile"]}
                     itemClass="carousel-item-padding-40-px">
-                    {product.images.map((slide) => (
+                    {productColor.images.map((slide) => (
                         <PhotoView key={slide.url} src={slide.url}>
                             <Image
                                 src={slide.url}
@@ -66,82 +66,61 @@ const ProductImages = ({product}: Props) => {
                                 alt={slide.url}
                             />
                         </PhotoView>
-                        // <Image src={slide.url} key={slide.url} width={250} height={250} priority className="object-contain h-full mx-auto select-none pointer-events-none" alt=""/>
                     ))}
                 </Carousel>
             </div>
             {
-                product.images.length > 5
-                ?
-                <div className={`hidden lg:block w-[560px]`}>
-                    <Carousel
-                        responsive={responsiveOption}
-                        swipeable
-                        keyBoardControl
-                        customTransition="all 0.5s"
-                        transitionDuration={500}
-                        containerClass="carousel-container"
-                        // removeArrowOnDeviceType={["tablet", "mobile"]}
-                        itemClass="carousel-item-padding-20-px">
-                        {product.images.map((slide) => (
-                            <Image
-                                src={slide.url}
-                                key={slide.url}
-                                width={100} height={100}
-                                priority
-                                className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-[#823D9A] border-2"
-                                alt="productImageOption"
-                                onClick={() => setSelectedImage(slide.url)}
-                            />
-                        ))}
-                    </Carousel>
-                </div>
-                :
-                <div className="hidden lg:flex flex-row gap-4">
-                    {/* Миниатюры слева */}
-                    <div className="flex flex-col gap-3 shrink-0">
-                        {product?.images.map(image => (
-                            <div key={image.url} className="overflow-hidden rounded-sm border-[#823D9A] border-[1.5px]">
+                productColor.images.length > 5
+                    ?
+                    <div className={`hidden lg:block w-[560px]`}>
+                        <Carousel
+                            responsive={responsiveOption}
+                            swipeable
+                            keyBoardControl
+                            customTransition="all 0.5s"
+                            transitionDuration={500}
+                            containerClass="carousel-container"
+                            itemClass="carousel-item-padding-20-px">
+                            {productColor.images.map((slide) => (
                                 <Image
-                                    src={image.url}
-                                    width={60} height={60}
-                                    quality={50}
+                                    src={slide.url}
+                                    key={slide.url}
+                                    width={100} height={100}
+                                    priority
+                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-[#823D9A] border-2"
                                     alt="productImageOption"
-                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition"
-                                    onClick={() => setSelectedImage(image.url)}
+                                    onClick={() => setSelectedImage(slide.url)}
                                 />
-                            </div>
-                        ))}
+                            ))}
+                        </Carousel>
                     </div>
+                    :
+                    <div className="hidden lg:flex flex-row gap-4">
+                        <div className="flex flex-col gap-3 shrink-0">
+                            {productColor.images.map(image => (
+                                <div key={image.url} className="overflow-hidden rounded-sm border-[#823D9A] border-[1.5px]">
+                                    <Image
+                                        src={image.url}
+                                        priority
+                                        width={60} height={60}
+                                        quality={50}
+                                        alt="productImageOption"
+                                        className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition"
+                                        onClick={() => setSelectedImage(image.url)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
 
-                    {/* Большая картинка */}
-                    <Image
-                        src={selectedImage}
-                        width={600} height={600}
-                        className="object-contain aspect-square mx-auto select-none pointer-events-none py-10 px-3"
-                        alt="ProductImage"
-                        quality={100}
-                        priority
-                    />
-                    {/*<PhotoView src={selectedImage}>*/}
-                    {/*    <Image*/}
-                    {/*        src={selectedImage}*/}
-                    {/*        width={600}*/}
-                    {/*        height={600}*/}
-                    {/*        className="*/}
-                    {/*            object-contain*/}
-                    {/*            aspect-square*/}
-                    {/*            mx-auto*/}
-                    {/*            py-10*/}
-                    {/*            px-3*/}
-                    {/*            cursor-zoom-in*/}
-                    {/*        "*/}
-                    {/*        alt="ProductImage"*/}
-                    {/*        quality={100}*/}
-                    {/*        priority*/}
-                    {/*    />*/}
-                    {/*</PhotoView>*/}
-                </div>
+                        <Image
+                            src={selectedImage}
+                            width={600} height={600}
+                            className="object-contain aspect-square mx-auto select-none pointer-events-none py-10 px-3"
+                            alt="ProductImage"
+                            quality={100}
+                            priority
+                        />
+                    </div>
             }
         </PhotoProvider>
     );

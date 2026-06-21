@@ -1,12 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {CartItem} from "@/app/types";
-
+import { CartItem } from "@/app/types";
 
 type CartStore = {
     items: CartItem[];
     addItem: (item: CartItem) => void;
-    removeItem: (productId: string, size?: string, color?: string) => void;
+    removeItem: (productColorId: number, size: string) => void;
     clearCart: () => void;
     changeQuantity: (item: CartItem, quantity: number) => void;
 };
@@ -21,9 +20,8 @@ export const useCartStore = create<CartStore>()(
 
                 const existing = items.find(
                     (i) =>
-                        i.productId === item.productId &&
-                        i.size === item.size &&
-                        i.color === item.color
+                        i.productColorId === item.productColorId &&
+                        i.size === item.size
                 );
 
                 if (existing) {
@@ -41,16 +39,15 @@ export const useCartStore = create<CartStore>()(
                 }
             },
 
-            removeItem: (productId, size, color) => {
+            removeItem: (productColorId, size) => {
                 const items = get().items;
 
                 set({
                     items: items.filter(
                         (i) =>
                             !(
-                                i.productId === productId &&
-                                i.size === size &&
-                                i.color === color
+                                i.productColorId === productColorId &&
+                                i.size === size
                             )
                     ),
                 });
@@ -61,9 +58,8 @@ export const useCartStore = create<CartStore>()(
 
                 const updated = items
                     .map((i) =>
-                        i.productId === item.productId &&
-                        i.size === item.size &&
-                        i.color === item.color
+                        i.productColorId === item.productColorId &&
+                        i.size === item.size
                             ? { ...i, quantity }
                             : i
                     )

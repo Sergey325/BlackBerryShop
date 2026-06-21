@@ -11,26 +11,27 @@ const ProductCard = ({product, isSelected}: Props) => {
     const params = useSearchParams()
     const router = useRouter()
 
+    const firstColor = product.colors[0];
+
     return (
         <div
             onClick={() => {
                 const qs = new URLSearchParams(params);
 
                 qs.set("product", product.slug || "");
-                qs.set("size", product.variants[0].size);
-                qs.set("color", product.variants[0].color);
+                qs.set("color", firstColor.color);
+                qs.set("size", firstColor.sizes[0]?.size ?? "");
 
                 router.push(`?${qs.toString()}`);
             }}
-            className="border rounded-xl overflow-hidden cursor-pointer "
+            className="border rounded-xl overflow-hidden cursor-pointer"
             style={{
                 borderWidth: isSelected ? "2px" : "1px",
                 borderColor: isSelected ? "#823D9A" : "#000000",
             }}>
             <Image
-                src={product.images[0].url}
+                src={firstColor.images[0]?.url}
                 width={70} height={70}
-
                 className="object-contain aspect-square mx-auto select-none hover:scale-110 transition"
                 alt="ProductImage"
                 quality={100}

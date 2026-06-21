@@ -50,7 +50,7 @@ const CartModal = () => {
                                     </div>
                                     <TiDeleteOutline
                                         className="text-red-400 hover:text-red-600 transition shrink-0 cursor-pointer size-8"
-                                        onClick={() => cart.removeItem(item.productId, item.size, item.color)}
+                                        onClick={() => cart.removeItem(item.productColorId, item.size)}
                                     />
                                 </div>
 

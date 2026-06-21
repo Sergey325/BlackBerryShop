@@ -72,7 +72,7 @@ const CartItem = ({item}: Props) => {
                             <ToolTip label="Видалити">
                                 <TiDeleteOutline
                                     className="text-red-500 hover:text-red-300 transition cursor-pointer size-8"
-                                    onClick={() => cart.removeItem(item.productId, item.size, item.color)}
+                                    onClick={() => cart.removeItem(item.productColorId, item.size)}
                                 />
                             </ToolTip>
                         </div>
@@ -89,7 +89,7 @@ const CartItem = ({item}: Props) => {
                     <ToolTip label="Видалити">
                         <TiDeleteOutline
                             className="text-red-500 hover:text-red-300 transition cursor-pointer size-9"
-                            onClick={() => cart.removeItem(item.productId, item.size, item.color)}
+                            onClick={() => cart.removeItem(item.productColorId, item.size)}
                         />
                     </ToolTip>
                 </div>
