@@ -28,11 +28,11 @@ export default function Header() {
 
     return (
         <header className="w-full border-b border-gray-200 text-base bg-gray-50 relative z-20 select-none px-6">
-            <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18">
+            <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-gray-50">
                 {/* Логотип */}
-                <div className="flex items-center gap-2 cursor-pointer">
+                <div className="flex items-center gap-2 cursor-pointer bg-gray-50">
                     <Link href="/" className="overflow-hidden">
-                        <Image src="/img.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain" />
+                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain bg-gray-50" />
                     </Link>
                     <Link href="/" className={`text-3xl bold mt-1.5 ${greatVibes.className}`}>
                         Black Berry
