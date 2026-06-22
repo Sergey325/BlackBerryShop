@@ -69,7 +69,7 @@ const CartClient = () => {
                     ...contactData,
                     firstName: contactData.firstName.trim(),
                     lastName: contactData.lastName.trim(),
-                    phone: "+" + contactData.phone.replace(/\D/g, ""),
+                    phone: contactData.phone.replace(/\D/g, ""),
                 },
                 delivery: {
                     city: selectedCity.name,
