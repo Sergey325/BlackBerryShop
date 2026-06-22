@@ -74,7 +74,7 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
                 </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex mt-5 gap-4">
                 {product.colors.map((c) => (
                     <div
                         key={c.id+c.colorName}
@@ -85,7 +85,7 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
                             transform: selectedProductColor.color === c.color && selectedProductColor.colorName === c.colorName ? "scale(1.4)" : "scale(1)",
                             transition: "transform 0.15s ease",
                         }}
-                        className="rounded-full size-5 cursor-pointer"
+                        className="rounded-full size-6 cursor-pointer"
                         onClick={() => handleColorChange(c)}
                     />
                 ))}
