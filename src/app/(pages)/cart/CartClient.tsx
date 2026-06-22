@@ -15,7 +15,7 @@ import {calculateTotalPrice} from "@/app/utils/getTotalPrice";
 
 
 const paymentOptions = [
-    { value: "prepayment", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Передплата карткою" },
+    { value: "prepayment", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },
     { value: "cod", label: "Оплата при отриманні (передоплата 150 грн, решта при отриманні)", shortTitle: `Оплата при отриманні\n(Передплата 150 грн)` },
 ]
 
