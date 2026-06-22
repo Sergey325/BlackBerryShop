@@ -65,7 +65,12 @@ const CartClient = () => {
         }
         else {
             const data = {
-                contact: contactData,
+                contact: {
+                    ...contactData,
+                    firstName: contactData.firstName.trim(),
+                    lastName: contactData.lastName.trim(),
+                    phone: "+" + contactData.phone.replace(/\D/g, ""),
+                },
                 delivery: {
                     city: selectedCity.name,
                     cityRef: selectedCity.ref,
