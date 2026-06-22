@@ -21,7 +21,7 @@ export async function POST(request: Request) {
                 area: delivery.area,
                 cityRef: delivery.cityRef,
                 warehouse: delivery.warehouse,
-                warehouseNumber: delivery.warehouseNumber,
+                warehouseNumber: Number(delivery.warehouseNumber),
                 warehouseRef: delivery.warehouseRef,
                 paymentMethod: paymentMethod as PaymentMethod,
                 items: {

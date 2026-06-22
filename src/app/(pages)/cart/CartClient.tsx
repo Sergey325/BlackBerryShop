@@ -71,6 +71,7 @@ const CartClient = () => {
                     cityRef: selectedCity.ref,
                     area: selectedCity.area,
                     warehouse: selectedWarehouse.description,
+                    warehouseNumber: selectedWarehouse.number,
                     warehouseRef: selectedWarehouse.ref,
                 },
                 paymentMethod: "MONOBANK",
