@@ -27,6 +27,7 @@ model Product {
 model ProductColor {
   id        Int     @id @default(autoincrement())
   color     String
+  colorName String
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -74,14 +75,19 @@ model Order {
   comment   String?
 
   // Доставка
-  city         String
-  area         String
-  cityRef      String
-  warehouse    String?
-  warehouseRef String?
+  city            String
+  area            String
+  cityRef         String
+  warehouse       String?
+  warehouseNumber Int?
+  warehouseRef    String?
 
   // Оплата
   paymentMethod PaymentMethod
+
+  // ТТН
+  ttnNumber String?
+  ttnRef    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

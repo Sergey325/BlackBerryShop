@@ -19,6 +19,7 @@ export interface IProductImage {
 export interface IProductColor {
     id: number;
     color: string;
+    colorName: string;
     productId: number;
     images: IProductImage[];
     sizes: IProductSize[];
@@ -44,7 +45,7 @@ export async function getProducts() {
                     include: { images: true, sizes: true },
                 },
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: "asc" },
         });
         return products;
     } catch (e: any) {

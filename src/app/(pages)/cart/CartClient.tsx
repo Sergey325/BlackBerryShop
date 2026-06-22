@@ -147,7 +147,7 @@ const CartClient = () => {
 
                         {/* Список товаров */}
                         {cart.items.map((item) => (
-                            <div key={item.productId + item.size + item.color} className="flex flex-col gap-4">
+                            <div key={item.productId + item.size + item.color + item.colorName} className="flex flex-col gap-4">
                                 <CartItem item={item} />
                                 <hr className="border-gray-400 w-full" />
                             </div>

@@ -5,9 +5,7 @@ import Image from "next/image";
 import { Great_Vibes } from "next/font/google";
 import {useEffect, useState} from "react";
 import { FaInstagram, FaTelegram } from "react-icons/fa";
-import {useCartStore} from "@/app/hooks/useCartStore";
 import Cart from "@/app/components/Cart";
-import Container from "@/app/components/reusable/Container";
 import {MdEmail, MdPhone} from "react-icons/md";
 
 const greatVibes = Great_Vibes({
@@ -53,17 +51,17 @@ export default function Header() {
                     <div className="hidden md:block relative group rounded-sm hover:shadow-[0_0_10px_rgba(0,0,0,0.1)] hover:bg-white transition-all duration-300 mt-2 py-3 px-4">
                         <div className="flex items-center gap-2">
                             <p className="">Зв&apos;язок з нами</p>
-                            <a href="https://github.com/Sergey325">
+                            <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer">
                                 <FaInstagram size={30} className="group-hover:text-pink-500 transition-all cursor-pointer hover:scale-115"/>
                             </a>
-                            <a href="https://github.com/Sergey325">
+                            <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer">
                                 <FaTelegram size={30} className="group-hover:text-sky-500 transition-all cursor-pointer hover:scale-115" />
                             </a>
                         </div>
                         <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
                             <div className="pt-3 flex flex-col gap-2 text-sm">
-                                <a href="mailto:gigmilitary@gmail.com" className="hover:underline underline-offset-4 hover:-translate-y-0.5 transition">blackberry.shop.kh@gmail.com</a>
-                                <a href="tel:+380123456789" className="hover:-translate-y-0.5 transition">+38 (068) 278-75-26</a>
+                                <a href="mailto:blackberry.shop.kh@gmail.com" className="hover:underline underline-offset-4 hover:-translate-y-0.5 transition">blackberry.shop.kh@gmail.com</a>
+                                <a href="tel:+380682787526" className="hover:-translate-y-0.5 transition">+38 (068) 278-75-26</a>
                                 <div className="text-gray-500">
                                     <p>Режим роботи магазину:</p>
                                     <p>ПН - ПТ: з 9:00 до 18:00</p>

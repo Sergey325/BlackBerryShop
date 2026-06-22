@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    allowedDevOrigins: ['suspense-unvocal-tripping.ngrok-free.dev'],
     images: {
         remotePatterns: [
             {

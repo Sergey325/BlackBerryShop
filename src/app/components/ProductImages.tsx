@@ -36,11 +36,6 @@ const responsiveOption = {
 const ProductImages = ({ productColor }: Props) => {
     const [selectedImage, setSelectedImage] = useState(productColor.images[0]?.url);
 
-    // При смене цвета сбрасываем выбранную картинку на первую новой галереи
-    useEffect(() => {
-        setSelectedImage(productColor.images[0]?.url);
-    }, [productColor.id]);
-
     return (
         <PhotoProvider>
             <div className="block lg:hidden pb-10 w-full">

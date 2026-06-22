@@ -44,7 +44,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                 const res = await axios.post("/api/cities", {
                     query: cityQuery,
                 });
-
+                console.log(res);
                 setCities(res.data);
             } catch (e) {
                 console.error(e);
@@ -91,6 +91,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                                     key={city.ref}
                                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                     onClick={() => {
+                                        console.log(city)
                                         setSelectedCity(city);
                                         setIsLoading(true)
                                         setCities([]);
@@ -150,6 +151,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             <div
                                 key={w.ref}
                                 onClick={() => {
+                                    console.log(w)
                                     setSelectedWarehouse(w);
                                     setWarehouseQuery(w.description);
                                     setIsWarehousesOpen(false);

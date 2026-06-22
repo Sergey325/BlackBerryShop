@@ -2,17 +2,16 @@
 
 import {IProduct} from "@/app/actions/getProducts";
 import ProductImages from "@/app/components/ProductImages";
-import StarRating from "@/app/components/StarRating";
-import {useMemo, useState} from "react";
+import {useMemo} from "react";
 import {useSearchParams} from "next/navigation";
 import ProductCard from "@/app/components/ProductCard";
 import ChooseVariant from "@/app/components/ChooseVariant";
 import Accordion from "@/app/components/reusable/Accordion";
-import slugify from "@/app/utils/slugify";
 
 type Props = {
     products: IProduct[]
 }
+
 
 const specifications = [
     {
@@ -45,27 +44,30 @@ const StoreClient = ({ products }: Props) => {
     const params = useSearchParams();
 
     const product = useMemo(() => {
-        return products.find(p => p.slug === params.get("product")) ?? products[0];
+        return products.find(p => p.id === Number(params.get("productId"))) ?? products[0];
     }, [params, products]);
 
     // Выбранный цвет — на уровне родителя, чтобы шарить между ProductImages и ChooseVariant
     const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
+    const selectedColorName = params.get("colorName") ?? product.colors[0]?.colorName;
     const selectedProductColor = useMemo(() => {
-        return product.colors.find(c => c.color === selectedColorHex) ?? product.colors[0];
+        return product.colors.find(c => c.color === selectedColorHex && c.colorName === selectedColorName) ?? product.colors[0];
     }, [product, selectedColorHex]);
 
-    // const [rating, setRating] = useState(0);
-
-    // const productsDev = [...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products, ...products];
 
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
             <div className="border border-gray-200 rounded-sm py-3 px-2 lg:p-4 w-full bg-white">
-                <p className="text-lg lg:text-[28px] font-medium">{product.name}</p>
+                <p className="text-lg lg:text-[28px] font-medium">
+                    {product.name.replace(
+                    /\s+(\S+)$/,
+                    ` ${selectedProductColor.colorName}, $1`
+                    )}
+                </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-10 lg:gap-4 w-full bg-transparent">
                 <div className="bg-white p-4 border border-gray-200 rounded-sm basis-3/5">
-                    <ProductImages productColor={selectedProductColor} />
+                    <ProductImages key={selectedProductColor.id} productColor={selectedProductColor} />
                 </div>
                 <div className="flex flex-col basis-2/5">
                     <div className="bg-white border border-b-2 border-gray-200 rounded-t-sm flex flex-col p-4 gap-2 w-full">
@@ -78,7 +80,7 @@ const StoreClient = ({ products }: Props) => {
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col p-4 gap-2 w-full">
                         <div className="flex flex-wrap gap-1.5">
                             {products.map((p, index) => (
-                                <ProductCard product={p} isSelected={p.slug === product.slug} key={index} />
+                                <ProductCard product={p} isSelected={p.id === product.id} key={index} />
                             ))}
                         </div>
                     </div>
@@ -118,14 +120,9 @@ const StoreClient = ({ products }: Props) => {
                 </div>
                 <div className="flex flex-col lg:flex-row w-full">
                     <div className="flex-1 w-full border-r border-gray-200 p-6 flex flex-col gap-4">
-                        <p className="font-normal text-sm md:text-base lg:text-lg">
-                            Стильна та зручна панамка - ідеальний вибір для сонячних днів.  Добре поєднується як із повсякденними, так і з літніми образами.
-                        </p>
-                        <p className="font-normal text-sm md:text-base lg:text-lg">
-                            Легка тканина забезпечує комфорт у носінні, а продуманий крій допомагає захистити обличчя від сонця.
-                        </p>
-                        <p className="font-normal text-sm md:text-base lg:text-lg">
-                            Добре поєднується як із повсякденними, так і з літніми образами.
+
+                        <p className="font-normal text-sm md:text-base lg:text-lg whitespace-pre-line">
+                            {product.description}
                         </p>
                     </div>
                     <div className="flex-1 w-full border-l border-gray-200 p-6 flex flex-col gap-6">

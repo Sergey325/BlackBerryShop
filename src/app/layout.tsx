@@ -8,6 +8,7 @@ import BackToTop from "@/app/components/reusable/BackToTop";
 import Container from "@/app/components/reusable/Container";
 import CartModal from "@/app/components/modals/CartModal";
 import Footer from "@/app/components/Footer";
+import SizesModal from "@/app/components/modals/SizesModal";
 
 
 const montserrat = Montserrat({
@@ -31,6 +32,7 @@ export default function RootLayout({
                     <Header/>
                     <BackToTop/>
                     <CartModal/>
+                    <SizesModal/>
                 </ClientOnly>
                 <Container>
                     <main className="flex-auto mb-5">
@@ -40,9 +42,6 @@ export default function RootLayout({
                     </main>
                 </Container>
                 <Footer/>
-                {/*<div className="h-15 mt-50">*/}
-                {/*            GGGGGGGGGGGGG*/}
-                {/*</div>*/}
             </body>
         </html>
     );

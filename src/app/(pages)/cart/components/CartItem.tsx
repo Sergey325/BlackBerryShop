@@ -43,7 +43,7 @@ const CartItem = ({item}: Props) => {
                 {/* Картинка + название — клик ведёт на товар */}
                 <div
                     className="flex lg:contents gap-3 items-center cursor-pointer"
-                    onClick={() => router.push(`/?product=${item.slug}&size=${item.size}&color=%23${item.color?.slice(1)}`)}
+                    onClick={() => router.push(`/?product=${item.slug}&productId=${item.productId}&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                 >
                     <Image src={item.photoUrl} alt="productImage" width={80} height={80} className="object-contain" />
 
@@ -61,7 +61,7 @@ const CartItem = ({item}: Props) => {
 
                 {/* Цена */}
                 <span className="hidden lg:block text-right">
-                    {calculatePriceWithDiscount(item.price, item.discount)} грн
+                    {calculatePriceWithDiscount(item.price, item.discount).toFixed(2)} грн
                 </span>
 
                 {/* Счётчик + удаление + цена (мобайл) */}

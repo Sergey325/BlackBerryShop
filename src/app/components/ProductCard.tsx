@@ -18,8 +18,9 @@ const ProductCard = ({product, isSelected}: Props) => {
             onClick={() => {
                 const qs = new URLSearchParams(params);
 
-                qs.set("product", product.slug || "");
+                qs.set("productId", product.id.toString() || "");
                 qs.set("color", firstColor.color);
+                qs.set("colorName", firstColor.colorName);
                 qs.set("size", firstColor.sizes[0]?.size ?? "");
 
                 router.push(`?${qs.toString()}`);

@@ -15,6 +15,10 @@ html, body, #root {
     height: 100%;
 }
 
+.shadow-soft {
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
 .react-multi-carousel-list {
     z-index: 0;
 }
