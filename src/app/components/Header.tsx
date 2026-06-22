@@ -34,7 +34,7 @@ export default function Header() {
                     <Link href="/" className="overflow-hidden">
                         <Image src="/img.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain" />
                     </Link>
-                    <Link href="/" className={`text-2xl md:text-3xl bold mt-1 ${greatVibes.className}`}>
+                    <Link href="/" className={`text-3xl bold mt-1.5 ${greatVibes.className}`}>
                         Black Berry
                     </Link>
                 </div>
