@@ -55,7 +55,7 @@ model NovaPoshtaCity {
   id        Int      @id @default(autoincrement())
   ref       String   @unique
   name      String
-  area      String?
+  area      String
   updatedAt DateTime @updatedAt
 
   @@index([name])
@@ -78,9 +78,9 @@ model Order {
   city            String
   area            String
   cityRef         String
-  warehouse       String?
-  warehouseNumber Int?
-  warehouseRef    String?
+  warehouse       String
+  warehouseNumber Int
+  warehouseRef    String
 
   // Оплата
   paymentMethod PaymentMethod
@@ -104,9 +104,9 @@ model OrderItem {
   name      String
   price     Float
   quantity  Int
-  color     String?
-  size      String?
-  imageUrl  String?
+  color     String
+  size      String
+  imageUrl  String
 }
 
 enum OrderStatus {

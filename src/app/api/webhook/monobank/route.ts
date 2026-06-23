@@ -36,7 +36,7 @@ export async function POST(request: Request) {
                     recipientLastName: order.lastName,
                     recipientPhone: order.phone,
                     recipientCityRef: order.cityRef,
-                    recipientWarehouseNumber: order.warehouseNumber!.toString(),
+                    recipientWarehouseNumber: order.warehouseNumber.toString(),
                     serviceType: order.warehouse?.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
                     cost: order.totalAmount,
                     description: order.items.map(i => i.name).join(", "),
