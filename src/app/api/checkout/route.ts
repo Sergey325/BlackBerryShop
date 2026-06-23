@@ -60,8 +60,8 @@ export async function POST(request: Request) {
                     icon: item.imageUrl,
                     unit: "шт",
                 })),
-                redirectUrl: `https://black-berry-shop.vercel.app/successfulPayment?id=${order.id}`,
-                webHookUrl: `https://black-berry-shop.vercel.app/api/webhook/monobank`,
+                redirectUrl: `https://black-berry.shop/successfulPayment?id=${order.id}`,
+                webHookUrl: `https://black-berry.shop/api/webhook/monobank`,
                 // https://suspense-unvocal-tripping.ngrok-free.dev
                 // redirectUrl: `${process.env.NEXT_PUBLIC_URL}/order/success?id=${order.id}`,
                 // webHookUrl: `${process.env.NEXT_PUBLIC_URL}/api/webhook/monobank`,
