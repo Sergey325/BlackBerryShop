@@ -1,5 +1,4 @@
 import Button from "@/app/components/reusable/Button";
-import toast from "react-hot-toast";
 
 type Props = {
     totalPrice: number
@@ -56,7 +55,7 @@ const CartSummary = ({totalPrice, payment, address, contactData, onCheckout}: Pr
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-700 pt-4 text-base sm:text-lg">
                     <div className="text-sm sm:text-base font-medium">Сума до cплати</div>
-                    <span className="text-xl sm:text-2xl text-gray-800 whitespace-nowrap">{payment.value === "cod" ? 150 : totalPrice} грн</span>
+                    <span className="text-xl sm:text-2xl text-gray-800 whitespace-nowrap">{payment.value === "CASH_ON_DELIVERY" ? 150 : totalPrice} грн</span>
                 </div>
             </div>
             <div className="text-sm sm:text-base pt-5">

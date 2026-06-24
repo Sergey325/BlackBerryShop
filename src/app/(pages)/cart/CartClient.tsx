@@ -15,8 +15,8 @@ import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTo
 
 
 const paymentOptions = [
-    { value: "prepayment", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },
-    { value: "cod", label: "Оплата при отриманні (передоплата 150 грн, решта при отриманні)", shortTitle: `Оплата при отриманні\n(Передплата 150 грн)` },
+    { value: "MONOBANK", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },
+    { value: "CASH_ON_DELIVERY", label: "Оплата при отриманні (передоплата 150 грн, решта при отриманні)", shortTitle: `Оплата при отриманні\n(Передплата 150 грн)` },
 ]
 
 const CartClient = () => {
@@ -79,8 +79,8 @@ const CartClient = () => {
                     warehouseNumber: selectedWarehouse.number,
                     warehouseRef: selectedWarehouse.ref,
                 },
-                paymentMethod: "MONOBANK",
-                totalAmount: payment.value === "cod" ? 150 : totalPrice,
+                paymentMethod: payment.value,
+                totalAmount: payment.value === "CASH_ON_DELIVERY" ? 150 : totalPrice,
                 items: cart.items.map(item => ({
                     productId: Number(item.productId),
                     name: item.productName,
