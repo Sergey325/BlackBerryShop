@@ -11,7 +11,7 @@ import {City, Warehouse} from "@/app/types";
 import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
-import {calculateTotalPrice} from "@/app/utils/getTotalPrice";
+import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 
 
 const paymentOptions = [
@@ -44,7 +44,7 @@ const CartClient = () => {
     const onCheckout = async () => {
         // const response = await axios.post("api/checkout")
         // window.location = response.data.url
-
+        console.log(cart.items)
         if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
             toast.error("Введіть ім'я, призвище, та номер телефону")
             contactRef.current?.scrollIntoView({
@@ -84,11 +84,12 @@ const CartClient = () => {
                 items: cart.items.map(item => ({
                     productId: Number(item.productId),
                     name: item.productName,
-                    price: calculateTotalPrice(item.price, item.quantity, item.discount),
+                    price: calculatePriceWithDiscount(item.price, item.discount),
                     quantity: item.quantity,
                     color: item.color,
                     size: item.size,
                     imageUrl: item.photoUrl,
+                    colorId: item.productColorId
                 })),
             }
             const res = await axios.post("/api/checkout", data);

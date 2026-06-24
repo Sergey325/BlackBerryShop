@@ -52,14 +52,15 @@ export async function POST(request: Request) {
                 merchantPaymInfo: {
                     reference: String(order.id),
                     destination: `Замовлення #${order.id}`,
+                    basketOrder: items.map((item: any) => ({
+                        name: item.name,
+                        qty: item.quantity,
+                        sum: Math.round(item.price * 100),
+                        icon: item.imageUrl,
+                        unit: "шт",
+                        code: `${item.productId}${item.color.replace('#', '')}${item.size}`,
+                    })),
                 },
-                basketOrder: items.map((item: any) => ({
-                    name: item.name,
-                    qty: item.quantity,
-                    sum: Math.round(item.price * 100),
-                    icon: item.imageUrl,
-                    unit: "шт",
-                })),
                 redirectUrl: `${process.env.BASE_URL}/successfulPayment?id=${order.id}`,
                 webHookUrl: `${process.env.BASE_URL}/api/webhook/monobank`,
                 // https://suspense-unvocal-tripping.ngrok-free.dev
@@ -70,6 +71,7 @@ export async function POST(request: Request) {
 
         const monobankData = await monobankRes.json();
         console.log(monobankData);
+
         // Сохраняем invoiceId
         await prisma.order.update({
             where: { id: order.id },
