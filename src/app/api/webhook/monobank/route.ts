@@ -22,6 +22,9 @@ export async function POST(request: Request) {
             return NextResponse.json(null, { status: 200 });
         }
 
+        await new Promise(resolve => setTimeout(resolve, 10000));
+
+
         const order = await prisma.order.update({
             where: { invoiceId },
             data: { status: newStatus as any },
