@@ -72,6 +72,7 @@ export async function POST(request: Request) {
                     reference: String(order.id),
                     destination: `Замовлення #${order.id}`,
                     basketOrder: basketOrder,
+                    customerEmails: [order.email, process.env.EMAIL],
                 },
                 redirectUrl: `${process.env.BASE_URL}/successfulPayment?id=${order.id}`,
                 webHookUrl: `${process.env.BASE_URL}/api/webhook/monobank`,
