@@ -1,6 +1,7 @@
 import Image from "next/image";
 import {useRouter, useSearchParams} from "next/navigation";
 import {IProduct} from "@/app/actions/getProducts";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
 
 type Props = {
     product: IProduct
@@ -13,18 +14,27 @@ const ProductCard = ({product, isSelected}: Props) => {
 
     const firstColor = product.colors[0];
 
+    const handleProductSelect = () => {
+        const qs = new URLSearchParams(params);
+        qs.set("productId", product.id.toString() || "");
+        qs.set("color", firstColor.color);
+        qs.set("colorName", firstColor.colorName);
+        qs.set("size", firstColor.sizes[0]?.size ?? "");
+
+        router.push(`?${qs.toString()}`);
+
+        trackMetaEvent("ViewContent", {
+            content_ids: [product.id],
+            content_name: product.name,
+            content_type: "product",
+            value: product.price,
+            currency: "UAH",
+        });
+    }
+
     return (
         <div
-            onClick={() => {
-                const qs = new URLSearchParams(params);
-
-                qs.set("productId", product.id.toString() || "");
-                qs.set("color", firstColor.color);
-                qs.set("colorName", firstColor.colorName);
-                qs.set("size", firstColor.sizes[0]?.size ?? "");
-
-                router.push(`?${qs.toString()}`);
-            }}
+            onClick={() => handleProductSelect()}
             className="border rounded-xl overflow-hidden cursor-pointer"
             style={{
                 borderWidth: isSelected ? "2px" : "1px",

@@ -15,8 +15,10 @@ export default async function SuccessfulPayment({ searchParams }: Props) {
             where: {
                 id: Number(id),
             },
+            include: { items: true }
         })
         : null;
+
 
 
     if (!order) {
@@ -50,6 +52,7 @@ export default async function SuccessfulPayment({ searchParams }: Props) {
         <SuccessfulClient
             id={String(order.id)}
             status={order.status}
+            order={order}
         />
     );
 }

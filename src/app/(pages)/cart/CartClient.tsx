@@ -12,6 +12,7 @@ import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
 
 
 const paymentOptions = [
@@ -42,9 +43,6 @@ const CartClient = () => {
     const deliveryRef = useRef<HTMLDivElement | null>(null);
 
     const onCheckout = async () => {
-        // const response = await axios.post("api/checkout")
-        // window.location = response.data.url
-        console.log(cart.items)
         if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
             toast.error("Введіть ім'я, призвище, та номер телефону")
             contactRef.current?.scrollIntoView({
@@ -92,8 +90,22 @@ const CartClient = () => {
                     colorId: item.productColorId
                 })),
             }
+
+            trackMetaEvent("InitiateCheckout", {
+                content_ids: cart.items.map(item => item.productId),
+                content_type: "product",
+                value: totalPrice,
+                currency: "UAH",
+                contents: cart.items.map(item => ({
+                    id: item.productId,
+                    quantity: item.quantity,
+                    color: item.colorName,
+                    size: item.size,
+                })),
+            });
+
             const res = await axios.post("/api/checkout", data);
-            console.log(res.data);
+
             if (res.data.redirectUrl) {
                 window.location.href = res.data.redirectUrl; // редирект на оплату
             }

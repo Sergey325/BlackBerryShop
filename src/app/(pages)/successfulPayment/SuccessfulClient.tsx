@@ -11,26 +11,45 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/app/hooks/useCartStore";
 import Loader from "@/app/components/reusable/Loader";
-import {OrderStatus} from "@prisma/client";
+import {OrderStatus, Prisma} from "@prisma/client";
 import Link from "next/link";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
 
 
 type Props = {
     id: string;
+    order: Prisma.OrderGetPayload<{
+        include: {
+            items: true;
+        };
+    }>;
     status: OrderStatus;
 };
 
 
-const SuccessfulClient = ({ id, status }: Props) => {
-
+const SuccessfulClient = ({ id, status, order }: Props) => {
     const router = useRouter();
     const clearCart = useCartStore(state => state.clearCart);
-
 
     useEffect(() => {
 
         if (status === "PAID") {
             clearCart();
+
+            trackMetaEvent("Purchase", {
+                content_ids: order.items.map(item => item.productId),
+                content_type: "product",
+                value: order.totalAmount,
+                currency: "UAH",
+
+                contents: order.items.map(item => ({
+                    id: item.productId,
+                    quantity: item.quantity,
+                    color: item.colorName,
+                    size: item.size,
+                })),
+            });
+
             return;
         }
 

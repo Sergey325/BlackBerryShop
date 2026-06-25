@@ -9,6 +9,7 @@ import Button from "@/app/components/reusable/Button";
 import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import useSizesModal from "@/app/hooks/useSizesModal";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
 
 type Props = {
     product: IProduct;
@@ -61,6 +62,35 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
         qs.set("size", size);
         router.push(`?${qs.toString()}`);
     };
+
+    const handleAddToCart = () => {
+        if (!selectedSizeObj?.available) return;
+
+        cart.addItem({
+            productId: product.id,
+            productColorId: selectedProductColor.id,
+            quantity: count,
+            size: selectedSize!,
+            color: selectedColorHex,
+            colorName: selectedProductColor.colorName,
+            discount: product.discount,
+            photoUrl: selectedProductColor.images[0]?.url ?? "",
+            price: product.price,
+            productName: product.name.replace(/\s+(\S+)$/,` ${selectedProductColor.colorName}, $1`),
+            slug: product.slug,
+        });
+        cartModal.onOpen();
+
+        trackMetaEvent("AddToCart", {
+            content_ids: [product.id],
+            content_name: product.name,
+            content_type: "product",
+            value: product.price,
+            currency: "UAH",
+            color: selectedProductColor.colorName,
+            size: selectedSize,
+        });
+    }
 
     return (
         <>
@@ -137,24 +167,7 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
             <div className="flex justify-between mt-4 mb-1">
                 <Button
                     label="Додати до кошика"
-                    onClick={() => {
-                        if (!selectedSizeObj?.available) return;
-
-                        cart.addItem({
-                            productId: product.id,
-                            productColorId: selectedProductColor.id,
-                            quantity: count,
-                            size: selectedSize!,
-                            color: selectedColorHex,
-                            colorName: selectedProductColor.colorName,
-                            discount: product.discount,
-                            photoUrl: selectedProductColor.images[0]?.url ?? "",
-                            price: product.price,
-                            productName: product.name.replace(/\s+(\S+)$/,` ${selectedProductColor.colorName}, $1`),
-                            slug: product.slug,
-                        });
-                        cartModal.onOpen();
-                    }}
+                    onClick={() => handleAddToCart()}
                 />
             </div>
         </>
