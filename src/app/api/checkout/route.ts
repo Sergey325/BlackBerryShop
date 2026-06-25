@@ -40,6 +40,12 @@ export async function POST(request: Request) {
 
         const isCod = paymentMethod === "CASH_ON_DELIVERY";
 
+        const customerEmails = [process.env.EMAIL!];
+
+        if (order.email) {
+            customerEmails.unshift(order.email);
+        }
+
         const basketOrder = isCod ? [
             {
                 name: "Передоплата за замовлення",
@@ -72,7 +78,7 @@ export async function POST(request: Request) {
                     reference: String(order.id),
                     destination: `Замовлення #${order.id}`,
                     basketOrder: basketOrder,
-                    customerEmails: [order.email, process.env.EMAIL],
+                    customerEmails: customerEmails,
                 },
                 redirectUrl: `${process.env.BASE_URL}/successfulPayment?id=${order.id}`,
                 webHookUrl: `${process.env.BASE_URL}/api/webhook/monobank`,
