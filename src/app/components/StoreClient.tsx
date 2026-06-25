@@ -88,7 +88,7 @@ const StoreClient = ({ products }: Props) => {
                         <ChooseVariant product={product} selectedProductColor={selectedProductColor} />
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">
-                        <Accordion title={"Способи доставки"} content={["Доставка у відділення - Нова Пошта"]}/>
+                        <Accordion title={"Способи доставки"} content={["Доставка у відділення або поштомат - Нова Пошта"]}/>
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 rounded-b-sm flex flex-col gap-2 w-full p-4">
                         <Accordion
