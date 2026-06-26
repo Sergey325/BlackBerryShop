@@ -15,6 +15,13 @@ export async function POST(request: Request) {
 
         const data = await res.json();
 
+        if (!data.success) {
+            return NextResponse.json(
+                { error: data.errors },
+                { status: 400 }
+            );
+        }
+
         const warehouses = data.data.map((w: any) => ({
             ref: w.Ref,
             number: w.Number,

@@ -63,7 +63,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
     }, [selectedCity]);
 
     return (
-        <div className="flex flex-col text-base lg:text-lg gap-4 border-2 border-gray-200 rounded-md p-6 bg-white">
+        <div className="flex flex-col text-base gap-4 border-2 border-gray-200 rounded-md p-6 bg-white">
             {/* Выбор города */}
             <div>
                 <label className="block mb-1 font-medium transition">Виберіть місто*</label>
@@ -109,7 +109,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
             </div>
 
             {/* Выбор отделения */}
-            <div ref={wrapperRef} className="text-base lg:text-lg relative">
+            <div ref={wrapperRef} className="text-base relative">
                 <label className="block mb-1 font-medium">
                     Виберіть відділення
                 </label>
