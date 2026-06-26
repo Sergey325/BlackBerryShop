@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {createTTN} from "@/app/lib/novaposhta";
+import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
 
 export async function POST(request: Request) {
     try {
@@ -53,6 +54,20 @@ export async function POST(request: Request) {
                 // Не валим весь webhook, если ТТН не создалась — заказ всё равно оплачен
                 console.error("Failed to create TTN for order", order.id, ttnError);
             }
+        }
+
+        // Отправляем сообщение о заказе в бота
+        const admins = await prisma.telegramUser.findMany({
+            where: {
+                role: "ADMIN",
+            },
+        });
+
+        for (const admin of admins) {
+            await sendTelegramMessage(
+                admin.chatId,
+                createOrderMessage(order)
+            );
         }
 
         // console.log("Order updated:", updated.id, newStatus);
