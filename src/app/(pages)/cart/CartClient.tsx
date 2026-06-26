@@ -13,6 +13,7 @@ import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import {isValidUAPhone, validateName} from "@/app/utils/validation";
 
 
 const paymentOptions = [
@@ -45,6 +46,24 @@ const CartClient = () => {
     const onCheckout = async () => {
         if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
             toast.error("Введіть ім'я, призвище, та номер телефону")
+            contactRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+
+            return;
+        }
+        else if (!validateName(contactData.firstName) || !validateName(contactData.lastName)) {
+            toast.error("Ім'я та прізвище повинні містити тільки українські літери");
+            contactRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+
+            return;
+        }
+        else if (!isValidUAPhone(contactData.phone)) {
+            toast.error("Номер телефону введено неправильно");
             contactRef.current?.scrollIntoView({
                 behavior: "smooth",
                 block: "center",

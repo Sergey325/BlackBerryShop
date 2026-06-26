@@ -18,7 +18,7 @@ export async function sendTelegramMessage(chatId: string, text: string) {
                             [
                                 {
                                     text: "🔎 Перейти до замовлень",
-                                    url: `${process.env.ADMIN_URL}/manageOrders?tab=AllOrders`,
+                                    url: `${process.env.ADMIN_URL}manageOrders?tab=AllOrders`,
                                 },
                             ],
                         ],
