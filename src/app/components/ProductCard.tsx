@@ -19,7 +19,7 @@ const ProductCard = ({product, isSelected}: Props) => {
         qs.set("productId", product.id.toString() || "");
         qs.set("color", firstColor.color);
         qs.set("colorName", firstColor.colorName);
-        qs.set("size", firstColor.sizes[0]?.size ?? "");
+        qs.delete("size");
 
         router.push(`?${qs.toString()}`);
 

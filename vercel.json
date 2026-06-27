@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/sync-cities",
-      "schedule": "35 14 * * *"
+      "schedule": "0 2 * * 0"
     }
   ]
 }
