@@ -40,9 +40,9 @@ export async function POST(request: Request) {
 
         const isCod = paymentMethod === "CASH_ON_DELIVERY";
 
-        const customerEmails = [process.env.EMAIL!];
+        const customerEmails = [process.env.EMAIL!, process.env.EMAIL2!];
 
-        if (order.email) {
+        if (order.email && !customerEmails.includes(order.email)) {
             customerEmails.unshift(order.email);
         }
 

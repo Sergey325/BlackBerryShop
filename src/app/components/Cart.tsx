@@ -23,7 +23,7 @@ const Cart = () => {
     return (
         <div className="group cursor-pointer relative select-none" onClick={() => {
             if (items.length === 0) {
-                toast.error("Кошик порожній")
+                toast("Кошик порожній",{icon: "ℹ️"})
             }
             else {
                 router.push("/cart")

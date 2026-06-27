@@ -10,6 +10,7 @@ import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import useSizesModal from "@/app/hooks/useSizesModal";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import toast from "react-hot-toast";
 
 type Props = {
     product: IProduct;
@@ -26,7 +27,7 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
     const selectedColorHex = selectedProductColor.color;
 
     // Размер зависит от выбранного цвета
-    const selectedSize = params.get("size") ?? selectedProductColor.sizes[0]?.size;
+    const selectedSize = params.get("size") ?? "";
     const productNameFromUrl = params?.get("product");
 
     const cartModal = useCartModal();
@@ -43,17 +44,16 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
             qs.set("product", product.slug);
             qs.set("productId", product.id.toString());
             qs.set("color", selectedColorHex);
-            qs.set("size", selectedSize ?? "");
+            if (selectedSize) qs.set("size", selectedSize);
             router.replace(`?${qs.toString()}`);
         }
     }, [productNameFromUrl]);
 
     const handleColorChange = (colorItem: IProductColor) => {
-        const newColor = product.colors.find((c) => c.color === colorItem.color && c.colorName === colorItem.colorName)!;
         const qs = new URLSearchParams(params);
         qs.set("color", colorItem.color);
         qs.set("colorName", colorItem.colorName);
-        qs.set("size", newColor.sizes[0]?.size ?? "");
+        qs.delete("size");
         router.push(`?${qs.toString()}`);
     };
 
@@ -64,7 +64,13 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
     };
 
     const handleAddToCart = () => {
-        if (!selectedSizeObj?.available) return;
+        if (!selectedSize) {
+            toast("Виберіть розмір", {
+                icon: "⚠️",
+            })
+            return
+        }
+        else if (!selectedSizeObj?.available) return;
 
         cart.addItem({
             productId: product.id,
