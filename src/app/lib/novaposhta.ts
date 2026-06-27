@@ -245,6 +245,15 @@ export async function createTTN({
             Weight: 2,
             ServiceType: serviceType,
             SeatsAmount: "1",
+            OptionsSeat: [
+                {
+                    weight: 2,
+                    volumetricWidth: 20,
+                    volumetricLength: 20,
+                    volumetricHeight: 10,
+                    volumetricVolume: 0.002
+                }
+            ],
             Description: `Одяг: ${description}`,
             Cost: cost,
         },
