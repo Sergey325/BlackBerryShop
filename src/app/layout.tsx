@@ -18,8 +18,28 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "BlackBerry Shop",
-  description: "",
+    metadataBase: new URL("https://black-berry.shop"),
+
+    title: "BlackBerry — авторські головні убори та аксесуари",
+    description: "BlackBerry — український бренд авторських головних уборів та аксесуарів. Панами, кепки та унікальні моделі для дітей і дорослих. Якість, комфорт і оригінальний дизайн.",
+
+    icons: {
+        icon: "/favicon.ico",
+    },
+
+    openGraph: {
+        title: "BlackBerry — авторські головні убори та аксесуари",
+        description:
+            "BlackBerry — український бренд авторських головних уборів та аксесуарів. Панами, кепки та унікальні моделі для дітей і дорослих. Якість, комфорт і оригінальний дизайн.",
+        images: [
+            {
+                url: "/logo.png",
+                width: 1200,
+                height: 630,
+                alt: "BlackBerry магазин",
+            },
+        ],
+    },
 };
 
 export default function RootLayout({
