@@ -42,15 +42,22 @@ export async function sendTelegramMessage(chatId: string, text: string) {
 
 }
 
+
 export function createOrderMessage(order: IOrder) {
+    const productsTotal = order.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
+
     return `
         🛒 <b>Нове замовлення #${order.id}</b>
 
-        💰 <b>Сума:</b> ${order.totalAmount} грн
+        💰 <b>Оплачено:</b> ${order.totalAmount} грн
+        💳 <b>Спосіб оплати:</b> ${order.paymentMethod === "MONOBANK" ? "Оплата карткою" : "Накладений платіж"}
         
         👤 <b>Покупець:</b>
         ${order.firstName} ${order.lastName}
-        📞 ${order.phone}
+        📞 <code>${order.phone}</code>
         ${order.email ? `✉️ ${order.email}` : ""}
         ${order.comment ? `💬 ${order.comment}` : ""}
         
@@ -58,15 +65,18 @@ export function createOrderMessage(order: IOrder) {
         ${order.city}${order.area ? `, ${order.area} обл` : ""}
         ${order.warehouse ? `🏢 ${order.warehouse}` : ""}
         
-        ${order.ttnNumber ? `📮 <b>ТТН:</b> ${order.ttnNumber}` : ""}
+        ${order.ttnNumber ? `📮 <b>ТТН:</b> <code>${order.ttnNumber}</code>` : ""}
+        
         
         📦 <b>Товари:</b>
-        ${order.items.map((item: any) => `
+        ${order.items.map((item) => `
         • <b>${item.name}</b>
             Кількість: ${item.quantity}
-            Ціна: ${item.price} грн
-            ${item.color ? `Колір: ${item.color}` : ""}
+            Ціна: ${item.price * item.quantity} грн
             ${item.size ? `Розмір: ${item.size}` : ""}
         `).join("\n")}
+        
+        ━━━━━━━━━━━━━━
+        💰 <b>Загальна сума:</b> ${productsTotal} грн
     `;
 }

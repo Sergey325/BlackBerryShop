@@ -104,6 +104,7 @@ const CartClient = () => {
                     price: calculatePriceWithDiscount(item.price, item.discount),
                     quantity: item.quantity,
                     color: item.color,
+                    colorName: item.colorName,
                     size: item.size,
                     imageUrl: item.photoUrl,
                     colorId: item.productColorId
