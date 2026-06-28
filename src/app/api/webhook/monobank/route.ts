@@ -56,19 +56,29 @@ export async function POST(request: Request) {
             }
         }
 
-        // Отправляем сообщение о заказе в бота
-        const admins = await prisma.telegramUser.findMany({
-            where: {
-                role: "ADMIN",
-            },
-        });
 
-        for (const admin of admins) {
-            await sendTelegramMessage(
-                admin.chatId,
-                createOrderMessage(order)
-            );
+        // Отправляем сообщение о заказе в бота
+        if (newStatus === "PAID") {
+            const admins = await prisma.telegramUser.findMany({
+                where: {
+                    role: "ADMIN",
+                },
+            });
+
+            console.log(admins)
+
+            const telegramMessage = createOrderMessage(order)
+
+            console.log(telegramMessage)
+
+            for (const admin of admins) {
+                await sendTelegramMessage(
+                    admin.chatId,
+                    telegramMessage
+                );
+            }
         }
+
 
         // console.log("Order updated:", updated.id, newStatus);
 
