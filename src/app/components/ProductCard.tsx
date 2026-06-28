@@ -23,13 +23,13 @@ const ProductCard = ({product, isSelected}: Props) => {
 
         router.push(`?${qs.toString()}`);
 
-        trackMetaEvent("ViewContent", {
-            content_ids: [product.id.toString()],
-            content_name: product.name,
-            content_type: "product",
-            value: product.price,
-            currency: "UAH",
-        });
+        // trackMetaEvent("ViewContent", {
+        //     content_ids: [product.id.toString()],
+        //     content_name: product.name,
+        //     content_type: "product",
+        //     value: product.price,
+        //     currency: "UAH",
+        // });
     }
 
     return (

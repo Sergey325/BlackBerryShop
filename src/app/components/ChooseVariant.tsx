@@ -87,15 +87,15 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
         });
         cartModal.onOpen();
 
-        trackMetaEvent("AddToCart", {
-            content_ids: [product.id.toString()],
-            content_name: product.name,
-            content_type: "product",
-            value: product.price,
-            currency: "UAH",
-            color: selectedProductColor.colorName,
-            size: selectedSize,
-        });
+        // trackMetaEvent("AddToCart", {
+        //     content_ids: [product.id.toString()],
+        //     content_name: product.name,
+        //     content_type: "product",
+        //     value: product.price,
+        //     currency: "UAH",
+        //     color: selectedProductColor.colorName,
+        //     size: selectedSize,
+        // });
     }
 
     return (

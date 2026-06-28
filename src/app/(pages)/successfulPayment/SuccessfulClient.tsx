@@ -36,19 +36,19 @@ const SuccessfulClient = ({ id, status, order }: Props) => {
         if (status === "PAID") {
             clearCart();
 
-            trackMetaEvent("Purchase", {
-                content_ids: order.items.map(item => item.productId.toString()),
-                content_type: "product",
-                value: order.totalAmount,
-                currency: "UAH",
-
-                contents: order.items.map(item => ({
-                    id: item.productId,
-                    quantity: item.quantity,
-                    color: item.colorName,
-                    size: item.size,
-                })),
-            });
+            // trackMetaEvent("Purchase", {
+            //     content_ids: order.items.map(item => item.productId.toString()),
+            //     content_type: "product",
+            //     value: order.totalAmount,
+            //     currency: "UAH",
+            //
+            //     contents: order.items.map(item => ({
+            //         id: item.productId,
+            //         quantity: item.quantity,
+            //         color: item.colorName,
+            //         size: item.size,
+            //     })),
+            // });
 
             return;
         }
