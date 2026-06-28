@@ -4,11 +4,6 @@ export async function sendTelegramMessage(chatId: string, text: string) {
     try {
         const token = process.env.TELEGRAM_BOT_TOKEN;
 
-        console.log({
-            tokenExists: !!process.env.TELEGRAM_BOT_TOKEN,
-            tokenStart: process.env.TELEGRAM_BOT_TOKEN?.slice(0, 10),
-        });
-
         const response = await fetch(
             `https://api.telegram.org/bot${token}/sendMessage`,
             {

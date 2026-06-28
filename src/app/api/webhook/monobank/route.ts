@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
 
 
-        const order = await prisma.order.update({
+        let order = await prisma.order.update({
             where: { invoiceId },
             data: { status: newStatus as any },
             include: { items: true },
@@ -46,10 +46,12 @@ export async function POST(request: Request) {
                     description: order.items.map(i => i.name).join(", "),
                 });
 
-                await prisma.order.update({
+                order = await prisma.order.update({
                     where: { id: order.id },
                     data: { ttnNumber, ttnRef },
+                    include: { items: true },
                 });
+
             } catch (ttnError) {
                 // Не валим весь webhook, если ТТН не создалась — заказ всё равно оплачен
                 console.error("Failed to create TTN for order", order.id, ttnError);
@@ -65,11 +67,7 @@ export async function POST(request: Request) {
                 },
             });
 
-            console.log(admins)
-
             const telegramMessage = createOrderMessage(order)
-
-            console.log(telegramMessage)
 
             for (const admin of admins) {
                 await sendTelegramMessage(
