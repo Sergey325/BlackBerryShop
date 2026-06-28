@@ -1,3 +1,5 @@
+import {OrderStatus, PaymentMethod} from "@prisma/client";
+
 export type City = {
     ref: string;
     name: string;
@@ -31,3 +33,40 @@ export type CartItem = {
     photoUrl: string;
     quantity: number;
 };
+
+export interface IOrderItem {
+    id: number;
+    orderId: number;
+    productId: number;
+    name: string;
+    price: number;
+    quantity: number;
+    color: string;
+    colorName: string | null;
+    size: string;
+    imageUrl: string;
+}
+
+export interface IOrder {
+    id: number;
+    invoiceId: string | null;
+    status: OrderStatus;
+    totalAmount: number;
+    firstName: string;
+    lastName: string
+    phone: string;
+    email: string | null;
+    comment: string| null;
+    city: string;
+    cityRef: string;
+    warehouse: string;
+    warehouseRef: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    paymentMethod: PaymentMethod;
+    area: string;
+    ttnNumber: string | null;
+    ttnRef: string | null;
+    warehouseNumber: number;
+    items: IOrderItem[]
+}

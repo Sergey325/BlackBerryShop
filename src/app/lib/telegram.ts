@@ -1,6 +1,13 @@
+import {IOrder} from "@/app/types";
+
 export async function sendTelegramMessage(chatId: string, text: string) {
     try {
         const token = process.env.TELEGRAM_BOT_TOKEN;
+
+        console.log({
+            tokenExists: !!process.env.TELEGRAM_BOT_TOKEN,
+            tokenStart: process.env.TELEGRAM_BOT_TOKEN?.slice(0, 10),
+        });
 
         const response = await fetch(
             `https://api.telegram.org/bot${token}/sendMessage`,
@@ -40,7 +47,7 @@ export async function sendTelegramMessage(chatId: string, text: string) {
 
 }
 
-export function createOrderMessage(order: any) {
+export function createOrderMessage(order: IOrder) {
     return `
         🛒 <b>Нове замовлення #${order.id}</b>
 
