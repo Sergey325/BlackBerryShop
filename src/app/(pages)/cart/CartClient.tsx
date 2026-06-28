@@ -111,7 +111,7 @@ const CartClient = () => {
             }
 
             trackMetaEvent("InitiateCheckout", {
-                content_ids: cart.items.map(item => item.productId),
+                content_ids: cart.items.map(item => item.productId.toString()),
                 content_type: "product",
                 value: totalPrice,
                 currency: "UAH",

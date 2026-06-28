@@ -37,7 +37,7 @@ const SuccessfulClient = ({ id, status, order }: Props) => {
             clearCart();
 
             trackMetaEvent("Purchase", {
-                content_ids: order.items.map(item => item.productId),
+                content_ids: order.items.map(item => item.productId.toString()),
                 content_type: "product",
                 value: order.totalAmount,
                 currency: "UAH",
