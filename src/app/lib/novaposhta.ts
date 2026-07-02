@@ -1,3 +1,5 @@
+import {PaymentMethod} from "@prisma/client";
+
 const API_URL = "https://api.novaposhta.ua/v2.0/json/";
 const API_KEY = process.env.NOVA_POSHTA_API_KEY!;
 //
@@ -178,6 +180,7 @@ export async function createTTN({
                                     recipientWarehouseRef,
                                     recipientWarehouseNumber,
                                     cost,
+                                    codAmount,
                                     serviceType,
                                     description,
                                 }: {
@@ -188,6 +191,7 @@ export async function createTTN({
     recipientWarehouseRef: string;
     recipientWarehouseNumber: string;
     cost: number;
+    codAmount: number;
     serviceType: string;
     description: string;
 }) {
@@ -221,6 +225,18 @@ export async function createTTN({
         cityRef: recipientCityRef,
     });
     console.log("[createTTN] recipientRef:", recipientRef, "contactRecipientRef:", contactRecipientRef);
+
+    const backwardDelivery =
+        codAmount > 0
+            ? [
+                {
+                    ServiceType: "Money",
+                    PayerType: "Recipient",
+                    CargoType: "Money",
+                    RedeliveryString: String(codAmount),
+                },
+            ]
+            : undefined;
 
     const payload = {
         apiKey: API_KEY,
@@ -256,6 +272,7 @@ export async function createTTN({
             ],
             Description: `Одяг: ${description}`,
             Cost: cost,
+            ...(backwardDelivery ? { BackwardDeliveryData: backwardDelivery } : {}),
         },
     };
     console.log("[createTTN] InternetDocument payload methodProperties:", JSON.stringify(payload.methodProperties, null, 2));
