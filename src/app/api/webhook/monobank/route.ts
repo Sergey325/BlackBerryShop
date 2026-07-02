@@ -31,6 +31,16 @@ export async function POST(request: Request) {
             include: { items: true },
         });
 
+        const prepaidAmount = 150; // или из order.paymentData
+
+        const itemsTotal = order.items.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+        );
+
+        const codAmount = itemsTotal - prepaidAmount;
+
+
         // Создаём ТТН только при успешной оплате
         if (newStatus === "PAID" && !order.ttnNumber) {
             try {
@@ -42,7 +52,8 @@ export async function POST(request: Request) {
                     recipientWarehouseRef: order.warehouseRef!,
                     recipientWarehouseNumber: order.warehouseNumber.toString(),
                     serviceType: order.warehouse?.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
-                    cost: order.totalAmount,
+                    cost: itemsTotal,
+                    codAmount: order.paymentMethod === "MONOBANK" ? 0 : codAmount,
                     description: order.items.map(i => i.name).join(", "),
                 });
 
