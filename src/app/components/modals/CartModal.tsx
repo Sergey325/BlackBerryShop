@@ -37,7 +37,7 @@ const CartModal = () => {
                                 <div className="flex justify-between items-start gap-2">
                                     <div>
                                         <p
-                                            className="font-medium text-sm md:text-lg hover:text-[#823D9A] transition-colors duration-300 cursor-pointer on"
+                                            className="font-medium text-sm md:text-lg hover:text-primary transition-colors duration-300 cursor-pointer on"
                                             onClick={() => {
                                                 cartModal.onClose()
                                                 router.push(`/?product=${item.slug}&productId=${item.productId}&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)

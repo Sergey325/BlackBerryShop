@@ -47,7 +47,7 @@ export default function RootLayout({
                                    }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="uk" className={`${montserrat.variable} min-h-screen antialiased`}>
-            <body className="min-h-full 2xl:px-0 flex flex-col font-(family-name:--font-montserrat) bg-gray-50">
+            <body className="min-h-full 2xl:px-0 flex flex-col font-(family-name:--font-montserrat) bg-gray-50 w-full">
                 <ClientOnly>
                     <ToasterProvider/>
                     <Header/>
@@ -56,8 +56,8 @@ export default function RootLayout({
                     <SizesModal/>
                 </ClientOnly>
                 <Container>
-                    <main className="flex-auto mb-5">
-                        <div className="mx-auto w-full h-full">
+                    <main className="flex-auto mb-5 w-full">
+                        <div className=" w-full h-full">
                             {children}
                         </div>
                     </main>

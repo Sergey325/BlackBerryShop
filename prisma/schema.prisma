@@ -12,16 +12,20 @@ datasource db {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String
-  description String
-  price       Float
-  discount    Float    @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  name         String
+  slug         String
+  description  String
+  price        Float
+  isBestseller Boolean  @default(false)
+  discount     Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  colors ProductColor[]
+  colors                 ProductColor[]
+  categoryId             Int?
+  category               Category?               @relation(fields: [categoryId], references: [id])
+  productAttributeValues ProductAttributeValue[]
 }
 
 model ProductColor {
@@ -49,6 +53,61 @@ model ProductSize {
   available      Boolean      @default(true)
   productColorId Int
   productColor   ProductColor @relation(fields: [productColorId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String
+  slug        String @unique
+  description String
+  icon        String // ссылка на иконку
+  coverImage  String // заглавное фото
+  season      Season
+
+  products Product[]
+
+  // Какие категории "часто покупают вместе" с этой категорией
+  relatedTo          CategoryRelation[]  @relation("CategoryRelation_From")
+  relatedFrom        CategoryRelation[]  @relation("CategoryRelation_To")
+  categoryAttributes CategoryAttribute[]
+}
+
+enum Season {
+  SUMMER
+  WINTER
+  ALL_SEASON
+}
+
+model CategoryRelation {
+  id Int @id @default(autoincrement())
+
+  fromCategoryId Int
+  fromCategory   Category @relation("CategoryRelation_From", fields: [fromCategoryId], references: [id], onDelete: Cascade)
+
+  toCategoryId Int
+  toCategory   Category @relation("CategoryRelation_To", fields: [toCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([fromCategoryId, toCategoryId])
+}
+
+model CategoryAttribute {
+  id         Int      @id @default(autoincrement())
+  name       String // напр. "Матеріал", "Сезон носіння"
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  values ProductAttributeValue[]
+}
+
+model ProductAttributeValue {
+  id    Int    @id @default(autoincrement())
+  value String // напр. "Бавовна"
+
+  attributeId Int
+  attribute   CategoryAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model NovaPoshtaCity {

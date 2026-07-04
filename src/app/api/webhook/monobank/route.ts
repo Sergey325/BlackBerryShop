@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {createTTN} from "@/app/lib/novaposhta";
-import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
 
 export async function POST(request: Request) {
     try {
@@ -31,6 +30,16 @@ export async function POST(request: Request) {
             include: { items: true },
         });
 
+        const prepaidAmount = 150; // или из order.paymentData
+
+        const itemsTotal = order.items.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+        );
+
+        const codAmount = itemsTotal - prepaidAmount;
+
+
         // Создаём ТТН только при успешной оплате
         if (newStatus === "PAID" && !order.ttnNumber) {
             try {
@@ -42,7 +51,8 @@ export async function POST(request: Request) {
                     recipientWarehouseRef: order.warehouseRef!,
                     recipientWarehouseNumber: order.warehouseNumber.toString(),
                     serviceType: order.warehouse?.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
-                    cost: order.totalAmount,
+                    cost: itemsTotal,
+                    codAmount: order.paymentMethod === "MONOBANK" ? 0 : codAmount,
                     description: order.items.map(i => i.name).join(", "),
                 });
 
@@ -60,22 +70,22 @@ export async function POST(request: Request) {
 
 
         // Отправляем сообщение о заказе в бота
-        if (newStatus === "PAID") {
-            const admins = await prisma.telegramUser.findMany({
-                where: {
-                    role: "ADMIN",
-                },
-            });
-
-            const telegramMessage = createOrderMessage(order)
-
-            for (const admin of admins) {
-                await sendTelegramMessage(
-                    admin.chatId,
-                    telegramMessage
-                );
-            }
-        }
+        // if (newStatus === "PAID") {
+        //     const admins = await prisma.telegramUser.findMany({
+        //         where: {
+        //             role: "ADMIN",
+        //         },
+        //     });
+        //
+        //     const telegramMessage = createOrderMessage(order)
+        //
+        //     for (const admin of admins) {
+        //         await sendTelegramMessage(
+        //             admin.chatId,
+        //             telegramMessage
+        //         );
+        //     }
+        // }
 
 
         // console.log("Order updated:", updated.id, newStatus);

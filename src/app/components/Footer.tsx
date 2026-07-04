@@ -1,36 +1,35 @@
 import Link from "next/link";
 import { FaInstagram, FaTelegram } from "react-icons/fa";
 import { MdEmail, MdPhone } from "react-icons/md";
-import Accordion from "@/app/components/reusable/Accordion";
 import FooterSection from "@/app/components/FooterSection";
 
 export default function Footer() {
 
     const navigation =
         <div className="flex flex-col gap-3 text-gray-400">
-            <Link href="/about" className="text-sm md:text-base  hover:text-[#823D9A] transition">Про нас</Link>
-            <Link href="/delivery" className="text-sm md:text-base hover:text-[#823D9A] transition">Доставка та оплата</Link>
-            <Link href="/exchange" className="text-sm md:text-base hover:text-[#823D9A] transition">Обмін та повернення</Link>
-            <Link href="/offer" className="text-sm md:text-base hover:text-[#823D9A] transition">Договір публічної оферти</Link>
+            <Link href="/about" className="text-sm md:text-base  hover:text-primary transition">Про нас</Link>
+            <Link href="/delivery" className="text-sm md:text-base hover:text-primary transition">Доставка та оплата</Link>
+            <Link href="/exchange" className="text-sm md:text-base hover:text-primary transition">Обмін та повернення</Link>
+            <Link href="/offer" className="text-sm md:text-base hover:text-primary transition">Договір публічної оферти</Link>
         </div>
 
     const contacts =
         <div className="flex flex-col gap-3 text-gray-400">
-            <a href="tel:+380682787526" className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+            <a href="tel:+380682787526" className="flex items-center gap-2 text-sm md:text-base hover:text-primary transition">
                 <MdPhone className="size-5"/>
                 +38 (068) 278-75-26
             </a>
-            <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+            <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm md:text-base hover:text-primary transition">
                 <MdEmail className="size-5"/>
                 blackberry.shop.kh@gmail.com
             </a>
             <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+               className="flex items-center gap-2 text-sm md:text-base hover:text-primary transition">
                 <FaInstagram className="size-5"/>
                 @blackberry.shop.ua
             </a>
             <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm md:text-base hover:text-[#823D9A] transition">
+               className="flex items-center gap-2 text-sm md:text-base hover:text-primary transition">
                 <FaTelegram className="size-5"/>
                 @blackberryshopua
             </a>

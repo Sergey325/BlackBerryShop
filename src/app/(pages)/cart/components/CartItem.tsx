@@ -48,7 +48,7 @@ const CartItem = ({item}: Props) => {
                     <Image src={item.photoUrl} alt="productImage" width={80} height={80} className="object-contain" />
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-medium text-base lg:text-lg hover:text-[#823D9A] transition-colors duration-300">{item.productName}</span>
+                        <span className="font-medium text-base lg:text-lg hover:text-primary transition-colors duration-300">{item.productName}</span>
                         <div className="flex  items-center gap-2 sm:gap-8 text-base flex-wrap lg:flex-nowrap">
                             <p className="text-nowrap text-sm lg:text-lg">Розмір: <span className="text-base lg:text-lg font-semibold">{item.size}</span></p>
                             <div className="flex items-center  gap-2">

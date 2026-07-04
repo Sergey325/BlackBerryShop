@@ -1,16 +1,12 @@
 import {getProducts} from "@/app/actions/getProducts";
-import ClientOnly from "@/app/components/reusable/ClientOnly";
-import StoreClient from "@/app/components/StoreClient";
+import HomePageClient from "@/app/components/homePage/HomePageClient";
 
-export const dynamic = "force-dynamic";
+//export const dynamic = "force-dynamic";
 
-export default async function Home() {
-    const products = await getProducts()
+export default async function HomePage() {
+    const products = await getProducts();
 
     return (
-        <ClientOnly>
-            <StoreClient products={products}/>
-        </ClientOnly>
-
-    );
+        <HomePageClient products={products} />
+    )
 }

@@ -34,7 +34,7 @@ const BackToTop = () => {
                 fixed 
                 bottom-20 right-5 lg:right-20 
                 rounded-full 
-                bg-[#823D9A] text-white
+                bg-primary text-white
                 p-2 lg:p-4 
                 animate-bounce 
                 shadow-xl

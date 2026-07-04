@@ -1,11 +1,11 @@
 "use client"
 
 import {IProduct} from "@/app/actions/getProducts";
-import ProductImages from "@/app/components/ProductImages";
+import ProductImages from "@/app/(pages)/store/product/[productId]/components/ProductImages";
 import {useMemo} from "react";
 import {useSearchParams} from "next/navigation";
-import ProductCard from "@/app/components/ProductCard";
-import ChooseVariant from "@/app/components/ChooseVariant";
+import ProductCard from "@/app/(pages)/store/product/[productId]/components/ProductCard";
+import ChooseVariant from "@/app/(pages)/store/product/[productId]/components/ChooseVariant";
 import Accordion from "@/app/components/reusable/Accordion";
 
 type Props = {
@@ -40,7 +40,7 @@ const specifications = [
     },
 ]
 
-const StoreClient = ({ products }: Props) => {
+const ProductClient = ({ products }: Props) => {
     const params = useSearchParams();
 
     const product = useMemo(() => {
@@ -148,4 +148,4 @@ const StoreClient = ({ products }: Props) => {
     );
 }
 
-export default StoreClient;
+export default ProductClient;

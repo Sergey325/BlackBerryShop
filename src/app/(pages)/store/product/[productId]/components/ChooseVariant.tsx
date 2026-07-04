@@ -103,7 +103,7 @@ const ChooseVariant = ({ product, selectedProductColor }: Props) => {
             <div className="flex justify-between text-sm font-medium text-zinc-600">
                 <p>Виберіть колір:</p>
                 <p
-                    className="text-sm text-[#823D9A] font-medium underline decoration-[1.5px] cursor-pointer"
+                    className="text-sm text-primary font-medium underline decoration-[1.5px] cursor-pointer"
                    onClick={() => sizesModal.onOpen()}
                 >
                     Розмірна сітка

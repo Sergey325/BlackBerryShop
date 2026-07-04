@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { IProductColor } from "@/app/actions/getProducts";
@@ -82,7 +82,7 @@ const ProductImages = ({ productColor }: Props) => {
                                     key={slide.url}
                                     width={100} height={100}
                                     priority
-                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-[#823D9A] border-2"
+                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-primary border-2"
                                     alt="productImageOption"
                                     onClick={() => setSelectedImage(slide.url)}
                                 />
@@ -93,7 +93,7 @@ const ProductImages = ({ productColor }: Props) => {
                     <div className="hidden lg:flex flex-row gap-4">
                         <div className="flex flex-col gap-3 shrink-0">
                             {productColor.images.map(image => (
-                                <div key={image.url} className="overflow-hidden rounded-sm border-[#823D9A] border-[1.5px]">
+                                <div key={image.url} className="overflow-hidden rounded-sm border-primary border-[1.5px]">
                                     <Image
                                         src={image.url}
                                         priority

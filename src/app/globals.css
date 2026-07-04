@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+    --color-primary: #823D9A;
+}
+
 @layer base {
     * {
         font-family: "Montserrat", Arial, sans-serif;
@@ -65,6 +69,21 @@ button.react-multiple-carousel__arrow {
 
 /*Handle*/
 ::-webkit-scrollbar-thumb {
-    @apply ml-1 bg-[#823D9A] h-[40%];
+    @apply ml-1 bg-primary h-[40%];
 }
 
+.thin-scrollbar::-webkit-scrollbar {
+    @apply w-0.5
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary
+}
