@@ -1,5 +1,6 @@
 import {FaHeart} from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 
 function Dots({ className = '' }: { className?: string }) {
     return (
@@ -43,10 +44,12 @@ const Hero = ({}) => {
                         <li>Індивідуальний підхід до кожного кліента</li>
                     </ul>
 
-                    <button className="mt-10 w-full max-w-[480px] bg-primary hover:bg-[#6e3382]
-                               text-white px-6 py-3 rounded-full transition-colors cursor-pointer">
+                    <Link
+                        href={`/catalog`}
+                        className="mt-10 w-full max-w-[480px] bg-primary hover:bg-[#6e3382]
+                               text-white px-6 py-3 rounded-full transition-colors cursor-pointer block text-center">
                         Перейти до каталогу
-                    </button>
+                    </Link>
 
                     <Dots className="mt-12" />
                 </div>
@@ -103,10 +106,12 @@ const Hero = ({}) => {
                         <li>Індивідуальний підхід до кожного кліента</li>
                     </ul>
 
-                    <button className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382]
-                               text-white px-6 py-3 rounded-full transition-colors cursor-pointer">
+                    <Link
+                        href={`/catalog`}
+                        className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382] text-white px-6 py-3 rounded-full transition-colors cursor-pointer"
+                    >
                         Перейти до каталогу
-                    </button>
+                    </Link>
 
                     <Dots />
                 </div>

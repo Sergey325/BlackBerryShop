@@ -1,4 +1,5 @@
 import {OrderStatus, PaymentMethod} from "@prisma/client";
+import {JSX} from "react";
 
 export type City = {
     ref: string;
@@ -70,3 +71,19 @@ export interface IOrder {
     warehouseNumber: number;
     items: IOrderItem[]
 }
+
+export type Season = {
+    id: "AUTUMN_WINTER" | "SPRING_SUMMER" | string;
+    label: string;
+    icon: string;
+    desc: string;
+    heroImage: string;
+    heroBg: string;
+    categories: {
+        slug: string;
+        name: string;
+        count: number;
+        image: string;
+    }[];
+    particles: JSX.Element;
+};

@@ -37,18 +37,63 @@ export interface IProduct {
     colors: IProductColor[];
 }
 
-export async function getProducts() {
-    try {
-        const products = await prisma.product.findMany({
-            include: {
-                colors: {
-                    include: { images: true, sizes: true },
+export interface IProductsParams {
+    title?: string;
+    category?: string;
+    sorting?: string;
+    priceMin?: string;
+    priceMax?: string;
+}
+
+export async function getProducts(params: IProductsParams = {}) {
+    const { title, category, sorting, priceMin, priceMax } = params;
+
+    const where: any = {};
+
+    if (title) {
+        where.name = {
+            contains: title,
+            mode: "insensitive",
+        };
+    }
+
+    if (category) {
+        where.category = {
+            slug: category,
+        };
+    }
+
+    if (priceMin || priceMax) {
+        where.price = {
+            ...(priceMin && { gte: Number(priceMin) }),
+            ...(priceMax && { lte: Number(priceMax) }),
+        };
+    }
+
+    let orderBy: any = { createdAt: "asc" };
+
+    switch (sorting) {
+        case "price_asc":
+            orderBy = { price: "asc" };
+            break;
+        case "price_desc":
+            orderBy = { price: "desc" };
+            break;
+        case "newest":
+            orderBy = { createdAt: "desc" };
+            break;
+    }
+
+    return prisma.product.findMany({
+        where,
+        orderBy,
+        include: {
+            colors: {
+                include: {
+                    images: true,
+                    sizes: true,
                 },
             },
-            orderBy: { createdAt: "asc" },
-        });
-        return products;
-    } catch (e: any) {
-        throw new Error(e);
-    }
+        },
+    });
 }

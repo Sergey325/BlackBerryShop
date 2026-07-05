@@ -19,11 +19,12 @@ const Categories = ({categories}: Props) => {
                         {/*<span className="text-white">💜</span>*/}
                         <GoHeartFill className="text-primary size-7" />
                     </h2>
-                    <button className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600
-                                            hover:text-primary transition-colors cursor-pointer">
+                    <Link
+                        href={`/catalog`}
+                        className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600 hover:text-primary transition-colors cursor-pointer">
                         Перейти до каталогу
                         <FaArrowRightLong className="w-4 h-4" />
-                    </button>
+                    </Link>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {categories.map((cat:any) => (
@@ -58,10 +59,13 @@ const Categories = ({categories}: Props) => {
                 </div>
                 {/* Mobile "view all" */}
                 <div className="sm:hidden flex justify-center mt-6">
-                    <button className="flex items-center gap-1.5 text-sm text-primary font-medium">
+                    <Link
+                        href={`/catalog`}
+                        className="flex items-center gap-1.5 text-sm text-primary font-medium"
+                    >
                         Перейти до каталогу
                         <FaArrowRightLong className="w-4 h-4" />
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>
