@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {isValidUAPhone, validateName} from "@/app/utils/validation";
-
+import {getCookie} from "@/app/utils/getCookie";
 
 const paymentOptions = [
     { value: "MONOBANK", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },

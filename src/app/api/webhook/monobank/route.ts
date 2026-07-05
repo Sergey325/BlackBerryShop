@@ -102,20 +102,22 @@ export async function POST(request: Request) {
                 }),
             });
 
-            // Отправляем сообщение о заказе в бота
-            const admins = await prisma.telegramUser.findMany({
-                where: {
-                    role: "ADMIN",
-                },
-            });
+            if (order.email !== process.env.EMAIL && order.email !== process.env.EMAIL2) {
+                // Отправляем сообщение о заказе в бота
+                const admins = await prisma.telegramUser.findMany({
+                    where: {
+                        role: "ADMIN",
+                    },
+                });
 
-            const telegramMessage = createOrderMessage(order)
+                const telegramMessage = createOrderMessage(order)
 
-            for (const admin of admins) {
-                await sendTelegramMessage(
-                    admin.chatId,
-                    telegramMessage
-                );
+                for (const admin of admins) {
+                    await sendTelegramMessage(
+                        admin.chatId,
+                        telegramMessage
+                    );
+                }
             }
         }
 
