@@ -89,6 +89,12 @@ model Order {
   ttnNumber String?
   ttnRef    String?
 
+  //FacebookPixel
+  fbp       String?
+  fbc       String?
+  clientIp  String?
+  userAgent String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -81,6 +81,9 @@ const CartClient = () => {
             return;
         }
         else {
+            const fbp = getCookie('_fbp');
+            const fbc = getCookie('_fbc');
+
             const data = {
                 contact: {
                     ...contactData,
@@ -109,20 +112,22 @@ const CartClient = () => {
                     imageUrl: item.photoUrl,
                     colorId: item.productColorId
                 })),
+                fbp,
+                fbc,
             }
 
-            // trackMetaEvent("InitiateCheckout", {
-            //     content_ids: cart.items.map(item => item.productId.toString()),
-            //     content_type: "product",
-            //     value: totalPrice,
-            //     currency: "UAH",
-            //     contents: cart.items.map(item => ({
-            //         id: item.productId,
-            //         quantity: item.quantity,
-            //         color: item.colorName,
-            //         size: item.size,
-            //     })),
-            // });
+            trackMetaEvent("InitiateCheckout", {
+                content_ids: cart.items.map(item => item.productId.toString()),
+                content_type: "product",
+                value: totalPrice,
+                currency: "UAH",
+                contents: cart.items.map(item => ({
+                    id: item.productId,
+                    quantity: item.quantity,
+                    color: item.colorName,
+                    size: item.size,
+                })),
+            });
 
             const res = await axios.post("/api/checkout", data);
 

@@ -5,7 +5,11 @@ import {PaymentMethod} from "@prisma/client";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { contact, delivery, paymentMethod, items, totalAmount } = body;
+        const { contact, delivery, paymentMethod, items, totalAmount, fbp, fbc } = body;
+
+        const forwardedFor = request.headers.get('x-forwarded-for');
+        const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : request.headers.get('x-real-ip') ?? null;
+        const userAgent = request.headers.get('user-agent') ?? null;
 
         // Создаём заказ в БД
         const order = await prisma.order.create({
@@ -24,6 +28,10 @@ export async function POST(request: Request) {
                 warehouseNumber: Number(delivery.warehouseNumber),
                 warehouseRef: delivery.warehouseRef,
                 paymentMethod: paymentMethod as PaymentMethod,
+                fbp: fbp ?? null,
+                fbc: fbc ?? null,
+                clientIp,
+                userAgent,
                 items: {
                     create: items.map((item: any) => ({
                         productId: item.productId,

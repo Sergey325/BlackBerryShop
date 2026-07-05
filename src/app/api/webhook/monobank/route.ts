@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {createTTN} from "@/app/lib/novaposhta";
 import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
+import {hashSha256} from "@/app/lib/fbHash";
 
 export async function POST(request: Request) {
     try {
@@ -70,8 +71,38 @@ export async function POST(request: Request) {
         }
 
 
-        // Отправляем сообщение о заказе в бота
+
         if (newStatus === "PAID") {
+            // Отправляем событие в FBPixel
+            await fetch(`https://graph.facebook.com/v20.0/${process.env.PIXEL_ID}/events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    data: [{
+                        event_name: 'Purchase',
+                        event_time: Math.floor(Date.now() / 1000),
+                        event_id: order.id,
+                        action_source: 'website',
+                        user_data: {
+                            em: hashSha256(order.email),
+                            ph: hashSha256(order.phone),
+                            client_ip_address: order.clientIp ?? undefined,
+                            client_user_agent: order.userAgent ?? undefined,
+                            fbc: order.fbc ?? undefined,
+                            fbp: order.fbp ?? undefined,
+                        },
+                        custom_data: {
+                            currency: 'UAH',
+                            value: itemsTotal,
+                            contents: order.items.map(i => ({ id: i.id, quantity: i.quantity })),
+                            content_type: 'product',
+                        },
+                    }],
+                    access_token: process.env.FB_CAPI_ACCESS_TOKEN,
+                }),
+            });
+
+            // Отправляем сообщение о заказе в бота
             const admins = await prisma.telegramUser.findMany({
                 where: {
                     role: "ADMIN",
