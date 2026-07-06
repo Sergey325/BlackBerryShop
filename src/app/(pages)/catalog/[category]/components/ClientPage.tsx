@@ -15,11 +15,6 @@ import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard
 import Pagination from "@/app/(pages)/catalog/[category]/components/Pagination";
 import {IProduct} from "@/app/actions/getProducts";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-interface ColorVariant { color: string; image: string; }
-interface Product { id: number; name: string; price: number; variants: ColorVariant[]; }
-
 // ─── Mock data ───────────────────────────────────────────────────────────────
 
 // const CATEGORY = {
@@ -36,7 +31,7 @@ const ALL_CATEGORIES = [
         slug: slugifyUa("Панами"),
         description: "Стильні панамки ручної роботи для дітей і підлітків. Легкі, зручні та яскраві — ідеальні для сонячних днів ☀️",
         icon: "/IMG_1590.PNG",
-        coverImage: "/IMG_1590.PNG",
+        coverImage: "/categories/IMG_1594.PNG",
         season: Season.SUMMER,
         features: ['Ручна робота', 'Якісні матеріали', 'Зручна посадка'],
         count: 17,
