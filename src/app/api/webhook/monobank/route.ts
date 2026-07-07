@@ -6,8 +6,8 @@ import {hashSha256} from "@/app/lib/fbHash";
 import * as Sentry from "@sentry/nextjs";
 
 export async function POST(request: Request) {
-    let orderId: number | null = null;
-    let invoiceId: string | null = null;
+    let orderId: number | undefined;
+    let invoiceId: string | undefined;
 
     try {
         const body = await request.json();

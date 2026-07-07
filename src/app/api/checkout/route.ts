@@ -4,7 +4,7 @@ import {PaymentMethod} from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
 
 export async function POST(request: Request) {
-    let orderId: number | null = null;
+    let orderId: number | undefined;
 
     try {
         const body = await request.json();
