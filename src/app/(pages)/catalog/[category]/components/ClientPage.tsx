@@ -127,7 +127,7 @@ export default function CategoryClientPage({products}: Props) {
                 {/* ── Banner ────────────────────────────────────────────── */}
 
                 {/* Desktop */}
-                <div className="hidden sm:flex items-stretch bg-gray-50 rounded-3xl overflow-hidden mb-8 min-h-[220px]">
+                <div className="hidden sm:flex items-stretch bg-gray-50 rounded-3xl overflow-hidden mb-8 min-h-[220px] shadow-sm">
                     <div className="flex-1 px-10 py-8 flex flex-col justify-center">
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
                             {selectedCategory?.name}

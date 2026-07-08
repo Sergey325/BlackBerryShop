@@ -3,45 +3,41 @@ import {sortSeasonsByCurrent} from "@/app/utils/sortSeasons";
 import {GoHeartFill} from "react-icons/go";
 import {PetalParticles, SnowParticles} from "@/app/(pages)/catalog/components/SeasonParticles";
 import SeasonBlock from "@/app/(pages)/catalog/components/SeasonBlock";
+import {getCategories} from "@/app/actions/getCategories";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
-const seasons = [
+const seasonsConfig = [
     {
-        id: 'SPRING_SUMMER',
+        id: 'SUMMER',
         label: 'Весна / Літо',
         icon: '☀️',
         desc: 'Легкі та яскраві аксесуари для сонячних днів',
-        heroImage: '/banners/IMG_1613.PNG',
-        heroBg: '#fdf2f8',   // light rose
-        categories: [
-            { slug: 'panamy',  name: 'Панами',               count: 48, image: '/categories/IMG_1594.PNG'  },
-            { slug: 'kepky',    name: 'Кепки',                 count: 23, image: '/categories/IMG_1593.PNG'    },
-            { slug: 'prykrasy', name: 'Прикраси',              count: 12, image: '/categories/IMG_1597.PNG' },
-        ],
-        particles: <PetalParticles/>,
+        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783528322/BlackBerry/Banners/IMG_1613_iumsmj.png',
+        heroBg: '#fdf2f8',
+        particles: <PetalParticles />,
     },
     {
-        id: 'AUTUMN_WINTER',
+        id: 'WINTER',
         label: 'Осінь / Зима',
         icon: '❄️',
         desc: 'Теплі та затишні аксесуари для холодних днів',
-        heroImage: '/banners/IMG_1604.PNG',
-        heroBg: '#ede9fe',   // light violet
-        categories: [
-            { slug: 'balaklavi', name: 'Балаклави', count: 36, image: '/IMG_3567.PNG' },
-            { slug: 'shapky',    name: 'Шапки',     count: 28, image: '/IMG_3567.PNG'    },
-            { slug: 'pledy',     name: 'Пледи',     count: 15, image: '/IMG_3567.PNG'     },
-            { slug: 'mitenky',   name: 'Мітенки',   count: 9,  image: '/IMG_3567.PNG'   },
-            { slug: 'mitenky1',   name: 'Мітенки',   count: 9,  image: '/IMG_3567.PNG'   },
-            { slug: 'mitenky2',   name: 'Мітенки',   count: 9,  image: '/IMG_3567.PNG'   },
-            { slug: 'mitenky3',   name: 'Мітенки',   count: 9,  image: '/IMG_3567.PNG'   },
-        ],
+        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783528323/BlackBerry/Banners/IMG_1604_xdb575.png',
+        heroBg: '#ede9fe',
         particles: <SnowParticles />,
     },
 ];
 
 
-export default function CatalogPage() {
+export default async function CatalogPage() {
+    const categories = await getCategories()
+
+    const seasons = seasonsConfig.map(season => ({
+        ...season,
+        categories: categories.filter(
+            category => category.season === season.id
+        ),
+    }));
+
     const sortedSeasons = sortSeasonsByCurrent(seasons);
 
     return (

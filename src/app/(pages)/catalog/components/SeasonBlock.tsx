@@ -1,6 +1,7 @@
 import Image from "next/image";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import {Season} from "@/app/types";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 type Props = {
     season: Season;
@@ -83,9 +84,10 @@ export default function SeasonBlock({ season }: Props) {
                 */}
                 <div className="absolute top-0 right-0 h-[280px] lg:h-[400px] w-[60%]">
                     <Image
-                        src={season.heroImage}
+                        src={optimizeCloudinaryUrl(season.heroImage, 1500)}
                         alt={season.label}
                         fill
+                        unoptimized
                         className="object-cover object-right-top"
                         priority
                     />

@@ -2,14 +2,12 @@ import {GoHeartFill} from "react-icons/go";
 import {FaArrowRightLong} from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
-import {Category} from "@prisma/client";
+import {getCategories, ICategory} from "@/app/actions/getCategories";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
+const Categories = async () => {
+    const categories = await getCategories()
 
-type Props = {
-    categories: any
-};
-
-const Categories = ({categories}: Props) => {
     return (
         <section className="">
             <div className="mx-auto px-2">
@@ -27,35 +25,35 @@ const Categories = ({categories}: Props) => {
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    {categories.map((cat:any) => (
-                        <Link
-                            key={cat.id}
-                            href={`/catalog/${cat.slug}`}
-                            draggable={false}
-                            className="group relative overflow-hidden rounded-2xl aspect-5/3 block select-none"
-                        >
-                            {/* Background photo */}
-                            <Image
-                                src={"/IMG_1576.PNG"}//cat.coverImage
-                                alt={cat.name}
-                                fill
-                                className="object-cover object-center rounded-2xl transition-transform duration-500 group-hover:scale-105"
-                            />
+                    {categories
+                        .filter((cat: ICategory) => cat.isOnMainPage)
+                        .map((cat: ICategory) => (
+                            <Link
+                                key={cat.id}
+                                href={`/catalog/${cat.slug}`}
+                                draggable={false}
+                                className="group relative overflow-hidden rounded-2xl aspect-5/3 block select-none"
+                            >
+                                <Image
+                                    src={optimizeCloudinaryUrl(cat.coverImage, 500)}
+                                    alt={cat.name}
+                                    fill
+                                    unoptimized
+                                    className="object-cover object-center rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                                />
 
-                            {/* Dark gradient overlay – heavier at bottom-left */}
-                            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20 group" />
+                                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20" />
 
-                            {/* Label */}
-                            <div className="absolute bottom-0 left-0 p-2 sm:p-4">
-                                <p className="text-white font-semibold text-base sm:text-lg leading-tight mb-3">
-                                    {cat.name}
-                                </p>
-                                <div className='flex items-center justify-center border border-white/60 size-8 rounded-full group-hover:border-primary group-hover:bg-primary transition-colors duration-500'>
-                                    <FaArrowRightLong className="size-4 text-white  transition-colors duration-500" />
+                                <div className="absolute bottom-0 left-0 p-2 sm:p-4">
+                                    <p className="text-white font-semibold text-base sm:text-lg leading-tight mb-3">
+                                        {cat.name}
+                                    </p>
+                                    <div className="flex items-center justify-center border border-white/60 size-8 rounded-full group-hover:border-primary group-hover:bg-primary transition-colors duration-500">
+                                        <FaArrowRightLong className="size-4 text-white" />
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        ))}
                 </div>
                 {/* Mobile "view all" */}
                 <div className="sm:hidden flex justify-center mt-6">

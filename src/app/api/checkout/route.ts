@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {PaymentMethod} from "@prisma/client";
+import * as Sentry from "@sentry/nextjs";
 
 export async function POST(request: Request) {
+    let orderId: number | undefined;
+
     try {
         const body = await request.json();
-        const { contact, delivery, paymentMethod, items, totalAmount } = body;
+        const { contact, delivery, paymentMethod, items, totalAmount } = body; //fbp, fbc
+
+        // const forwardedFor = request.headers.get('x-forwarded-for');
+        // const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : request.headers.get('x-real-ip') ?? null;
+        // const userAgent = request.headers.get('user-agent') ?? null;
 
         // Создаём заказ в БД
         const order = await prisma.order.create({
@@ -24,6 +31,10 @@ export async function POST(request: Request) {
                 warehouseNumber: Number(delivery.warehouseNumber),
                 warehouseRef: delivery.warehouseRef,
                 paymentMethod: paymentMethod as PaymentMethod,
+                // fbp: fbp ?? null,
+                // fbc: fbc ?? null,
+                // clientIp,
+                // userAgent,
                 items: {
                     create: items.map((item: any) => ({
                         productId: item.productId,
@@ -38,6 +49,8 @@ export async function POST(request: Request) {
                 },
             },
         });
+
+        orderId = order.id;
 
         const isCod = paymentMethod === "CASH_ON_DELIVERY";
 
@@ -90,7 +103,7 @@ export async function POST(request: Request) {
         });
 
         const monobankData = await monobankRes.json();
-        console.log(monobankData);
+        // console.log(monobankData);
 
         // Сохраняем invoiceId
         await prisma.order.update({
@@ -105,6 +118,18 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: error }, { status: 500 });
+
+        Sentry.withScope((scope) => {
+            scope.setContext("order", {
+                orderId,
+            });
+
+            Sentry.captureException(error);
+        });
+
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
     }
 }

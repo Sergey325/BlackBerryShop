@@ -1,5 +1,6 @@
 import {OrderStatus, PaymentMethod} from "@prisma/client";
 import {JSX} from "react";
+import {ICategory} from "@/app/actions/getCategories";
 
 export type City = {
     ref: string;
@@ -79,11 +80,6 @@ export type Season = {
     desc: string;
     heroImage: string;
     heroBg: string;
-    categories: {
-        slug: string;
-        name: string;
-        count: number;
-        image: string;
-    }[];
+    categories: ICategory[];
     particles: JSX.Element;
 };

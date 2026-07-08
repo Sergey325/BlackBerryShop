@@ -102,7 +102,7 @@ const BestSellers = ({products}: Props) => {
                                 <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full">
                                     <div className="min-w-0 flex flex-col w-full">
 
-                                        <p className="text-[11px] sm:text-sm text-slate-800 font-medium  min-h-[32px]">
+                                        <p className="text-[11px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
                                             {product.name.split(".")[0]}
                                         </p>
 
