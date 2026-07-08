@@ -7,14 +7,6 @@ import {Reviews} from "@/app/components/homePage/Reviews";
 
 export const dynamic = "force-dynamic";
 
-// ─── Data ──────────────────────────────────────────────────────────────────
-const categories = [
-    { id: 1, name: 'Балаклави на голову',    count: 48, emoji: '☀️'},
-    { id: 2, name: 'Балаклави на шолом',      count: 23, emoji: '🧢'},
-    { id: 3, name: 'Шапки',  count: 36, emoji: '❄️'},
-    { id: 4, name: 'Повʼязки',      count: 28, emoji: '🩷'},
-];
-
 export default async function HomePage() {
     const products = await getProducts();
 
@@ -24,7 +16,7 @@ export default async function HomePage() {
 
             <BestSellers products={products} />
 
-            <Categories categories={categories}/>
+            <Categories />
 
             <WhyUs/>
 
