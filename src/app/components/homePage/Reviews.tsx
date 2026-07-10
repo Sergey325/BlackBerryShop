@@ -7,6 +7,7 @@ import TestimonialCard from "@/app/components/homePage/TestimonialCard";
 import {useRef} from "react";
 import {CustomNext, CustomPrev} from "@/app/components/homePage/BestSellers";
 import {GoHeartFill} from "react-icons/go";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const reviews = [
@@ -16,7 +17,7 @@ const reviews = [
         date: '17 січня',
         text: 'Вітаю) дякую за шапки❤️\n' +
             'Всі на Буковелі питали де ми їх брали, ми всім роздали посилання на ваш інста👌',
-        image: '/reviews/review-1.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530241/BlackBerry/Reviews/review-1_ohlx5w.jpg',
     },
     {
         id: 2,
@@ -24,7 +25,7 @@ const reviews = [
         date: '4 лютого',
         text: 'Спасибо большое за такого зайца😻\n' +
             'Каждый день от людей слышала  комплименты за наряд такой🤭',
-        image: '/reviews/review-2.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530242/BlackBerry/Reviews/review-2_ibxjr6.jpg',
     },
     {
         id: 3,
@@ -32,7 +33,7 @@ const reviews = [
         date: '21 березня',
         text: 'Доброго дня❤️😍 \n' +
             'Дякую вам за неймовірну роботу і красу😍❤️',
-        image: '/reviews/review-3.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530244/BlackBerry/Reviews/review-3_wejeg1.jpg',
     },
     {
         id: 4,
@@ -40,7 +41,7 @@ const reviews = [
         date: '5 квітня',
         text: 'Доброго вечора ❤️\n' +
             'Посилку сьогодні отримали . Дуже дякуємо, діти задоволені 🥰👌🏻',
-        image: '/reviews/review-4.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530245/BlackBerry/Reviews/review-4_asvoku.jpg',
     },
     {
         id: 5,
@@ -57,7 +58,7 @@ const reviews = [
             'Дужеееее дякуююю Вам🤗🤗🤗\n' +
             '\n' +
             'Дуже-дуже сподобалась))))))',
-        image: '/reviews/review-5.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530246/BlackBerry/Reviews/review-5_a7yalq.jpg',
     },
     {
         id: 6,
@@ -65,7 +66,7 @@ const reviews = [
         date: '12 травня',
         text: 'Отримали замовлення☺️\n' +
             'Дуже мʼякенька,тепла та стильна балаклава ! Донечка у захваті! 🤩 Дякуємо!',
-        image: '/reviews/review-6.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530248/BlackBerry/Reviews/review-6_doxhbr.jpg',
     },
     {
         id: 7,
@@ -73,13 +74,13 @@ const reviews = [
         date: '12 травня',
         text: 'Добрий день! Стічей отримали, малі в захваті!\n' +
             'Дякую',
-        image: '/reviews/review-7.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530249/BlackBerry/Reviews/review-7_octutm.jpg',
     },{
         id: 8,
         name: 'Катерина',
         date: '12 травня',
         text: 'Добрый день,спасибо огромное за шапочки,дочка в восторге',
-        image: '/reviews/review-8.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530250/BlackBerry/Reviews/review-8_kxiiiq.jpg',
     },{
         id: 9,
         name: 'Катерина',
@@ -88,56 +89,56 @@ const reviews = [
             'забрали\n' +
             'клієнт задоволений ☺️ \n' +
             'дякуємо!!',
-        image: '/reviews/review-9.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530251/BlackBerry/Reviews/review-9_hpmbjf.jpg',
     },{
         id: 10,
         name: 'Катерина',
         date: '12 травня',
         text: 'Добрый день. Неожиданно пришла раньше балаклава, как раз на праздник доченьке. Она очень довольна. Спасибо Вам большое 💛💙',
-        image: '/reviews/review-10.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530252/BlackBerry/Reviews/review-10_aqqkhc.jpg',
     },{
         id: 11,
         name: 'Катерина',
         date: '12 травня',
         text: 'Ця шапка привертала увагу кожного перехожого',
-        image: '/reviews/review-11.png',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530254/BlackBerry/Reviews/review-11_ax0g6k.jpg',
     },{
         id: 12,
         name: 'Катерина',
         date: '12 травня',
         text: 'Дякую, в нас сталась любов )',
-        image: '/reviews/review-12.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530255/BlackBerry/Reviews/review-12_jfv6es.jpg',
     },{
         id: 13,
         name: 'Катерина',
         date: '12 травня',
         text: 'Дитина дуже задоволена, все супер❤️ Дуже вам дякуємо😊',
-        image: '/reviews/review-13.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530256/BlackBerry/Reviews/review-13_nifxru.jpg',
     },{
         id: 14,
         name: 'Катерина',
         date: '12 травня',
         text: 'Щиро дякую за вашу працю♥️',
-        image: '/reviews/review-14.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530257/BlackBerry/Reviews/review-14_av39no.jpg',
     },{
         id: 15,
         name: 'Катерина',
         date: '12 травня',
         text: 'Добрий день, отримали посилку. \n' +
             'Дякую вам за таку красу!!! Дитина дуже задоволена і щаслива🥰🥰🥰',
-        image: '/reviews/review-15.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530259/BlackBerry/Reviews/review-15_h2w7fe.jpg',
     },{
         id: 16,
         name: 'Катерина',
         date: '12 травня',
         text: 'Красива, затишна та тепла, дякую!',
-        image: '/reviews/review-16.png',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530260/BlackBerry/Reviews/review-16_ehnei6.jpg',
     },{
         id: 17,
         name: 'Катерина',
         date: '12 травня',
         text: 'Дякуємо за шапочки ❤️',
-        image: '/reviews/review-17.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530261/BlackBerry/Reviews/review-17_axfysi.jpg',
     },{
         id: 18,
         name: 'Катерина',
@@ -145,13 +146,13 @@ const reviews = [
         text: 'Доброго дня) дякуємо за чудовий головний убір. 🤠\n' +
             'Нам дуже сподобалася балаклава.\n' +
             'При таких погодніх умовах, саме те що треба 👍',
-        image: '/reviews/review-18.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530263/BlackBerry/Reviews/review-18_d4xpfo.jpg',
     },{
         id: 19,
         name: 'Катерина',
         date: '12 травня',
         text: 'Балаклава просто супер! Витримала морози -20 і хуртовину в горах! Дитина у теплі і вона не промокла жодного разу. Якісна і тримає форму та колір! І виглядає круто! Дякую)',
-        image: '/reviews/review-19.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530264/BlackBerry/Reviews/review-19_jfpy3h.jpg',
     },{
         id: 20,
         name: 'Катерина',
@@ -159,7 +160,7 @@ const reviews = [
         text: 'Доброго дня, забрали посилочку.\n' +
             'Це просто щось неймовірне!!! Дитина задоволенна і я теж 🫶\n' +
             'Велике при велике Вам дякую ❤️🥰',
-        image: '/reviews/review-20.jpg',
+        image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530265/BlackBerry/Reviews/review-20_fe9wt0.jpg',
     },
 ];
 
@@ -231,7 +232,7 @@ function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
         <div className="bg-primary/7 rounded-2xl overflow-hidden flex flex-col shadow-sm h-full">
             {/* Photo */}
             <div className="relative w-full aspect-3/4">
-                <Image src={review.image} alt={review.name} fill draggable={false} className="object-cover object-center" />
+                <Image src={optimizeCloudinaryUrl(review.image, 500)} alt={review.name} fill unoptimized draggable={false} className="object-cover object-center" />
                 <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-black/20 to-transparent" />
             </div>
 

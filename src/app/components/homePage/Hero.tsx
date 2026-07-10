@@ -1,6 +1,7 @@
 import {FaHeart} from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 function Dots({ className = '' }: { className?: string }) {
     return (
@@ -57,9 +58,10 @@ const Hero = ({}) => {
                 {/* Image — absolutely fills the right 65% */}
                 <div className="absolute right-0 top-0 h-full w-[65%]">
                     <Image
-                        src="/IMG_1557.png"
+                        src={optimizeCloudinaryUrl("https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530220/BlackBerry/Banners/IMG_1557_rd2tw9.png", 1500)}
                         alt="Дівчина у панамі Teddy"
-                        fill priority
+                        fill
+                        unoptimized
                         draggable={false}
                         className="object-cover object-center select-none"
                     />
@@ -75,9 +77,10 @@ const Hero = ({}) => {
             <div className="relative lg:hidden min-h-[450px]">
 
                 <Image
-                    src="/IMG_1557.png"
+                    src={optimizeCloudinaryUrl("https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530220/BlackBerry/Banners/IMG_1557_rd2tw9.png", 1500)}
                     alt="Дівчина у панамі Teddy"
                     fill priority
+                    unoptimized
                     draggable={false}
                     className="object-cover object-center select-none"
                 />

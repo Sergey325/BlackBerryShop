@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { FaQuoteLeft } from "react-icons/fa";
 import {JSX} from "react";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 type Props = {
     photoSrc: string,
@@ -21,9 +22,10 @@ export default function TestimonialCard({
             <div className="relative mx-auto w-full max-w-[150px] md:mx-0">
                 <div className="relative aspect-4/5 w-full -rotate-4 overflow-hidden rounded-[22px] bg-white shadow-lg">
                     <Image
-                        src={photoSrc}
+                        src={optimizeCloudinaryUrl(photoSrc, 500)}
                         alt={photoAlt}
                         fill
+                        unoptimized
                         draggable={false}
                         sizes="200px"
                         className="object-cover select-none"

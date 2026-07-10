@@ -7,6 +7,7 @@ import {IProduct} from "@/app/actions/getProducts";
 import Image from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import {GoHeartFill} from "react-icons/go";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 
 type Props = {
@@ -89,10 +90,11 @@ const BestSellers = ({products}: Props) => {
                                 {/* Product image */}
                                 <div className="aspect-square bg-white rounded-t-lg flex items-center justify-center p-3 sm:p-5">
                                     <Image
-                                        src={product.colors[0].images[0].url}
+                                        src={optimizeCloudinaryUrl(product.colors[0].images[0].url, 500)}
                                         alt={product.name}
-                                        width={300}
-                                        height={300}
+                                        width={250}
+                                        height={250}
+                                        unoptimized
                                         draggable={false}
                                         className="object-contain w-full h-full rounded-lg"
                                     />
