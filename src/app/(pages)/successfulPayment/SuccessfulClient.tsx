@@ -14,6 +14,7 @@ import Loader from "@/app/components/reusable/Loader";
 import {OrderStatus, Prisma} from "@prisma/client";
 import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import * as Sentry from "@sentry/nextjs";
 
 
 type Props = {
@@ -30,11 +31,22 @@ type Props = {
 const SuccessfulClient = ({ id, status, order }: Props) => {
     const router = useRouter();
     const clearCart = useCartStore(state => state.clearCart);
+    console.log("")
+
 
     useEffect(() => {
-
         if (status === "PAID") {
-            clearCart();
+            Sentry.withScope((scope) => {
+                scope.setTag("event", "payment_success_page");
+
+                scope.setContext("order", {
+                    orderId: id,
+                    totalAmount: order.totalAmount,
+                    paymentMethod: order.paymentMethod,
+                });
+
+                Sentry.captureMessage("User viewed successful payment page", "info");
+            });
 
             // trackMetaEvent("Purchase", {
             //     content_ids: order.items.map(item => item.productId.toString()),
@@ -49,6 +61,7 @@ const SuccessfulClient = ({ id, status, order }: Props) => {
             //         size: item.size,
             //     })),
             // });
+            clearCart();
 
             return;
         }
