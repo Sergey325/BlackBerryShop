@@ -3,23 +3,71 @@ import {useCallback, useEffect} from "react";
 import qs from "query-string";
 
 type Props = {
-    key: string;
-    value: string
+    multiplyParameter?: boolean
+    urlParameter: string,
+    urlValue: string,
+    baseUrl: string,
+    setIsChecked?: (value: boolean) => void
 }
 
-const useUrlParam = ({ key, value }: Props ) => {
-    const router = useRouter();
-    const params = useSearchParams();
+const useUrlParams = ({urlValue, urlParameter, multiplyParameter, setIsChecked, baseUrl}: Props) => {
+    const router = useRouter()
+    const params = useSearchParams()
 
-    const setParam = useCallback(() => {
-        const qs = new URLSearchParams(params);
+    useEffect(() => {
+        const paramValues = params?.getAll(urlParameter) || [];
+        setIsChecked?.(paramValues.includes(urlValue));
+    }, [params, setIsChecked, urlParameter, urlValue]);
 
-        qs.set(key, value);
+    const changeUrl = useCallback(() => {
+        let currentQuery = {};
 
-        router.push(`?${qs.toString()}`);
-    }, [params, key, value, router]);
+        if (params) {
+            currentQuery = qs.parse(params.toString());
+        }
 
-    return { setParam };
-};
+        const existingValues = params?.getAll(urlParameter) || [];
 
-export default useUrlParam;
+        if (existingValues.includes(urlValue)) {
+            const updatedQuery = {
+                ...currentQuery,
+                [urlParameter]: existingValues.filter(value => value !== urlValue),
+            };
+            const url = qs.stringifyUrl({
+                url: baseUrl,
+                query: updatedQuery,
+            }, { skipNull: true });
+            router.replace(url, {
+                scroll: false,
+            });
+        } else {
+            let updatedQuery;
+
+            if (multiplyParameter) {
+                const updatedValues = [...existingValues, urlValue];
+                updatedQuery = {
+                    ...currentQuery,
+                    [urlParameter]: updatedValues,
+                };
+            } else {
+                updatedQuery = {
+                    ...currentQuery,
+                    [urlParameter]: urlValue,
+                };
+            }
+
+            const url = qs.stringifyUrl({
+                url: baseUrl,
+                query: updatedQuery,
+            }, { skipNull: true });
+            router.replace(url, {
+                scroll: false,
+            });
+        }
+    }, [params, urlParameter, urlValue, baseUrl, router, multiplyParameter]);
+    return {
+        changeUrl,
+    }
+}
+
+export default useUrlParams;

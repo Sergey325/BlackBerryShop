@@ -52,7 +52,7 @@ const Hero = ({}) => {
                         Перейти до каталогу
                     </Link>
 
-                    <Dots className="mt-12" />
+                    {/*<Dots className="mt-12" />*/}
                 </div>
 
                 {/* Image — absolutely fills the right 65% */}
@@ -116,7 +116,7 @@ const Hero = ({}) => {
                         Перейти до каталогу
                     </Link>
 
-                    <Dots />
+                    {/*<Dots />*/}
                 </div>
 
             </div>

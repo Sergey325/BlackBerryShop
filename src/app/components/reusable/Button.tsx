@@ -25,7 +25,7 @@ const Button = ({label, onClick, disabled, outline, small, icon: Icon, gradient}
                 duration-300
                 w-full
                 ${outline ? "bg-transparent" : "bg-primary"}
-                ${outline ? "shadow-[0_0_0_1px_rgba(100,116,139,1)]" : "border-slate-400"}
+                ${outline ? "shadow-[0_0_0_1px_rgba(130,61,154,1)]" : "border-primary/30"}
                 ${outline ? "hover:shadow-[0_0_0_3px_rgba(130,61,154,1)]" : gradient ? "hover:shadow-[0_0_20px_rgba(137,63,237,0.70)]" : "group"}
                 ${outline ? "text-gray-950" : "text-white"}
                 ${gradient && "bg-linear-to-br from-indigo-500 to-purple-600"}

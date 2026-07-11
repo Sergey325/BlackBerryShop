@@ -12,7 +12,7 @@
 
 @layer components {
     input {
-        @apply border border-gray-200 rounded-md outline-none transition focus:border-gray-400;
+        @apply border border-primary/30 rounded-md outline-none transition focus:border-primary/80;
     }
 }
 html, body, #root {

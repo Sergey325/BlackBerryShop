@@ -28,7 +28,7 @@ const EmptyState = ({
                 h-[70vh]
                 flex flex-col
                 justify-center items-center
-                gap-2
+                gap-10
             "
         >
             <Heading
@@ -41,7 +41,7 @@ const EmptyState = ({
                     <Button
                         outline
                         label={btnTitle}
-                        onClick={() => onClick || router.push('/')}
+                        onClick={() => onClick ? onClick() : router.push('/')}
                     />
                 )}
             </div>

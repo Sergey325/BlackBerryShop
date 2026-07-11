@@ -44,7 +44,6 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                 const res = await axios.post("/api/cities", {
                     query: cityQuery,
                 });
-                console.log(res);
                 setCities(res.data);
             } catch (e) {
                 console.error(e);

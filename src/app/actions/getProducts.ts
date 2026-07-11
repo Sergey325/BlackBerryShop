@@ -16,6 +16,7 @@ export interface IProductImage {
     productColorId: number;
 }
 
+
 export interface IProductColor {
     id: number;
     color: string;
@@ -25,6 +26,11 @@ export interface IProductColor {
     sizes: IProductSize[];
 }
 
+export interface IProductMaterial {
+    id: number;
+    name: string;
+}
+
 export interface IProduct {
     id: number;
     name: string;
@@ -32,6 +38,7 @@ export interface IProduct {
     description: string;
     price: number;
     discount: number;
+    material: IProductMaterial | null;
     createdAt: Date;
     updatedAt: Date;
     colors: IProductColor[];
@@ -39,6 +46,9 @@ export interface IProduct {
 
 export interface IProductsParams {
     title?: string;
+    size?: string[];
+    material?: string[];
+    color?: string[];
     category?: string;
     sorting?: string;
     priceMin?: string;
@@ -46,7 +56,7 @@ export interface IProductsParams {
 }
 
 export async function getProducts(params: IProductsParams = {}) {
-    const { title, category, sorting, priceMin, priceMax } = params;
+    const { title, category, sorting, priceMin, priceMax, size, material, color } = params;
 
     const where: any = {};
 
@@ -55,6 +65,39 @@ export async function getProducts(params: IProductsParams = {}) {
             contains: title,
             mode: "insensitive",
         };
+    }
+
+    if (size?.length) {
+        where.colors = {
+            some: {
+                sizes: {
+                    some: {
+                        size: {
+                            in: size,
+                        },
+                        available: true,
+                    },
+                },
+            },
+        };
+    }
+
+    if (material?.length) {
+        where.material = {
+            name: {
+                in: material,
+            },
+        };
+    }
+
+    if (color?.length) {
+        where.colors = {
+            some: {
+                color: {
+                    in: color
+                }
+            }
+        }
     }
 
     if (category) {
@@ -73,10 +116,10 @@ export async function getProducts(params: IProductsParams = {}) {
     let orderBy: any = { createdAt: "asc" };
 
     switch (sorting) {
-        case "price_asc":
+        case "asc":
             orderBy = { price: "asc" };
             break;
-        case "price_desc":
+        case "desc":
             orderBy = { price: "desc" };
             break;
         case "newest":
@@ -94,6 +137,7 @@ export async function getProducts(params: IProductsParams = {}) {
                     sizes: true,
                 },
             },
+            material: true,
         },
     });
 }
