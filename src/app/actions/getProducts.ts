@@ -56,88 +56,93 @@ export interface IProductsParams {
 }
 
 export async function getProducts(params: IProductsParams = {}) {
-    const { title, category, sorting, priceMin, priceMax, size, material, color } = params;
+    try {
+        const { title, category, sorting, priceMin, priceMax, size, material, color } = params;
 
-    const where: any = {};
+        const where: any = {};
 
-    if (title) {
-        where.name = {
-            contains: title,
-            mode: "insensitive",
-        };
-    }
+        if (title) {
+            where.name = {
+                contains: title,
+                mode: "insensitive",
+            };
+        }
 
-    if (size?.length) {
-        where.colors = {
-            some: {
-                sizes: {
-                    some: {
-                        size: {
-                            in: size,
+        if (size?.length) {
+            where.colors = {
+                some: {
+                    sizes: {
+                        some: {
+                            size: {
+                                in: size,
+                            },
+                            available: true,
                         },
-                        available: true,
                     },
                 },
-            },
-        };
-    }
+            };
+        }
 
-    if (material?.length) {
-        where.material = {
-            name: {
-                in: material,
-            },
-        };
-    }
+        if (material?.length) {
+            where.material = {
+                name: {
+                    in: material,
+                },
+            };
+        }
 
-    if (color?.length) {
-        where.colors = {
-            some: {
-                color: {
-                    in: color
+        if (color?.length) {
+            where.colors = {
+                some: {
+                    color: {
+                        in: color
+                    }
                 }
             }
         }
-    }
 
-    if (category) {
-        where.category = {
-            slug: category,
-        };
-    }
+        if (category) {
+            where.category = {
+                slug: category,
+            };
+        }
 
-    if (priceMin || priceMax) {
-        where.price = {
-            ...(priceMin && { gte: Number(priceMin) }),
-            ...(priceMax && { lte: Number(priceMax) }),
-        };
-    }
+        if (priceMin || priceMax) {
+            where.price = {
+                ...(priceMin && { gte: Number(priceMin) }),
+                ...(priceMax && { lte: Number(priceMax) }),
+            };
+        }
 
-    let orderBy: any = { createdAt: "asc" };
+        let orderBy: any = { createdAt: "asc" };
 
-    switch (sorting) {
-        case "asc":
-            orderBy = { price: "asc" };
-            break;
-        case "desc":
-            orderBy = { price: "desc" };
-            break;
-        case "newest":
-            orderBy = { createdAt: "desc" };
-            break;
-    }
+        switch (sorting) {
+            case "asc":
+                orderBy = { price: "asc" };
+                break;
+            case "desc":
+                orderBy = { price: "desc" };
+                break;
+            case "newest":
+                orderBy = { createdAt: "desc" };
+                break;
+        }
 
-    return prisma.product.findMany({
-        where,
-        orderBy,
-        include: {
-            colors: {
-                include: {
-                    images: true,
-                    sizes: true,
+        return prisma.product.findMany({
+            where,
+            orderBy,
+            include: {
+                colors: {
+                    include: {
+                        images: true,
+                        sizes: true,
+                    },
                 },
+                material: true,
             },
-            material: true,
-        },
-    });
+        });
+
+    } catch (e) {
+        console.error(e);
+    }
 }

@@ -7,13 +7,15 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
+import Link from "next/link";
 
 type Props = {
     product: IProduct;
-    list?: boolean
+    list?: boolean;
+    selectedCategorySlug: string;
 };
 
-const ProductCard = ({ product, list = false }: Props) => {
+const ProductCard = ({ product, list = false, selectedCategorySlug }: Props) => {
     const searchParams = useSearchParams();
 
     const initialIdx = useMemo(() => {
@@ -45,15 +47,14 @@ const ProductCard = ({ product, list = false }: Props) => {
 
     if (list) {
         return (
-            <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3">
-                <div className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100">
-                    <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none"/>
-                </div>
+            <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
+                <Link href={`/catalog/${selectedCategorySlug}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+                    <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none group-hover:scale-105 transition-transform"/>
+                </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <div>
-                        <p className="font-semibold text-gray-900 text-sm">{product.name}</p>
-
-                    </div>
+                    <Link href={`/catalog/${selectedCategorySlug}/${product.id}`}>
+                        <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
+                    </Link>
                     {
                         visibleColors.length > 1 &&
                         <div className="-mb-4">
@@ -93,8 +94,11 @@ const ProductCard = ({ product, list = false }: Props) => {
     }
 
     return (
-        <div
+        <Link
             key={product.id}
+            href={`/catalog/${selectedCategorySlug}/${product.id}`}
+            draggable={false}
+
             className="bg-primary/7 rounded-2xl overflow-hidden border border-primary/50
                shadow-sm hover:shadow-md hover:-translate-y-0.5
                transition-all duration-200 group select-none cursor-pointer
@@ -119,7 +123,11 @@ const ProductCard = ({ product, list = false }: Props) => {
                                 <button
                                     key={c.id}
                                     onMouseEnter={() => setActiveIdx(i)}
-                                    onClick={() => setActiveIdx(i)}
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        // e.stopPropagation();
+                                        setActiveIdx(i)
+                                    }}
                                     className={`size-4 rounded-full cursor-pointer border shadow-sm transition-transform hover:scale-125 ${
                                         activeIdx === i
                                             ? 'border-primary border-2 scale-125'
@@ -138,7 +146,7 @@ const ProductCard = ({ product, list = false }: Props) => {
                         </div>
 
 
-                        <p className="text-[12px] text-gray-600 mt-1 -ml-1">
+                        <p className="text-[11px] text-gray-600 mt-1 -ml-1">
                             Доступно {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
                         </p>
                     </div>
@@ -149,7 +157,7 @@ const ProductCard = ({ product, list = false }: Props) => {
             <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full h-full">
                 <div className="min-w-0 flex flex-col w-full h-full justify-between">
 
-                    <p className="text-[11px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
+                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
                         {product.name}
                     </p>
 
@@ -169,7 +177,7 @@ const ProductCard = ({ product, list = false }: Props) => {
 
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

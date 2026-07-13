@@ -13,10 +13,11 @@ type Props = {
     colorOnChecked?: string
     onChange?: (isChecked: boolean) => void
     initialValue?: boolean
-    baseUrl: string
+    baseUrl?: string
+    labelStyle?: string
 };
 
-const CheckBox = ({label, urlParameter = "", urlValue = "", colorOnChecked, multiplyParameter = true, initialValue = false, onChange, baseUrl}: Props) => {
+const CheckBox = ({label, urlParameter = "", urlValue = "", colorOnChecked, multiplyParameter = true, initialValue = false, onChange, baseUrl = '', labelStyle}: Props) => {
     const [isChecked, setIsChecked] = useState(initialValue)
     const {changeUrl} = useUrlParams({urlValue, urlParameter, multiplyParameter, setIsChecked, baseUrl})
 
@@ -38,7 +39,7 @@ const CheckBox = ({label, urlParameter = "", urlValue = "", colorOnChecked, mult
                 <BiSquareRounded size={20} className=""/>
                 <BsCheck size={20} className={`absolute top-0 left-0 ${isChecked ? "scale-100" : "scale-0"} transition ${colorOnChecked}`}/>
             </div>
-            <span className="text-base">{label}</span>
+            <span className={labelStyle ? labelStyle : "text-base"}>{label}</span>
         </div>
     );
 };

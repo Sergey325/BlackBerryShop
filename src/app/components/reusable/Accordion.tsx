@@ -8,17 +8,18 @@ type Props = {
     title: string;
     content?: string[]
     children?: ReactNode;
+    initialState?: boolean;
 };
 
-const Accordion = ({title, content, children}: Props) => {
-    const [open, setOpen] = useState(false);
+const Accordion = ({title, content, children, initialState = false}: Props) => {
+    const [open, setOpen] = useState(initialState);
 
 
     return (
         <div className="">
             <button
                 onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-between font-semibold"
+                className="w-full flex items-center justify-between font-medium"
             >
                 {title}
                 <FaChevronDown className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} />

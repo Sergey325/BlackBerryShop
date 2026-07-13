@@ -6,11 +6,19 @@ import {FiSliders} from "react-icons/fi";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
 import ProductsGrid from "@/app/(pages)/catalog/[category]/components/ProductsGrid";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import {pluralizeUk} from "@/app/utils/pluralizeUk";
+import EmptyState from "@/app/components/reusable/EmptyState";
+import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
 
 type Props = {
     params: Promise<{ category: string }>;
     searchParams: Promise<IProductsParams>;
 };
+
+function normalizeArray(value?: string | string[]) {
+    if (!value) return undefined;
+    return Array.isArray(value) ? value : [value];
+}
 
 export function getFilterOptions(products: IProduct[]) {
     const sizes = new Map<string, number>();
@@ -71,34 +79,20 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
     const { category } = await params;
     const filters = await searchParams;
 
-    const categories = await getCategories()
-
-    const selectedCategory = categories.find(c => c.slug === category)
-
-    const products = await getProducts({
-        ...filters,
-        category,
-
-        size: filters.size
-            ? Array.isArray(filters.size)
-                ? filters.size
-                : [filters.size]
-            : undefined,
-
-        material: filters.material
-            ? Array.isArray(filters.material)
-                ? filters.material
-                : [filters.material]
-            : undefined,
-        color: filters.color
-            ? Array.isArray(filters.color)
-                ? filters.color
-                : [filters.color]
-            : undefined,
-    });
+    const [selectedCategory, products, categories] = await Promise.all([
+        getCategoryBySlug(category),
+        getProducts({
+            ...filters,
+            category,
+            size: normalizeArray(filters.size),
+            material: normalizeArray(filters.material),
+            color: normalizeArray(filters.color),
+        }),
+        getCategories(),
+    ]);
 
     if (!selectedCategory) {
-        return null
+        return <EmptyState title={"Сталася помилка"} subtitle={"Такої категорії на існує, спробуйте обрати іншу"} btnTitle="До каталогу" showReset redirectUrl={"/catalog"}/>
     }
 
     return (
@@ -122,7 +116,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
                             {selectedCategory?.name}
                             <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
-                                {selectedCategory?._count.products.toString()} моделей
+                                {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                             </span>
                         </h1>
                         <p className="text-gray-500 text-sm max-w-sm leading-relaxed mb-6">
@@ -155,29 +149,38 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         <div className="flex items-center gap-2 mb-1.5 flex-nowrap">
                             <h1 className="text-xl font-bold text-white">{selectedCategory?.name}</h1>
                             <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-nowrap">
-                                {selectedCategory?._count.products.toString()} моделей
+                                {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                             </span>
                         </div>
                         <p className="text-white/75 text-xs leading-relaxed">{selectedCategory?.description}</p>
                     </div>
                 </div>
 
-                <div className="flex gap-6 w-full">
-                    <div className="hidden sm:flex max-h-min flex-col gap-4 bg-white rounded-xl px-4 md:px-6 py-2 md:py-4 shadow-sm">
-                        <div className="flex items-center gap-1.5 font-semibold text-gray-900 w-52 shrink-0">
-                            <FiSliders className="w-4 h-4" />
-                            Фільтри
+                {
+                    products && products.length > 0 ?
+                    <div className="flex gap-6 w-full">
+                        <div className="hidden sm:flex max-h-min flex-col gap-4 bg-white rounded-xl px-4 md:px-6 py-2 md:py-4 shadow-sm">
+                            <div className="flex items-center gap-1.5 font-semibold text-gray-900 w-52 shrink-0">
+                                <FiSliders className="w-4 h-4" />
+                                Фільтри
+                            </div>
+                            <aside className="hidden sm:block w-52 shrink-0 self-start">
+                                <FiltersContent categories={categories} selectedCategorySlug={selectedCategory?.slug} options={getFilterOptions(products)} />
+                            </aside>
                         </div>
-                        <aside className="hidden sm:block w-52 shrink-0 self-start">
-                            <FiltersContent categories={categories} selectedCategorySlug={selectedCategory?.slug} options={getFilterOptions(products)} />
-                        </aside>
+                        <ProductsGrid products={products} categories={categories} selectedCategorySlug={selectedCategory.slug}/>
                     </div>
-                    <ProductsGrid products={products} categories={categories} selectedCategorySlug={selectedCategory.slug}/>
-                </div>
+                    :
+                    <EmptyState
+                        title={"Товарів не знайдено"}
+                        subtitle={"за обраними фільтрами немає товарів, спробуйте скинути фільтри"}
+                        btnTitle="Скинути фільтри"
+                        showReset
+                        heightStyle={"30vh"}
+                        redirectUrl={`/catalog/${selectedCategory.slug}`}
+                    />
+                }
             </div>
-
-            {/* ── Mobile filter modal ────────────────────────────────────── */}
-
         </main>
     );
 };

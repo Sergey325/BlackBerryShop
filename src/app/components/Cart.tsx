@@ -37,11 +37,14 @@ const Cart = () => {
                 className="
                 text-zinc-700 text-sm
                 absolute top-[-6px] right-[-16px]
+                aspect-square
                 rounded-full
                 group-hover:text-primary
                 border
+                size-5
+                text-center
                 bg-gray-50
-                px-1.5
+                px-1
             ">
                 {amountCart ? amountCart : ""}
             </span>

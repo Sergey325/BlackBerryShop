@@ -10,7 +10,8 @@ type Props = {
     showReset?: boolean
     center?: boolean
     btnTitle?: string
-    onClick?: () => void
+    redirectUrl?: string
+    heightStyle?: string
 };
 
 const EmptyState = ({
@@ -18,18 +19,19 @@ const EmptyState = ({
         subtitle = "Try changing or removing some of your filters",
         showReset,
         btnTitle = "Reset the page",
-        onClick
+        heightStyle,
+        redirectUrl
     }: Props) => {
-    const router = useRouter()
+    const router = useRouter();
 
     return (
         <div
             className="
-                h-[70vh]
                 flex flex-col
                 justify-center items-center
                 gap-10
             "
+            style={{height: heightStyle ? heightStyle : "70vh"}}
         >
             <Heading
                 center
@@ -41,7 +43,7 @@ const EmptyState = ({
                     <Button
                         outline
                         label={btnTitle}
-                        onClick={() => onClick ? onClick() : router.push('/')}
+                        onClick={() => router.push(redirectUrl ? redirectUrl : '/')}
                     />
                 )}
             </div>
