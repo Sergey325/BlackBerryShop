@@ -8,6 +8,7 @@ import Image from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import {GoHeartFill} from "react-icons/go";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import EmptyState from "@/app/components/reusable/EmptyState";
 
 
 type Props = {

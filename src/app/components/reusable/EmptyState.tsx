@@ -12,15 +12,17 @@ type Props = {
     btnTitle?: string
     redirectUrl?: string
     heightStyle?: string
+    onReset?: () => void
 };
 
 const EmptyState = ({
-        title = "No exact matches",
-        subtitle = "Try changing or removing some of your filters",
-        showReset,
-        btnTitle = "Reset the page",
-        heightStyle,
-        redirectUrl
+    title = "No exact matches",
+    subtitle = "Try changing or removing some of your filters",
+    showReset,
+    btnTitle = "Reset the page",
+    heightStyle,
+    redirectUrl,
+    onReset
     }: Props) => {
     const router = useRouter();
 
@@ -43,7 +45,13 @@ const EmptyState = ({
                     <Button
                         outline
                         label={btnTitle}
-                        onClick={() => router.push(redirectUrl ? redirectUrl : '/')}
+                        onClick={() => {
+                            if (onReset) {
+                                onReset();
+                            } else {
+                                router.push(redirectUrl ?? "/");
+                            }
+                        }}
                     />
                 )}
             </div>

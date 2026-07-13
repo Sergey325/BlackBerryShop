@@ -19,7 +19,7 @@ const Error = ({ error, reset }: Props) => {
             subtitle="Спробуйте оновити сторінку, або повернутися пізніше"
             showReset
             btnTitle="Оновити"
-            onClick={reset}
+            onReset={reset}
         />
     );
 };

@@ -17,6 +17,7 @@ model Product {
   slug         String
   description  String
   price        Float
+  quantity     Int?
   isBestseller Boolean @default(false)
   discount     Float   @default(0)
 
