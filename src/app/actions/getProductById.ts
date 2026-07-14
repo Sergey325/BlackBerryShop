@@ -20,7 +20,16 @@ export async function getProductById(productId: string) {
                     },
                 },
                 material: true,
-                category: true,
+                category: {
+                    include: {
+                        specifications: true,
+                        _count: {
+                            select: {
+                                products: true,
+                            },
+                        },
+                    }
+                }
             },
         });
     } catch (e) {

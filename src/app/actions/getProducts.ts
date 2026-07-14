@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import {ICategory} from "@/app/actions/getCategories";
 
 export interface IProductSize {
     id: number;
@@ -42,6 +43,7 @@ export interface IProduct {
     createdAt: Date;
     updatedAt: Date;
     colors: IProductColor[];
+    category: ICategory | null;
 }
 
 export interface IProductsParams {
@@ -139,6 +141,16 @@ export async function getProducts(params: IProductsParams = {}) {
                     },
                 },
                 material: true,
+                category: {
+                    include: {
+                        specifications: true,
+                        _count: {
+                            select: {
+                                products: true,
+                            },
+                        },
+                    }
+                }
             },
         });
 

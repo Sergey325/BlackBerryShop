@@ -117,7 +117,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                 }`}>
                     {products.map(p =>
                         <Suspense key={p.id} fallback={null}>
-                            <ProductCard product={p} list={view === 'list'} selectedCategorySlug={selectedCategorySlug}/>
+                            <ProductCard product={p} list={view === 'list'}/>
                         </Suspense>
                     )}
                 </div>

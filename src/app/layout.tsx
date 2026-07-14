@@ -10,6 +10,8 @@ import CartModal from "@/app/components/modals/CartModal";
 import Footer from "@/app/components/Footer";
 import SizesModal from "@/app/components/modals/SizesModal";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 
 const montserrat = Montserrat({

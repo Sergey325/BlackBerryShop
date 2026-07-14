@@ -105,7 +105,6 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
         //     size: selectedSize,
         // });
     }
-    console.log(includeLining   )
 
     return (
         <>

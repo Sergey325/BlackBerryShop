@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {IProduct} from "@/app/actions/getProducts";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
@@ -12,11 +12,15 @@ import Link from "next/link";
 type Props = {
     product: IProduct;
     list?: boolean;
-    selectedCategorySlug: string;
 };
 
-const ProductCard = ({ product, list = false, selectedCategorySlug }: Props) => {
+const ProductCard = ({ product, list = false }: Props) => {
     const searchParams = useSearchParams();
+
+    const start = useRef({ x: 0, y: 0 });
+    const dragged = useRef(false);
+
+    const THRESHOLD = 8;
 
     const initialIdx = useMemo(() => {
         const colors = searchParams.getAll('color');          // все color-параметры
@@ -48,11 +52,11 @@ const ProductCard = ({ product, list = false, selectedCategorySlug }: Props) => 
     if (list) {
         return (
             <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
-                <Link href={`/catalog/${selectedCategorySlug}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+                <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
                     <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none group-hover:scale-105 transition-transform"/>
                 </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <Link href={`/catalog/${selectedCategorySlug}/${product.id}`}>
+                    <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
                         <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
                     </Link>
                     {
@@ -96,9 +100,26 @@ const ProductCard = ({ product, list = false, selectedCategorySlug }: Props) => 
     return (
         <Link
             key={product.id}
-            href={`/catalog/${selectedCategorySlug}/${product.id}`}
             draggable={false}
-
+            onMouseDown={(e) => {
+                start.current = { x: e.clientX, y: e.clientY };
+                dragged.current = false;
+            }}
+            onMouseMove={(e) => {
+                if (
+                    Math.abs(e.clientX - start.current.x) > THRESHOLD ||
+                    Math.abs(e.clientY - start.current.y) > THRESHOLD
+                ) {
+                    dragged.current = true;
+                }
+            }}
+            onClick={(e) => {
+                if (dragged.current) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }}
+            href={`/catalog/${product.category?.slug || ""}/${product.id}`}
             className="bg-primary/7 rounded-2xl overflow-hidden border border-primary/50
                shadow-sm hover:shadow-md hover:-translate-y-0.5
                transition-all duration-200 group select-none cursor-pointer
@@ -106,7 +127,8 @@ const ProductCard = ({ product, list = false, selectedCategorySlug }: Props) => 
             "
         >
             {/* Product image */}
-            <div className="aspect-square relative bg-white rounded-t-lg flex items-center justify-center ">
+            <div
+                className="aspect-square relative bg-white rounded-t-lg flex items-center justify-center ">
                 <Image
                     src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
                     alt={product.name}

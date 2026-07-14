@@ -8,14 +8,16 @@ import ChooseVariant from "@/app/(pages)/catalog/[category]/[productId]/componen
 import Accordion from "@/app/components/reusable/Accordion";
 import Link from "next/link";
 import {ICategory} from "@/app/actions/getCategories";
+import ProductCarouselRow from "@/app/(pages)/catalog/[category]/[productId]/components/ProductCarouselRow";
 
 type Props = {
     product: IProduct
     category: ICategory;
+    products: IProduct[];
 }
 
 
-const ProductClient = ({ product, category }: Props) => {
+const ProductClient = ({ product, category, products }: Props) => {
     const params = useSearchParams();
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
@@ -84,12 +86,22 @@ const ProductClient = ({ product, category }: Props) => {
                 </div>
             </div>
 
+            <ProductCarouselRow
+                title="Часто купують разом"
+                products={products}
+            />
+
+            <ProductCarouselRow
+                title="Варіанти кастомізації"
+                products={products}
+            />
+
             <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full">
                 {/* Tab bar */}
                 <div className="flex border-b-2 border-gray-200">
                     <button
                         onClick={() => setTab('description')}
-                        className={`py-4 text-center flex-1 text-base font-semibold transition-colors
+                        className={`py-4 text-center flex-1 text-base font-semibold transition-colors cursor-pointer
                             ${tab === 'description'
                                 ? 'border-b-2 -mb-[2px] border-primary text-primary'
                                 : 'text-gray-500 hover:text-gray-700'
