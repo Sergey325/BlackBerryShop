@@ -145,7 +145,7 @@ export function SnowParticles() {
                             width: f.size, height: f.size,
                             '--drift': `${f.drift}px`,
                             animation: `snow-fall ${f.duration}s ${f.delay}s linear infinite both`,
-                            willChange: 'transform, opacity',
+                            // willChange: 'transform, opacity',
                         } as React.CSSProperties}
                     />
                 ))}
@@ -209,7 +209,7 @@ export function PetalParticles() {
                             top: `${p.top}%`,
                             left: 0,
                             animation: `petal-x ${p.duration}s ${p.delay}s linear infinite both`,
-                            willChange: 'transform, opacity',
+                            // willChange: 'transform, opacity',
                         }}
                     >
                         <span
@@ -220,7 +220,7 @@ export function PetalParticles() {
                                 background: p.color,
                                 '--ws': p.ws,
                                 animation: `petal-y ${p.duration}s ${p.delay}s ease-in-out infinite both`,
-                                willChange: 'transform',
+                                // willChange: 'transform',
                             } as React.CSSProperties}
                         />
                     </div>
