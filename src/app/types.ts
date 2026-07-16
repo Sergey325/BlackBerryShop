@@ -34,6 +34,7 @@ export type CartItem = {
     colorName: string;
     photoUrl: string;
     quantity: number;
+    categorySlug: string;
 };
 
 export interface IOrderItem {

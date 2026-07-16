@@ -40,7 +40,7 @@ const CartModal = () => {
                                             className="font-medium text-sm md:text-lg hover:text-primary transition-colors duration-300 cursor-pointer on"
                                             onClick={() => {
                                                 cartModal.onClose()
-                                                router.push(`/?product=${item.slug}&productId=${item.productId}&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)
+                                                router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)
                                             }}
                                         >{item.productName}</p>
                                         <div className="flex items-center gap-2 mt-1">

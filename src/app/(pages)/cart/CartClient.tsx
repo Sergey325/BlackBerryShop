@@ -156,7 +156,7 @@ const CartClient = () => {
         {
             title: "Способи оплати",
             content:
-                <div className="text-sm md:text-base font-medium" >
+                <div className="text-sm font-medium" >
                     <RadioGroup
                         value={payment.value}
                         onChange={setPayment}
@@ -173,9 +173,9 @@ const CartClient = () => {
             <div className="flex flex-col xl:flex-row gap-10 lg:gap-20 items-start">
 
                 <div className="flex flex-col w-full xl:w-4/6 gap-10 lg:gap-20 items-start ">
-                    <div className="flex flex-col  w-full gap-3 border-2 border-gray-200 rounded-md p-6 bg-white">
+                    <div className="flex flex-col  w-full gap-3 border border-primary/30  rounded-2xl p-6 bg-white shadow-xs">
                         {/* Заголовок — только на десктопе */}
-                        <div className="hidden lg:grid grid-cols-[80px_1fr_120px_140px_40px_120px] gap-4 items-center pb-4 border-b border-gray-400 text-gray-600 text-sm md:text-lg">
+                        <div className="hidden lg:grid grid-cols-[80px_1fr_120px_140px_40px_120px] gap-4 items-center pb-4 border-b border-gray-300 text-gray-600 text-sm md:text-base">
                             <div></div>
                             <div>Назва</div>
                             <div className="text-right">Ціна</div>
@@ -185,10 +185,10 @@ const CartClient = () => {
                         </div>
 
                         {/* Список товаров */}
-                        {cart.items.map((item) => (
-                            <div key={item.productId + item.size + item.color + item.colorName} className="flex flex-col gap-4">
+                        {cart.items.map((item, i) => (
+                            <div key={i} className="flex flex-col gap-4">
                                 <CartItem item={item} />
-                                <hr className="border-gray-400 w-full" />
+                                <div className="w-full border-t border-gray-300" />
                             </div>
                         ))}
                     </div>

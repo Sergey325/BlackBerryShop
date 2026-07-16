@@ -26,7 +26,7 @@ const CartSummary = ({totalPrice, payment, address, contactData, onCheckout}: Pr
 
     return (
         <div
-            className="rounded-lg px-4 py-6 sm:p-6 lg:col-span-5 lg:p-8  bg-white text-gray-800 self-start border-2 border-gray-200"
+            className="rounded-2xl px-4 py-6 sm:p-6 lg:col-span-5 lg:p-8  bg-white text-gray-800 self-start border-2 border-primary/50 shadow-xs"
         >
             <h2 className="text-xl font-medium ">
                 Підсумок замовлення

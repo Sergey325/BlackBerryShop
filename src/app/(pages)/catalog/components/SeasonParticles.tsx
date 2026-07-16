@@ -22,17 +22,27 @@ function getFlakes(count: number): P[] {
     return flakeCache.get(count)!;
 }
 
-const petalCache = new Map<number, Petal[]>();
-function getPetals(count: number): Petal[] {
+interface PetalBase {
+    id: number;
+    top: number;
+    size: number;
+    durationFactor: number; // 0..1, стабильный на весь жизненный цикл частицы
+    delayFactor: number;    // 0..1
+    color: string;
+    ws: number;
+}
+
+const petalCache = new Map<number, PetalBase[]>();
+function getPetalsBase(count: number): PetalBase[] {
     if (!petalCache.has(count)) {
         petalCache.set(count, generate(count, i => ({
-            id:       i,
-            top:      Math.random() * 78 + 5,
-            size:     Math.random() * 7 + 5,
-            duration: Math.random() * 8 + 10,
-            delay:    Math.random() * 14,
-            color:    COLORS[Math.floor(Math.random() * COLORS.length)],
-            ws:       Math.random() * 0.6 + 0.7,
+            id:             i,
+            top:            Math.random() * 78 + 5,
+            size:           Math.random() * 7 + 5,
+            durationFactor: Math.random(),
+            delayFactor:    Math.random(),
+            color:          COLORS[Math.floor(Math.random() * COLORS.length)],
+            ws:             Math.random() * 0.6 + 0.7,
         })));
     }
     return petalCache.get(count)!;
@@ -102,7 +112,7 @@ interface P { id: number; left: number; size: number; duration: number; delay: n
 // ─── Снег: падает сверху вниз ─────────────────────────────────────────────
 
 export function SnowParticles() {
-    const count = useResponsiveCount(250, 100);
+    const count = useResponsiveCount(250, 80);
     const flakes = getFlakes(count);
     const { ref, active } = useAnimationGate<HTMLDivElement>();
 
@@ -148,36 +158,18 @@ export function SnowParticles() {
 
 const COLORS = ['#fda4af', '#f9a8d4', '#fbcfe8', '#fed7aa', '#fde68a'];
 
-interface Petal {
-    id: number;
-    top: number;
-    size: number;
-    duration: number;
-    delay: number;
-    color: string;
-    ws: number; // wave scale — индивидуальная амплитуда
-}
-
 export function PetalParticles() {
-    const count = useResponsiveCount(16, 8);
-    // const [durMin, durMax] = useResponsiveRange(10, 18, 5, 9); // на мобилке в ~2 раза быстрее
-    const petals = getPetals(count);
+    const count = useResponsiveCount(16, 6);
+    const [durMin, durMax] = useResponsiveRange(10, 18, 5, 9); // на мобилке в ~2 раза быстрее
+    const base = getPetalsBase(count);
     const { ref, active } = useAnimationGate<HTMLDivElement>();
 
-    // useEffect(() => {
-    //     const id = setTimeout(() => {
-    //         setPetals(Array.from({ length: count }, (_, i) => ({
-    //             id:       i,
-    //             top:      Math.random() * 78 + 5,
-    //             size:     Math.random() * 7 + 5,
-    //             duration: Math.random() * (durMax - durMin) + durMin,
-    //             delay:    Math.random() * (durMax + 2),
-    //             color:    COLORS[Math.floor(Math.random() * COLORS.length)],
-    //             ws:       Math.random() * 0.6 + 0.7,
-    //         })));
-    //     }, 0);
-    //     return () => clearTimeout(id);
-    // }, [count, durMin, durMax]);
+    // duration/delay вычисляются на рендере из стабильного factor + текущего диапазона
+    const petals = base.map(p => ({
+        ...p,
+        duration: durMin + p.durationFactor * (durMax - durMin),
+        delay:    p.delayFactor * (durMax + 2),
+    }));
 
     if (!petals.length) return null;
 

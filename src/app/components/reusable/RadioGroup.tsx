@@ -21,11 +21,12 @@ export default function RadioGroup({ options, value, onChange }: Props) {
 
 
     return (
-        <div className="flex flex-col divide-y divide-gray-200 border-2 border-gray-200 rounded-md bg-white select-none">
+        <div className="flex flex-col divide-y divide-gray-200 border border-primary/30 rounded-2xl bg-white select-none shadow-xs overflow-hidden">
             {options.map((option) => (
                 <label
                     key={option.value}
                     className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 transition"
+                    style={{  }}
                     onClick={() => onChange(option)}
                 >
                     <div className="flex items-center gap-3">

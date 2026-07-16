@@ -86,17 +86,18 @@ const ProductClient = ({ product, category, products }: Props) => {
                 </div>
             </div>
 
-            <ProductCarouselRow
-                title="Часто купують разом"
-                products={products}
-            />
+            <div className="flex flex-col w-full gap-10">
+                <ProductCarouselRow
+                    title="Часто купують разом"
+                    products={products}
+                />
+                <ProductCarouselRow
+                    title="Варіанти кастомізації"
+                    products={products}
+                />
+            </div>
 
-            <ProductCarouselRow
-                title="Варіанти кастомізації"
-                products={products}
-            />
-
-            <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full mt-5">
                 {/* Tab bar */}
                 <div className="flex border-b-2 border-gray-200">
                     <button

@@ -13,10 +13,10 @@ export default function SeasonBlock({ season }: Props) {
 
             {/* ── MOBILE ────────────────────────────────────────────────── */}
             <div className="sm:hidden rounded-3xl relative overflow-hidden" style={{ backgroundColor: season.heroBg }}>
-                {season.particles}
+                {/*{season.particles}*/}
                 {/* Banner: text left | image right — side by side, no wasted space */}
                 <div className="relative flex items-stretch min-h-[120px]">
-
+                    {season.particles}
                     {/* Left — icon, title, description */}
                     <div className="flex-1 pl-4 py-5 flex flex-col justify-center gap-1 z-10">
                         <div className="flex items-center gap-1.5">
@@ -32,7 +32,6 @@ export default function SeasonBlock({ season }: Props) {
 
                     {/* Right — hero image, flush to the right edge */}
                     <div className="relative w-[45%] shrink-0">
-
                         <Image
                             src={season.heroImage}
                             alt={season.label}

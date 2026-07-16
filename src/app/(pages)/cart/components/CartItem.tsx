@@ -36,24 +36,24 @@ const CartItem = ({item}: Props) => {
 
     return (
         <>
-            <hr className="border-gray-400 w-full lg:hidden" />
+            {/*<hr className="h-px bg-primary/30 border-0 w-full lg:hidden"/>*/}
 
             <div className="grid grid-cols-1 lg:grid-cols-[80px_1fr_120px_140px_40px_120px] gap-4 items-center text-base lg:text-lg">
 
                 {/* Картинка + название — клик ведёт на товар */}
                 <div
                     className="flex lg:contents gap-3 items-center cursor-pointer"
-                    onClick={() => router.push(`/?product=${item.slug}&productId=${item.productId}&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                    onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                 >
-                    <Image src={item.photoUrl} alt="productImage" width={80} height={80} className="object-contain" />
+                    <Image src={item.photoUrl} alt="productImage" width={80} height={80} draggable={false} className="object-contain select-none" />
 
                     <div className="flex flex-col gap-1">
-                        <span className="font-medium text-base lg:text-lg hover:text-primary transition-colors duration-300">{item.productName}</span>
+                        <span className="font-medium text-base lg:text-base hover:text-primary transition-colors duration-300">{item.productName}</span>
                         <div className="flex  items-center gap-2 sm:gap-8 text-base flex-wrap lg:flex-nowrap">
-                            <p className="text-nowrap text-sm lg:text-lg">Розмір: <span className="text-base lg:text-lg font-semibold">{item.size}</span></p>
-                            <div className="flex items-center  gap-2">
-                                <span className="text-nowrap text-sm lg:text-lg">Колір:</span>
-                                <div className="size-5 rounded-sm border border-gray-500" style={{ backgroundColor: item.color }} />
+                            <p className="text-nowrap text-sm">Розмір: <span className="text-base font-semibold">{item.size}</span></p>
+                            <div className="flex items-center gap-2">
+                                <span className="text-nowrap text-sm">Колір:</span>
+                                <div className="size-4 rounded-sm border border-gray-500" style={{ backgroundColor: item.color }} />
                             </div>
                         </div>
                     </div>

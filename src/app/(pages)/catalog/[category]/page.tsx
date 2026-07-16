@@ -115,7 +115,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     <div className="flex-1 px-10 py-8 flex flex-col justify-center">
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
                             {selectedCategory?.name}
-                            <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
+                            <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full text-nowrap">
                                 {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                             </span>
                         </h1>
@@ -135,7 +135,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     {/* Hero image — right side */}
                     <div className="relative w-[42%] shrink-0">
                         <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized
-                               className="object-cover object-top" />
+                               className="object-cover object-top-right" />
                         {/* fade into banner bg */}
                         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-white to-transparent pointer-events-none" />
                     </div>
@@ -146,7 +146,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized className="object-cover object-top" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
                     <div className="absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
-                        <div className="flex items-center gap-2 mb-1.5 flex-nowrap">
+                        <div className="flex flex-col items-start gap-2 mb-1.5">
                             <h1 className="text-xl font-bold text-white">{selectedCategory?.name}</h1>
                             <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-nowrap">
                                 {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}

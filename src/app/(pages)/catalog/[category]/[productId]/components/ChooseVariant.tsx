@@ -92,6 +92,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
             price: product.price,
             productName: product.name.replace(/\s+(\S+)$/,` ${selectedProductColor.colorName}, $1`),
             slug: product.slug,
+            categorySlug: product.category!.slug
         });
         cartModal.onOpen();
 

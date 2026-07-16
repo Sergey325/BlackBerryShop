@@ -62,7 +62,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
     }, [selectedCity]);
 
     return (
-        <div className="flex flex-col text-base gap-4 border-2 border-gray-200 rounded-md p-6 bg-white">
+        <div className="flex flex-col text-base gap-4 border border-primary/30 rounded-2xl p-6 bg-white shadow-xs">
             {/* Выбор города */}
             <div>
                 <label className="block mb-1 font-medium transition">Виберіть місто*</label>
@@ -81,10 +81,10 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             }
                         }}
                         placeholder="Виберіть місто"
-                        className="w-full border border-gray-200 rounded-md px-4 py-3"
+                        className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm"
                     />
                     {cities.length > 0 && !selectedCity && (
-                        <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 max-h-60 overflow-auto">
+                        <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-auto">
                             {cities.map((city) => (
                                 <div
                                     key={city.ref}
@@ -124,7 +124,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                     onFocus={() => setIsWarehousesOpen(true)}
                     placeholder="Пошук відділення..."
                     disabled={!selectedCity}
-                    className="w-full border border-gray-200 rounded-md px-4 py-3 pr-10 mb-2"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-3 pr-10 mb-2 text-sm"
                 />
 
                 {/* КРЕСТИК */}
@@ -135,7 +135,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             setWarehouseQuery("");
                             setIsWarehousesOpen(false);
                         }}
-                        className="absolute right-3 top-[45px] text-gray-400 hover:text-gray-600 cursor-pointer"
+                        className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 cursor-pointer"
                         type="button"
                     >
                         <FiX size={25} />
