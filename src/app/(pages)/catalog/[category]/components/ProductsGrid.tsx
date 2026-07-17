@@ -79,7 +79,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                     key={m}
                                     onClick={() => handleClick("view", m)}
                                     className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                                        view === m ? 'bg-primary/20 shadow-sm text-primary' : 'text-gray-400 hover:text-gray-600'
+                                        view === m ? 'bg-primary/20 shadow-sm text-primary' : 'text-gray-600 hover:text-primary'
                                     }`}
                                 >
                                     {m === 'grid' ? <FiGrid className="size-5" /> : <FiList className="size-5" />}
@@ -89,9 +89,9 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
 
                         <button
                             onClick={() => setFilterOpen(true)}
-                            className="sm:hidden flex items-center gap-1.5 text-sm font-medium bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl transition-colors"
+                            className="sm:hidden flex items-center gap-1.5 text-sm bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl transition-colors"
                         >
-                            <FiSliders className="size-4" />
+                            <FiSliders className="size-4 text-primary" />
                             Фільтри
                         </button>
 
