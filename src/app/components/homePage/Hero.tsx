@@ -64,48 +64,55 @@ const responsive = {
     all: {breakpoint: {max: 4000, min: 0}, items: 1},
 };
 
-function Dots({
-      count,
-      active,
-      onSelect,
-      className = '',
-  }: {
-    count: number;
-    active: number;
-    onSelect: (i: number) => void;
-    className?: string;
-}) {
+// function Dots({
+//       count,
+//       active,
+//       onSelect,
+//       className = '',
+//   }: {
+//     count: number;
+//     active: number;
+//     onSelect: (i: number) => void;
+//     className?: string;
+// }) {
+//     return (
+//         <div className={`flex items-center gap-2 ${className}`}>
+//             {Array.from({length: count}).map((_, i) => (
+//                 <button
+//                     key={i}
+//                     type="button"
+//                     onClick={() => onSelect(i)}
+//                     aria-label={`Слайд ${i + 1}`}
+//                     className={`block rounded-full transition-all cursor-pointer ${
+//                         i === active ? 'w-5 h-2 bg-primary' : 'w-2 h-2 bg-gray-300'
+//                     }`}
+//                 />
+//             ))}
+//         </div>
+//     );
+// }
+
+const CustomDot = ({ onMove, index, active }: any) => {
     return (
-        <div className={`flex items-center gap-2 ${className}`}>
-            {Array.from({length: count}).map((_, i) => (
-                <button
-                    key={i}
-                    type="button"
-                    onClick={() => onSelect(i)}
-                    aria-label={`Слайд ${i + 1}`}
-                    className={`block rounded-full transition-all cursor-pointer ${
-                        i === active ? 'w-5 h-2 bg-primary' : 'w-2 h-2 bg-gray-300'
-                    }`}
-                />
-            ))}
-        </div>
+        <button
+            onClick={() => onMove(index)}
+            className={`block rounded-full transition-all ${
+                active
+                    ? 'w-5 h-2 bg-primary'
+                    : 'w-2 h-2 bg-gray-300'
+            }`}
+        />
     );
-}
+};
 
 const Hero = () => {
-    const [active, setActive] = useState(0);
     const carouselRef = useRef<Carousel>(null);
 
     const [isSliding, setIsSliding] = useState(false);
 
-    const goTo = (i: number) => {
-        carouselRef.current?.goToSlide(i);
-        setActive(i);
-    };
-
     return (
         <section className="relative overflow-hidden rounded-xl lg:rounded-3xl shadow-[0_0_20px_rgba(0,0,0,0.10)] select-none bg-linear-to-t from-black/70 via-black/40 to-black/10  lg:bg-none lg:bg-white">
-            <div className={`relative z-20 transition-[filter] ${isSliding ? 'blur-[2px]' : 'blur-0'} w-[calc(100%+4px)] -ml-0.5`}>
+            <div className={`relative z-20 w-[calc(100%+4px)] -ml-0.5`}>
                 <Carousel
                     ref={carouselRef}
                     responsive={responsive}
@@ -117,19 +124,28 @@ const Hero = () => {
                     autoPlaySpeed={5000}
                     pauseOnHover
                     transitionDuration={400}
-                    showDots={false}
+                    beforeChange={() => setIsSliding(true)}
+                    afterChange={() => setIsSliding(false)}
+                    showDots={true}
+                    customDot={<CustomDot />}
+                    dotListClass="
+                      !absolute
+                      !bottom-5
+                      !left-0
+                      !right-0
+                      !justify-center
+                      !gap-2
+                      lg:!bottom-10
+                      lg:!left-[4%]
+                      lg:!right-auto
+                      lg:!justify-start
+                    "
                     // additionalTransfrom={-1}
                     containerClass="overflow-hidden"
-                    itemClass="overflow-hidden"
-                    beforeChange={() => setIsSliding(true)}
-                    afterChange={(_, {currentSlide}) => {
-                        setIsSliding(false);
-                        const real = ((currentSlide % slides.length) + slides.length) % slides.length;
-                        setActive(real);
-                    }}
+                    itemClass="overflow-hidden relative!"
                 >
                     {slides.map((slide, i) => (
-                        <div key={i}>
+                        <div key={i} className={`transition-filter duration-300 ${isSliding ? 'blur-[2px]' : ''}`}>
                             {/* ── Desktop ── */}
                             <div className="hidden lg:flex items-center min-h-[650px] ">
 
@@ -162,7 +178,7 @@ const Hero = () => {
                                         {slide.ctaLabel}
                                     </Link>
 
-                                    <Dots count={slides.length} active={active} onSelect={goTo} className="mt-12" />
+                                    {/*<Dots count={slides.length} active={active} onSelect={goTo} className="mt-12" />*/}
                                 </div>
 
                                 <div className="absolute right-0 top-0 h-full w-3/4 laptop:w-[65%]">
@@ -202,7 +218,7 @@ const Hero = () => {
 
                                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/10" />
 
-                                <div className="relative z-10 flex flex-col gap-4 justify-between min-h-[450px] px-6 pt-10 pb-8">
+                                <div className="relative z-10 flex flex-col gap-4 justify-between min-h-[450px] px-6 pt-10 pb-12">
                                     <span className="self-start inline-flex items-center gap-1.5
                                                      bg-white/80 text-gray-700 border border-primary shadow-[0_0_5px_rgba(130,61,154,0.50)]
                                                      text-xs rounded-full px-4 py-1.5">
@@ -230,7 +246,7 @@ const Hero = () => {
                                         {slide.ctaLabel}
                                     </Link>
 
-                                    <Dots count={slides.length} active={active} onSelect={goTo} />
+                                    {/*<Dots count={slides.length} active={active} onSelect={goTo} />*/}
                                 </div>
                             </div>
                         </div>
