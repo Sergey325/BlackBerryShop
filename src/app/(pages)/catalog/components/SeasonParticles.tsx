@@ -108,7 +108,7 @@ function useParticleCanvas(draw: DrawFn) {
         return () => io.disconnect();
     }, [ready]);
 
-    // rAF-цикл с троттлингом до ~30fps
+    // rAF-цикл с троттлингом до ~60fps
     useEffect(() => {
         const node = canvasRef.current;
         if (!ready || !node) return;
@@ -118,7 +118,7 @@ function useParticleCanvas(draw: DrawFn) {
         let rafId: number;
         let lastTime: number | null = null;
         let accumulator = 0;
-        const targetFrameTime = 1000 / 30;
+        const targetFrameTime = 1000 / 60;
 
         const loop = (time: number) => {
             rafId = requestAnimationFrame(loop);
