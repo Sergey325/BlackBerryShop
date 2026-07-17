@@ -118,7 +118,7 @@ function useParticleCanvas(draw: DrawFn) {
         let rafId: number;
         let lastTime: number | null = null;
         let accumulator = 0;
-        const targetFrameTime = 1000 / 45;
+        const targetFrameTime = 1000 / 30;
 
         const loop = (time: number) => {
             rafId = requestAnimationFrame(loop);
