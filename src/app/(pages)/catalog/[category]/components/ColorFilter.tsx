@@ -35,10 +35,10 @@ const ColorFilter = ({
             onClick={changeUrl}
             title={title}
             className={`
-                w-7 h-7 rounded-full shadow-sm border-2 transition-all hover:scale-110
+                w-7 h-7 rounded-full shadow-sm border transition-all hover:scale-110
                 ${isChecked
                 ? "border-primary scale-110"
-                : "border-white/80"
+                : "border-gray-400/50"
             }
             `}
             style={{ backgroundColor: color }}

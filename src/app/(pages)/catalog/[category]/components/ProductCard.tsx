@@ -8,6 +8,8 @@ import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";
+import useCartModal from "@/app/hooks/useCartModal";
+import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
     product: IProduct;
@@ -16,6 +18,9 @@ type Props = {
 
 const ProductCard = ({ product, list = false }: Props) => {
     const searchParams = useSearchParams();
+
+    const cartModal = useCartModal();
+    const cart = useCartStore();
 
     const start = useRef({ x: 0, y: 0 });
     const dragged = useRef(false);
@@ -48,6 +53,42 @@ const ProductCard = ({ product, list = false }: Props) => {
 
     const visibleColors = product.colors.slice(0, visibleCount);
     const hasMoreColors = product.colors.length > visibleColors.length;
+
+    const handleAddToCart = () => {
+        // if (!selectedSize) {
+        //     toast("Виберіть розмір", {
+        //         icon: "⚠️",
+        //     })
+        //     return
+        // }
+        // else if (!selectedSizeObj?.available) return;
+
+        cart.addItem({
+            productId: product.id,
+            productColorId: product.colors[activeIdx].id,
+            quantity: 1,
+            sizes: product.colors[activeIdx].sizes,
+            color: product.colors[activeIdx].color,
+            colorName: product.colors[activeIdx].colorName,
+            discount: product.discount,
+            photoUrl: product.colors[activeIdx].images[0]?.url ?? "",
+            price: product.price,
+            productName: product.name.replace(/\s+(\S+)$/,` ${product.colors[activeIdx].colorName}, $1`),
+            slug: product.slug,
+            categorySlug: product.category!.slug
+        });
+        cartModal.onOpen();
+
+        // trackMetaEvent("AddToCart", {
+        //     content_ids: [product.id.toString()],
+        //     content_name: product.name,
+        //     content_type: "product",
+        //     value: product.price,
+        //     currency: "UAH",
+        //     color: selectedProductColor.colorName,
+        //     size: selectedSize,
+        // });
+    }
 
     if (list) {
         return (
@@ -87,7 +128,9 @@ const ProductCard = ({ product, list = false }: Props) => {
                     <div className="flex items-center justify-between">
                         <p className="font-bold text-gray-900 self-end">{product.price} грн</p>
                         <button
-                            className="shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors">
+                            onClick={() => handleAddToCart()}
+                            className="shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors"
+                        >
                             <MdOutlineShoppingCart className="size-4"/>
                             <span className="hidden sm:block">До кошика</span>
                         </button>
@@ -188,6 +231,11 @@ const ProductCard = ({ product, list = false }: Props) => {
                             {product.price} грн
                         </p>
                         <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAddToCart()
+                            }}
                             className="
                                 shrink-0 size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
                                 text-white rounded-full flex items-center justify-center shadow-md shadow-violet-200 transition-colors cursor-pointer

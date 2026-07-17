@@ -29,6 +29,7 @@ interface DropdownProps<T = string> {
     className?: string;
     buttonClassName?: string;
     menuClassName?: string;
+    textCenter?: boolean;
     label?: string;
     error?: string;
 }
@@ -43,6 +44,7 @@ export default function Dropdown<T = string>({
     className = '',
     buttonClassName = '',
     menuClassName = '',
+    textCenter = false,
     label,
     error,
 }: DropdownProps<T>) {
@@ -181,7 +183,8 @@ export default function Dropdown<T = string>({
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
                 aria-controls={listboxId}
-                className={`flex w-full items-center justify-between gap-2 rounded-xl border bg-white px-4 py-2.5 text-left text-sm transition-colors
+                className={`flex w-full items-center justify-between gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm transition-colors
+                    ${textCenter ? "text-center" : "text-left"}
                     ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-primary/50'}
                     ${error ? 'border-red-400' : 'border-primary/30'}
                     ${isOpen ? 'border-primary/30 ring-1 ring-primary/80' : ''}
@@ -230,7 +233,8 @@ export default function Dropdown<T = string>({
                         aria-selected={isSelected}
                         onMouseEnter={() => setActiveIndex(index)}
                         onClick={() => selectOption(option)}
-                        className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors
+                        className={`flex cursor-pointer items-center rounded-lg px-3 py-2 text-sm transition-colors
+                            ${textCenter ? "text-center justify-center" : "text-left"}
                             ${option.disabled ? 'pointer-events-none opacity-40' : ''}
                             ${isActive && !option.disabled ? 'bg-neutral-100' : ''}
                             ${isSelected ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-700'}

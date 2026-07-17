@@ -5,9 +5,10 @@ import { CartItem } from "@/app/types";
 type CartStore = {
     items: CartItem[];
     addItem: (item: CartItem) => void;
-    removeItem: (productColorId: number, size: string) => void;
+    removeItem: (productColorId: number, size?: string) => void;
     clearCart: () => void;
     changeQuantity: (item: CartItem, quantity: number) => void;
+    changeSize: (item: CartItem, size: string) => void;
 };
 
 export const useCartStore = create<CartStore>()(
@@ -66,6 +67,46 @@ export const useCartStore = create<CartStore>()(
                     .filter((i) => i.quantity > 0);
 
                 set({ items: updated });
+            },
+
+            changeSize: (item, newSize) => {
+                const items = get().items;
+
+                const existing = items.find(
+                    i =>
+                        i.productColorId === item.productColorId &&
+                        i.size === newSize
+                );
+
+                if (existing) {
+                    set({
+                        items: items
+                            .filter(
+                                i =>
+                                    !(
+                                        i.productColorId === item.productColorId &&
+                                        i.size === item.size
+                                    )
+                            )
+                            .map(i =>
+                                i === existing
+                                    ? {
+                                        ...i,
+                                        quantity: i.quantity + item.quantity,
+                                    }
+                                    : i
+                            ),
+                    });
+                } else {
+                    set({
+                        items: items.map(i =>
+                            i.productColorId === item.productColorId &&
+                            i.size === item.size
+                                ? { ...i, size: newSize }
+                                : i
+                        ),
+                    });
+                }
             },
 
             clearCart: () => set({ items: [] }),

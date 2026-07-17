@@ -46,8 +46,15 @@ type DrawFn = (
 ) => void;
 
 function useParticleCanvas(draw: DrawFn) {
-    const [node, setNode] = useState<HTMLCanvasElement | null>(null);
-    const ref = useCallback((el: HTMLCanvasElement | null) => setNode(el), []);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [ready, setReady] = useState(false);
+
+    // callback ref: node пишем в обычный useRef (мутировать можно свободно),
+    // а через setState только сигналим "элемент готов/исчез" для перезапуска эффектов
+    const ref = useCallback((el: HTMLCanvasElement | null) => {
+        canvasRef.current = el;
+        setReady(!!el);
+    }, []);
 
     const sizeRef = useRef({ width: 0, height: 0 });
     const activeRef = useRef(false);
@@ -55,20 +62,22 @@ function useParticleCanvas(draw: DrawFn) {
     const elapsedRef = useRef(0);
     const drawRef = useRef(draw);
 
-    // держим актуальный draw без пересоздания rAF-цикла на каждый рендер
     useEffect(() => { drawRef.current = draw; }, [draw]);
 
-    // размер canvas под родителя + devicePixelRatio (ограниченный — 3x на слабом
-    // телефоне не даёт видимой пользы, только лишняя площадь под растеризацию)
+    // размер canvas под родителя + devicePixelRatio
     useEffect(() => {
-        if (!node) return;
+        const node = canvasRef.current;
+        if (!ready || !node) return;
         const parent = node.parentElement;
         if (!parent) return;
         const ctx = node.getContext('2d');
         if (!ctx) return;
 
         const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const rawDpr = window.devicePixelRatio || 1;
+            const cap = window.innerWidth < 640 ? 1 : 2;
+            const dpr = Math.min(rawDpr, cap);
+
             const { width, height } = parent.getBoundingClientRect();
             sizeRef.current = { width, height };
             node.width = Math.round(width * dpr);
@@ -82,11 +91,13 @@ function useParticleCanvas(draw: DrawFn) {
         const ro = new ResizeObserver(resize);
         ro.observe(parent);
         return () => ro.disconnect();
-    }, [node]);
+    }, [ready]);
 
     // видимость блока + prefers-reduced-motion
     useEffect(() => {
-        if (!node) return;
+        const node = canvasRef.current;
+        if (!ready || !node) return;
+
         reducedRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         const io = new IntersectionObserver(
@@ -95,28 +106,37 @@ function useParticleCanvas(draw: DrawFn) {
         );
         io.observe(node);
         return () => io.disconnect();
-    }, [node]);
+    }, [ready]);
 
-    // сам цикл анимации — один на весь canvas, не на частицу
+    // rAF-цикл с троттлингом до ~30fps
     useEffect(() => {
-        if (!node) return;
+        const node = canvasRef.current;
+        if (!ready || !node) return;
         const ctx = node.getContext('2d');
         if (!ctx) return;
 
         let rafId: number;
         let lastTime: number | null = null;
+        let accumulator = 0;
+        const targetFrameTime = 1000 / 45;
 
         const loop = (time: number) => {
             rafId = requestAnimationFrame(loop);
 
+            const last = lastTime ?? time;
+            const frameDelta = time - last;
+            lastTime = time;
+
             if (reducedRef.current || !activeRef.current) {
-                lastTime = time; // не копим dt, пока страница вне экрана/на паузе
+                accumulator = 0; // не копим долг, пока страница вне экрана/на паузе
                 return;
             }
 
-            const last = lastTime ?? time;
-            const dt = Math.min((time - last) / 1000, 0.05); // клэмп — защита от скачка после фона/паузы
-            lastTime = time;
+            accumulator += frameDelta;
+            if (accumulator < targetFrameTime) return; // ещё не время следующего кадра
+            const dt = Math.min(accumulator / 1000, 0.05);
+            accumulator = 0;
+
             elapsedRef.current += dt;
 
             const { width, height } = sizeRef.current;
@@ -128,7 +148,7 @@ function useParticleCanvas(draw: DrawFn) {
 
         rafId = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(rafId);
-    }, [node]);
+    }, [ready]);
 
     return ref;
 }
@@ -163,7 +183,7 @@ function getFlakes(count: number): Flake[] {
 }
 
 export function SnowParticles() {
-    const count = useResponsiveCount(400, 35);
+    const count = useResponsiveCount(300, 35);
     const flakes = getFlakes(count);
 
     const [durMin, durMax] = useResponsiveRange(

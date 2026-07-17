@@ -62,13 +62,13 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
         qs.set("color", colorItem.color);
         qs.set("colorName", colorItem.colorName);
         qs.delete("size");
-        router.push(`?${qs.toString()}`);
+        router.push(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleSizeChange = (size: string) => {
         const qs = new URLSearchParams(params);
         qs.set("size", size);
-        router.push(`?${qs.toString()}`);
+        router.push(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleAddToCart = () => {
@@ -85,6 +85,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
             productColorId: selectedProductColor.id,
             quantity: count,
             size: selectedSize!,
+            sizes: selectedProductColor.sizes,
             color: selectedColorHex,
             colorName: selectedProductColor.colorName,
             discount: product.discount,

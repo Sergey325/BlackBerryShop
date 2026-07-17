@@ -20,11 +20,11 @@ const CartModal = () => {
 
     const bodyContent =
         (<div className="flex flex-col gap-4 ">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 divide-y divide-gray-300">
                 {cart.items.map((item) => (
                     <div key={item.productId +item.color+item.size+item.colorName}>
                         <div
-                            className="flex gap-4 py-4 border-b border-gray-200"
+                            className="flex gap-4 py-4"
                         >
 
                             {/* Картинка */}

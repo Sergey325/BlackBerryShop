@@ -37,8 +37,8 @@ const CartSummary = ({totalPrice, payment, address, contactData, onCheckout}: Pr
                     <span className="font-light text-sm md:text-base text-gray-700">Вартість замовлення</span>
                     <span className="text-sm md:text-base text-gray-800 font-medium text-right">{totalPrice} грн</span>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-light text-sm sm:text-base text-gray-700">Спосіб оплати</span>
+                <div className="flex gap-2 sm:gap-4 justify-between items-center">
+                    <span className="font-light text-sm sm:text-base text-gray-700 text-nowrap">Спосіб оплати</span>
                     <span className="text-sm md:text-base text-gray-800 font-medium text-right">{payment.shortTitle}</span>
                 </div>
                 <div className="flex justify-between items-center">

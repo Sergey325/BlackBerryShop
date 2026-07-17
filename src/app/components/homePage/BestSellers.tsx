@@ -4,11 +4,8 @@ import Carousel from "react-multi-carousel";
 import {IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
 import {useRef} from "react";
 import {IProduct} from "@/app/actions/getProducts";
-import Image from "next/image";
-import {MdOutlineShoppingCart} from "react-icons/md";
 import {GoHeartFill} from "react-icons/go";
-import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
-import EmptyState from "@/app/components/reusable/EmptyState";
+import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 
 
 type Props = {
@@ -80,52 +77,53 @@ const BestSellers = ({products}: Props) => {
                         itemClass="px-1 sm:px-2 flex justify-center"
                         containerClass="py-2"
                     >
-                        {products.map((product) => (
-                            <div
-                                key={product.id}
-                                className="bg-primary/7 rounded-2xl overflow-hidden border border-primary/50
-                                                   shadow-sm hover:shadow-md hover:-translate-y-0.5
-                                                   transition-all duration-200 group select-none cursor-pointer
-                                                   w-full max-w-[280px]  mx-auto"
-                            >
-                                {/* Product image */}
-                                <div className="aspect-square bg-white rounded-t-lg flex items-center justify-center p-3 sm:p-5">
-                                    <Image
-                                        src={optimizeCloudinaryUrl(product.colors[0].images[0].url, 500)}
-                                        alt={product.name}
-                                        width={250}
-                                        height={250}
-                                        unoptimized
-                                        draggable={false}
-                                        className="object-contain w-full h-full rounded-lg"
-                                    />
-                                </div>
-
-                                {/* Info row */}
-                                <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full">
-                                    <div className="min-w-0 flex flex-col w-full">
-
-                                        <p className="text-[11px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
-                                            {product.name.split(".")[0]}
-                                        </p>
-
-                                        <div className="flex justify-between items-center w-full">
-                                            <p className="font-bold text-gray-900 text-xs sm:text-sm">
-                                                {product.price} грн
-                                            </p>
-                                            <button
-                                                className="
-                                                        shrink-0 size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
-                                                        text-white rounded-full flex items-center justify-center shadow-md shadow-violet-200 transition-colors cursor-pointer
-                                                    "
-                                            >
-                                                <MdOutlineShoppingCart className="size-4" />
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                        {products.map((product, i) => (
+                            <ProductCard key={product.id+i} product={product}/>
+                            // <div
+                            //     key={product.id}
+                            //     className="bg-primary/7 rounded-2xl overflow-hidden border border-primary/50
+                            //                    shadow-sm hover:shadow-md hover:-translate-y-0.5
+                            //                    transition-all duration-200 group select-none cursor-pointer
+                            //                    w-full max-w-[280px]  mx-auto"
+                            // >
+                            //     {/* Product image */}
+                            //     <div className="aspect-square bg-white rounded-t-lg flex items-center justify-center p-3 sm:p-5">
+                            //         <Image
+                            //             src={optimizeCloudinaryUrl(product.colors[0].images[0].url, 500)}
+                            //             alt={product.name}
+                            //             width={250}
+                            //             height={250}
+                            //             unoptimized
+                            //             draggable={false}
+                            //             className="object-contain w-full h-full rounded-lg"
+                            //         />
+                            //     </div>
+                            //
+                            //     {/* Info row */}
+                            //     <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full">
+                            //         <div className="min-w-0 flex flex-col w-full">
+                            //
+                            //             <p className="text-[11px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
+                            //                 {product.name.split(".")[0]}
+                            //             </p>
+                            //
+                            //             <div className="flex justify-between items-center w-full">
+                            //                 <p className="font-bold text-gray-900 text-xs sm:text-sm">
+                            //                     {product.price} грн
+                            //                 </p>
+                            //                 <button
+                            //                     className="
+                            //                             shrink-0 size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
+                            //                             text-white rounded-full flex items-center justify-center shadow-md shadow-violet-200 transition-colors cursor-pointer
+                            //                         "
+                            //                 >
+                            //                     <MdOutlineShoppingCart className="size-4" />
+                            //                 </button>
+                            //             </div>
+                            //
+                            //         </div>
+                            //     </div>
+                            // </div>
                         ))}
                     </Carousel>
                     <CustomNext onClick={() => carouselBestSellersRef.current?.next(1)} />

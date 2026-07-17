@@ -1,6 +1,7 @@
 import {OrderStatus, PaymentMethod} from "@prisma/client";
 import {JSX} from "react";
 import {ICategory} from "@/app/actions/getCategories";
+import {IProductSize} from "@/app/actions/getProducts";
 
 export type City = {
     ref: string;
@@ -29,7 +30,8 @@ export type CartItem = {
     slug: string;
     price: number;
     discount: number;
-    size: string;
+    size?: string;
+    sizes: IProductSize[];
     color: string;
     colorName: string;
     photoUrl: string;

@@ -111,7 +111,7 @@ const Hero = ({}) => {
 
                     <Link
                         href={`/catalog`}
-                        className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382] text-white px-6 py-3 rounded-full transition-colors cursor-pointer"
+                        className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382] text-white px-6 py-3 rounded-full transition-colors cursor-pointer text-center"
                     >
                         Перейти до каталогу
                     </Link>
