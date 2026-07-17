@@ -64,7 +64,7 @@ const ProductClient = ({ product, category, products }: Props) => {
                         <ChooseVariant
                             product={product}
                             selectedProductColor={selectedProductColor}
-                            hasLining={true}// hasLining={category.specifications.some(s => s.name === "Підкладка")}
+                            hasLining={category.hasLining || false}// hasLining={category.specifications.some(s => s.name === "Підкладка")}
                         />
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">

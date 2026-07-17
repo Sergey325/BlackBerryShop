@@ -124,7 +124,7 @@ export default function SeasonBlock({ season }: Props) {
                         Cards: default 4-col, 5-col at xl.
                         If you add more categories the grid just wraps — no extra code needed.
                     */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 max-w-[75%] select-none">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 max-w-[75%] select-none">
                         {season.categories.map((cat) => (
                             <CategoryCard key={cat.slug} category={cat} />
                         ))}

@@ -94,6 +94,8 @@ model Category {
   coverImage          String // заглавное фото
   season              Season
   isOnMainPage        Boolean? @default(false)
+  hasLining           Boolean? @default(false)
+
 
   products Product[]
 

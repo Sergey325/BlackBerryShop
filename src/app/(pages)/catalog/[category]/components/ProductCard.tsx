@@ -14,9 +14,10 @@ import {useCartStore} from "@/app/hooks/useCartStore";
 type Props = {
     product: IProduct;
     list?: boolean;
+    colors?: boolean;
 };
 
-const ProductCard = ({ product, list = false }: Props) => {
+const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const searchParams = useSearchParams();
 
     const cartModal = useCartModal();
@@ -101,7 +102,7 @@ const ProductCard = ({ product, list = false }: Props) => {
                         <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
                     </Link>
                     {
-                        visibleColors.length > 1 &&
+                        visibleColors.length > 1 && colors &&
                         <div className="-mb-4">
                             <div className="flex gap-1.5 mt-2 items-center">
                                 {visibleColors.map((c, i) => (
@@ -181,7 +182,7 @@ const ProductCard = ({ product, list = false }: Props) => {
                 />
                 {/* Color swatches */}
                 {
-                    visibleColors.length > 1 &&
+                    visibleColors.length > 1 && colors &&
                     <div className="absolute bottom-0 left-2.5">
                         <div className="flex gap-1.5 items-center">
                             {visibleColors.map((c, i) => (

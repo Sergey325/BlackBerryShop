@@ -9,6 +9,7 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
 import EmptyState from "@/app/components/reusable/EmptyState";
 import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
+import {FaHeart} from "react-icons/fa";
 
 type Props = {
     params: Promise<{ category: string }>;
@@ -125,9 +126,18 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         <div className="flex flex-wrap gap-2">
                             {/*//////////////////////*/}
                             {['Ручна робота', 'Якісні матеріали', 'Зручна посадка'].map(f => (
-                                <span key={f}
-                                      className="text-xs font-medium bg-white border border-gray-100 text-gray-600 px-3 py-1.5 rounded-xl shadow-sm">
-                                    💜 {f}
+                                // <span className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur-sm shadow-[0_0_5px_rgba(130,61,154,0.50)] transition
+                                //          text-gray-600 rounded-full px-4 py-1.5
+                                //          border border-primary mb-7">
+                                //     Ручна робота з любов&apos;ю
+                                //     <FaHeart className="size-4 text-primary" />
+                                // </span>
+                                <span
+                                    key={f}
+                                    className="inline-flex items-center gap-1.5 text-xs font-medium bg-white border border-gray-100 text-gray-600 px-3 py-1.5 rounded-xl shadow-sm"
+                                >
+                                    <FaHeart className="size-3 text-primary/80" />
+                                    {f}
                                 </span>
                             ))}
                         </div>

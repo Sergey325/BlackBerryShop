@@ -70,12 +70,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
             <div className="flex gap-4 w-full">
                 <div className="flex flex-col lg:flex-row w-full gap-2 lg:gap-4 lg:justify-between">
                     <div className="flex gap-2 lg:gap-4 order-2">
-                        <button
-                            onClick={() => setFilterOpen(true)}
-                            className="sm:hidden flex items-center gap-1.5 text-sm font-medium bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl transition-colors"
-                        >
-                            <FiSliders className="size-4" />
-                        </button>
+
 
                         {/*gridView*/}
                         <div className="flex items-center bg-white border border-primary/30 rounded-xl p-1 gap-2">
@@ -91,6 +86,14 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 </button>
                             ))}
                         </div>
+
+                        <button
+                            onClick={() => setFilterOpen(true)}
+                            className="sm:hidden flex items-center gap-1.5 text-sm font-medium bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl transition-colors"
+                        >
+                            <FiSliders className="size-4" />
+                            Фільтри
+                        </button>
 
                         {/* Sort */}
                         <div className="w-full lg:w-40">
@@ -117,7 +120,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                 }`}>
                     {products.map(p =>
                         <Suspense key={p.id} fallback={null}>
-                            <ProductCard product={p} list={view === 'list'}/>
+                            <ProductCard product={p} list={view === 'list'} colors/>
                         </Suspense>
                     )}
                 </div>

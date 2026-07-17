@@ -44,7 +44,11 @@ const CartClient = () => {
     const deliveryRef = useRef<HTMLDivElement | null>(null);
 
     const onCheckout = async () => {
-        if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
+        if (cart.items.find(item => !item.size)) {
+            toast.error("Виберіть розмір")
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        else if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
             toast.error("Введіть ім'я, призвище, та номер телефону")
             contactRef.current?.scrollIntoView({
                 behavior: "smooth",

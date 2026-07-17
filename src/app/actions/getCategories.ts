@@ -12,6 +12,7 @@ export interface ICategory {
     coverImage: string
     season: Season
     isOnMainPage: boolean | null
+    hasLining: boolean | null
     specifications: {
         name: string
         id: number

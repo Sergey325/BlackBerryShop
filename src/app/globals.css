@@ -2,6 +2,7 @@
 
 @theme {
     --color-primary: #823D9A;
+    --breakpoint-laptop: 1175px;
 }
 
 @layer base {
