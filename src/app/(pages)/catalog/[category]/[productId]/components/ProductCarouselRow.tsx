@@ -2,7 +2,7 @@
 
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import { IProduct } from '@/app/actions/getProducts';
+import {IRelatedProduct} from '@/app/actions/getProducts';
 import {CustomNext, CustomPrev} from "@/app/components/homePage/BestSellers";
 import {useRef} from "react";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
@@ -16,7 +16,7 @@ const responsive = {
 
 type Props = {
     title: string;
-    products: IProduct[];
+    products: IRelatedProduct[];
 };
 
 export default function ProductCarouselRow({ title, products }: Props) {

@@ -23,7 +23,7 @@ const ProductPage = async ({ params }: Props) => {
     }
 
     return (
-        <ProductClient product={product} category={category} products={products}/>
+        <ProductClient product={product} category={category}/>
     );
 };
 

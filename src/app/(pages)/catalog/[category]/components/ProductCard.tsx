@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {IProduct} from "@/app/actions/getProducts";
+import {IProduct, IRelatedProduct} from "@/app/actions/getProducts";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
@@ -12,7 +12,7 @@ import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
-    product: IProduct;
+    product: IProduct | IRelatedProduct;
     list?: boolean;
     colors?: boolean;
 };
@@ -130,7 +130,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         <p className="font-bold text-gray-900 self-end">{product.price} грн</p>
                         <button
                             onClick={() => handleAddToCart()}
-                            className="shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors"
+                            className="shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors cursor-pointer"
                         >
                             <MdOutlineShoppingCart className="size-4"/>
                             <span className="hidden sm:block">До кошика</span>
@@ -164,7 +164,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                 }
             }}
             href={`/catalog/${product.category?.slug || ""}/${product.id}`}
-            className="bg-primary/7 rounded-2xl overflow-hidden border border-primary/50
+            className="bg-primary/7 rounded-2xl border border-primary/50
                shadow-sm hover:shadow-md hover:-translate-y-0.5
                transition-all duration-200 group select-none cursor-pointer
                w-full max-w-[280px]  mx-auto flex flex-col justify-between
@@ -172,7 +172,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
         >
             {/* Product image */}
             <div
-                className="aspect-square relative bg-white rounded-t-lg flex items-center justify-center ">
+                className="aspect-square relative bg-white rounded-t-2xl flex items-center justify-center">
                 <Image
                     src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
                     alt={product.name}
@@ -223,12 +223,12 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
             <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full h-full">
                 <div className="min-w-0 flex flex-col w-full h-full justify-between">
 
-                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[32px]">
+                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[36px]">
                         {product.name}
                     </p>
 
                     <div className="flex justify-between items-center w-full">
-                        <p className="font-bold text-gray-900 text-xs sm:text-sm">
+                        <p className="font-bold text-gray-900 text-sm">
                             {product.price} грн
                         </p>
                         <button
@@ -238,8 +238,8 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                 handleAddToCart()
                             }}
                             className="
-                                shrink-0 size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
-                                text-white rounded-full flex items-center justify-center shadow-md shadow-violet-200 transition-colors cursor-pointer
+                                shrink-0  size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
+                                text-white rounded-full flex items-center justify-center cursor-pointer
                             "
                         >
                             <MdOutlineShoppingCart className="size-4" />

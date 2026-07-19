@@ -9,15 +9,15 @@ import Accordion from "@/app/components/reusable/Accordion";
 import Link from "next/link";
 import {ICategory} from "@/app/actions/getCategories";
 import ProductCarouselRow from "@/app/(pages)/catalog/[category]/[productId]/components/ProductCarouselRow";
+import {IProductWithRelated} from "@/app/actions/getProductById";
 
 type Props = {
-    product: IProduct
+    product: IProductWithRelated
     category: ICategory;
-    products: IProduct[];
 }
 
 
-const ProductClient = ({ product, category, products }: Props) => {
+const ProductClient = ({ product, category }: Props) => {
     const params = useSearchParams();
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
@@ -89,11 +89,11 @@ const ProductClient = ({ product, category, products }: Props) => {
             <div className="flex flex-col w-full gap-10">
                 <ProductCarouselRow
                     title="Часто купують разом"
-                    products={products}
+                    products={product.relatedTo}
                 />
                 <ProductCarouselRow
                     title="Варіанти кастомізації"
-                    products={products}
+                    products={product.relatedTo}
                 />
             </div>
 

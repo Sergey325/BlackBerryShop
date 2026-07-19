@@ -1,4 +1,4 @@
-import {getProducts, IProduct, IProductsParams} from "@/app/actions/getProducts";
+import {getProducts, IProductsParams} from "@/app/actions/getProducts";
 import {getCategories} from "@/app/actions/getCategories";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import {pluralizeUk} from "@/app/utils/pluralizeUk";
 import EmptyState from "@/app/components/reusable/EmptyState";
 import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
 import {FaHeart} from "react-icons/fa";
+import {getFilterOptions} from "@/app/utils/getFilterOptions";
 
 type Props = {
     params: Promise<{ category: string }>;
@@ -19,61 +20,6 @@ type Props = {
 function normalizeArray(value?: string | string[]) {
     if (!value) return undefined;
     return Array.isArray(value) ? value : [value];
-}
-
-export function getFilterOptions(products: IProduct[]) {
-    const sizes = new Map<string, number>();
-    const materials = new Map<string, number>();
-    const colors = new Map<string, {
-        color: string;
-        colorName: string;
-        count: number;
-    }>();
-
-    products.forEach(product => {
-        // материал
-        if (product.material) {
-            materials.set(
-                product.material.name,
-                (materials.get(product.material.name) ?? 0) + 1
-            );
-        }
-
-        product.colors.forEach(pc => {
-            // цвет
-            const currentColor = colors.get(pc.color);
-
-            colors.set(pc.color, {
-                color: pc.color,
-                colorName: pc.colorName,
-                count: (currentColor?.count ?? 0) + 1,
-            });
-
-            // размеры
-            pc.sizes.forEach(size => {
-                if (!size.available) return;
-
-                sizes.set(
-                    size.size,
-                    (sizes.get(size.size) ?? 0) + 1
-                );
-            });
-        });
-    });
-
-    return {
-        sizes: Array.from(sizes, ([size, count]) => ({
-            size,
-            count,
-        })),
-
-        materials: Array.from(materials, ([name, count]) => ({
-            name,
-            count,
-        })),
-
-        colors: Array.from(colors.values()),
-    };
 }
 
 const CategoryPage = async ({ params, searchParams }: Props) => {
@@ -167,7 +113,6 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                 </div>
 
                 {
-                    products && products.length > 0 ?
                     <div className="flex gap-6 w-full">
                         <div className="hidden sm:flex max-h-min flex-col gap-4 bg-white rounded-xl px-4 md:px-6 py-2 md:py-4 shadow-sm">
                             <div className="flex items-center gap-1.5 font-semibold text-gray-900 w-52 shrink-0">
@@ -180,15 +125,17 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         </div>
                         <ProductsGrid products={products} categories={categories} selectedCategorySlug={selectedCategory.slug}/>
                     </div>
-                    :
-                    <EmptyState
-                        title={"Товарів не знайдено"}
-                        subtitle={"за обраними фільтрами немає товарів, спробуйте скинути фільтри"}
-                        btnTitle="Скинути фільтри"
-                        showReset
-                        heightStyle={"30vh"}
-                        redirectUrl={`/catalog/${selectedCategory.slug}`}
-                    />
+                    // products && products.length > 0 ?
+                    //
+                    // :
+                    // <EmptyState
+                    //     title={"Товарів не знайдено"}
+                    //     subtitle={"за обраними фільтрами немає товарів, спробуйте скинути фільтри"}
+                    //     btnTitle="Скинути фільтри"
+                    //     showReset
+                    //     heightStyle={"30vh"}
+                    //     redirectUrl={`/catalog/${selectedCategory.slug}`}
+                    // />
                 }
             </div>
         </main>

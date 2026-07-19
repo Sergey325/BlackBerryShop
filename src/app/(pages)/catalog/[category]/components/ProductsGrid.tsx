@@ -10,12 +10,13 @@ import {Suspense, useEffect, useState} from "react";
 import {IProduct} from "@/app/actions/getProducts";
 import {ICategory} from "@/app/actions/getCategories";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
-import {getFilterOptions} from "@/app/(pages)/catalog/[category]/page";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
+import EmptyState from "@/app/components/reusable/EmptyState";
+import {getFilterOptions} from "@/app/utils/getFilterOptions";
 
 
 type Props = {
-    products: IProduct[];
+    products?: IProduct[];
     categories: ICategory[];
     selectedCategorySlug: string;
 };
@@ -108,24 +109,36 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                     </div>
                     <div className="flex items-center bg-white border border-primary/30 rounded-xl shadow-sm px-2 py-2 lg:py-1 lg:w-[220px] focus-within:border-primary/80 order-1 transition">
                         <BiSearch className="size-6 min-w-6"/>
-                        <InputFilter id={"title"} type={"text"} baseUrl={`/catalog/${category}`} styles={"border-none w-full"} placeholder="Пошук..."/>
+                        <InputFilter id={"title"} type={"text"} baseUrl={`/catalog/${category}`} styles={"border-none w-full"} placeholder="Пошук..." debounced/>
                     </div>
                 </div>
             </div>
-            <div className="flex-1 min-w-0">
-                <div className={`grid gap-3 sm:gap-4 ${
-                    view === 'list'
-                        ? 'grid-cols-1'
-                        : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                }`}>
-                    {products.map(p =>
-                        <Suspense key={p.id} fallback={null}>
-                            <ProductCard product={p} list={view === 'list'} colors/>
-                        </Suspense>
-                    )}
-                </div>
-                {/*<Pagination />*/}
-            </div>
+            {
+                products && products.length > 0  ?
+                    <div className="flex-1 min-w-0">
+                        <div className={`grid gap-3 sm:gap-4 ${
+                            view === 'list'
+                                ? 'grid-cols-1'
+                                : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                        }`}>
+                            {products.map(p =>
+                                <Suspense key={p.id} fallback={null}>
+                                    <ProductCard product={p} list={view === 'list'} colors/>
+                                </Suspense>
+                            )}
+                        </div>
+                        {/*<Pagination />*/}
+                    </div>
+                    : <EmptyState
+                        title={"Товарів не знайдено"}
+                        subtitle={"за обраними фільтрами немає товарів, спробуйте скинути фільтри"}
+                        btnTitle="Скинути фільтри"
+                        showReset
+                        heightStyle={"30vh"}
+                        redirectUrl={`/catalog/${selectedCategorySlug}`}
+                />
+            }
+
             {filterOpen && (
                 <div className="absolute">
                     {/* backdrop */}

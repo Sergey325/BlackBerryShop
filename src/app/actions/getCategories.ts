@@ -3,6 +3,12 @@
 import prisma from "@/app/lib/prisma";
 import {Season} from "@prisma/client";
 
+export interface IRelatedProductCategory {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 export interface ICategory {
     name: string
     id: number

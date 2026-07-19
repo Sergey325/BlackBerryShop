@@ -1,8 +1,27 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import {ICategory} from "@/app/actions/getCategories";
+import {ICategory, IRelatedProductCategory} from "@/app/actions/getCategories";
 
+export interface IRelatedProduct {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    discount: number;
+    material: IProductMaterial | null;
+    category: IRelatedProductCategory | null;
+    colors: {
+        id: number;
+        color: string;
+        colorName: string;
+        colorCode: string | null;
+        productId: number;
+        isBestSeller: boolean;
+        images: IProductImage[];
+        sizes: IProductSize[];
+    }[];
+}
 export interface IProductSize {
     id: number;
     size: string;
@@ -22,6 +41,8 @@ export interface IProductColor {
     id: number;
     color: string;
     colorName: string;
+    colorCode: string | null;
+    isBestSeller: boolean;
     productId: number;
     images: IProductImage[];
     sizes: IProductSize[];
@@ -63,12 +84,23 @@ export async function getProducts(params: IProductsParams = {}) {
 
         const where: any = {};
 
-        if (title) {
-            where.name = {
-                contains: title,
-                mode: "insensitive",
-            };
-        }
+        const searchedProducts = title ? await prisma.$queryRaw<{ id: number; score: number }[]>`
+            SELECT
+                id,
+                GREATEST(
+                    similarity(name, ${title}),
+                    CASE
+                        WHEN name ILIKE ${"%" + title + "%"} THEN 1
+                        ELSE 0
+                    END
+                ) AS score
+            FROM "Product"
+            WHERE
+                name ILIKE ${"%" + title + "%"}
+                OR similarity(name, ${title}) > 0.2
+            ORDER BY score DESC
+            LIMIT 100
+        ` : null;
 
         if (size?.length) {
             where.colors = {
@@ -118,19 +150,32 @@ export async function getProducts(params: IProductsParams = {}) {
 
         let orderBy: any = { createdAt: "asc" };
 
+        if (searchedProducts) {
+            where.id = {
+                in: searchedProducts.map(p => p.id),
+            };
+        }
+
         switch (sorting) {
             case "asc":
                 orderBy = { price: "asc" };
                 break;
+
             case "desc":
                 orderBy = { price: "desc" };
                 break;
+
             case "newest":
                 orderBy = { createdAt: "desc" };
                 break;
+
+            default:
+                orderBy = searchedProducts
+                    ? undefined
+                    : { createdAt: "asc" };
         }
 
-        return prisma.product.findMany({
+        const products = await prisma.product.findMany({
             where,
             orderBy,
             include: {
@@ -150,9 +195,26 @@ export async function getProducts(params: IProductsParams = {}) {
                             },
                         },
                     }
-                }
+                },
             },
         });
+
+        if (title && !sorting) {
+            const orderMap = new Map(
+                searchedProducts!.map((item, index) => [
+                    item.id,
+                    index
+                ])
+            );
+
+            return products.sort(
+                (a, b) =>
+                    (orderMap.get(a.id) ?? 999) -
+                    (orderMap.get(b.id) ?? 999)
+            );
+        }
+
+        return products;
 
     } catch (e) {
         console.error(e);

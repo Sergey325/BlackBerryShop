@@ -12,14 +12,13 @@ datasource db {
 }
 
 model Product {
-  id           Int     @id @default(autoincrement())
-  name         String
-  slug         String
-  description  String
-  price        Float
-  quantity     Int?
-  isBestseller Boolean @default(false)
-  discount     Float   @default(0)
+  id          Int    @id @default(autoincrement())
+  name        String
+  slug        String
+  description String
+  price       Float
+  quantity    Int?
+  discount    Float  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,11 +35,13 @@ model Product {
 }
 
 model ProductColor {
-  id        Int     @id @default(autoincrement())
-  color     String
-  colorName String
-  productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id           Int     @id @default(autoincrement())
+  color        String
+  colorName    String
+  colorCode    String?
+  isBestSeller Boolean @default(false)
+  productId    Int
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   images ProductImage[]
   sizes  ProductSize[]
@@ -95,7 +96,6 @@ model Category {
   season              Season
   isOnMainPage        Boolean? @default(false)
   hasLining           Boolean? @default(false)
-
 
   products Product[]
 
@@ -159,6 +159,12 @@ model Order {
   // ТТН
   ttnNumber String?
   ttnRef    String?
+
+  //FacebookPixel
+  fbp       String?
+  fbc       String?
+  clientIp  String?
+  userAgent String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

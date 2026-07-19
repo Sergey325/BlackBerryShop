@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {isValidUAPhone, validateName} from "@/app/utils/validation";
+import {getCookie} from "@/app/utils/getCookie";
 
 
 const paymentOptions = [
@@ -85,6 +86,9 @@ const CartClient = () => {
             return;
         }
         else {
+            const fbp = getCookie('_fbp');
+            const fbc = getCookie('_fbc');
+
             const data = {
                 contact: {
                     ...contactData,
@@ -113,6 +117,8 @@ const CartClient = () => {
                     imageUrl: item.photoUrl,
                     colorId: item.productColorId
                 })),
+                fbp,
+                fbc,
             }
 
             // trackMetaEvent("InitiateCheckout", {

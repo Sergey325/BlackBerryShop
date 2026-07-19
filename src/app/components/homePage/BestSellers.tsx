@@ -46,6 +46,15 @@ export const CustomNext = ({ onClick }: { onClick?: () => void }) => (
 );
 
 const BestSellers = ({products}: Props) => {
+    const bestSellerProducts = products.flatMap(product =>
+        product.colors
+            .filter(color => color.isBestSeller)
+            .map(color => ({
+                ...product,
+                colors: [color],
+            }))
+    );
+
     const carouselBestSellersRef = useRef<Carousel | null>(null);
 
     return (
@@ -77,7 +86,7 @@ const BestSellers = ({products}: Props) => {
                         itemClass="px-1 sm:px-2 flex justify-center"
                         containerClass="py-2"
                     >
-                        {products.map((product, i) => (
+                        {bestSellerProducts.map((product, i) => (
                             <ProductCard key={product.id+i} product={product}/>
                             // <div
                             //     key={product.id}

@@ -58,7 +58,7 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
                     value,
                 }
             } as React.ChangeEvent<HTMLInputElement>);
-        }, 800);
+        }, 600);
 
         return () => clearTimeout(timeout);
     }, [value]);
