@@ -34,22 +34,22 @@ const CartSummary = ({totalPrice, payment, address, contactData, onCheckout}: Pr
 
             <div className="mt-6 space-y-4">
                 <div className="flex justify-between items-center">
-                    <span className="font-light text-sm md:text-base text-gray-700">Вартість замовлення</span>
-                    <span className="text-sm md:text-base text-gray-800 font-medium text-right">{totalPrice} грн</span>
+                    <span className="font-light text-sm text-gray-700">Вартість замовлення</span>
+                    <span className="text-sm md:text-sm text-gray-800 font-medium text-right">{totalPrice} грн</span>
                 </div>
                 <div className="flex gap-2 sm:gap-4 justify-between items-center">
-                    <span className="font-light text-sm sm:text-base text-gray-700 text-nowrap">Спосіб оплати</span>
-                    <span className="text-sm md:text-base text-gray-800 font-medium text-right">{payment.shortTitle}</span>
+                    <span className="font-light text-sm text-gray-700 text-nowrap">Спосіб оплати</span>
+                    <span className="text-sm md:text-sm text-gray-800 font-medium text-right">{payment.shortTitle}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="font-light text-sm sm:text-base text-gray-700 text-right">Замовник</span>
-                    <span className="text-sm md:text-base  text-gray-800 font-medium max-w-70 overflow-hidden text-right">{`${contactData?.firstName} ${contactData?.lastName}`}</span>
+                    <span className="font-light text-sm text-gray-700 text-right">Замовник</span>
+                    <span className="text-sm md:text-sm  text-gray-800 font-medium max-w-70 overflow-hidden text-right">{`${contactData?.firstName} ${contactData?.lastName}`}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="font-light text-sm sm:text-base text-gray-700 ">Адреса доставки</span>
+                    <span className="font-light text-sm text-gray-700 ">Адреса доставки</span>
                     <div className="flex flex-col ">
-                        <p className="text-sm md:text-base  text-gray-800 font-medium text-right">{address?.city && `${address?.city} ${address?.area} обл.`}</p>
-                        <p className="text-sm md:text-base  text-gray-800 font-medium text-right">{address?.warehousesAddress?.match(/^.*?№\d+/)?.[0]}</p>
+                        <p className="text-sm md:text-sm  text-gray-800 font-medium text-right">{address?.city && `${address?.city} ${address?.area} обл.`}</p>
+                        <p className="text-sm md:text-sm  text-gray-800 font-medium text-right">{address?.warehousesAddress?.match(/^.*?№\d+/)?.[0]}</p>
                     </div>
 
                 </div>

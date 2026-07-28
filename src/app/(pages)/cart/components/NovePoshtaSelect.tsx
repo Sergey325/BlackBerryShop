@@ -110,7 +110,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
             {/* Выбор отделения */}
             <div ref={wrapperRef} className="text-base relative">
                 <label className="block mb-1 font-medium">
-                    Виберіть відділення
+                    Виберіть відділення/поштомат
                 </label>
 
                 <input
@@ -122,7 +122,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                         setIsWarehousesOpen(true);
                     }}
                     onFocus={() => setIsWarehousesOpen(true)}
-                    placeholder="Пошук відділення..."
+                    placeholder="Пошук відділення/поштомату..."
                     disabled={!selectedCity}
                     className="w-full border border-gray-200 rounded-lg px-4 py-3 pr-10 mb-2 text-sm"
                 />

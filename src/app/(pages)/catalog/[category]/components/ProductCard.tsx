@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {IProduct, IRelatedProduct} from "@/app/actions/getProducts";
+import {IRelatedProduct} from "@/app/actions/getProducts";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
@@ -9,10 +9,11 @@ import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import useCartModal from "@/app/hooks/useCartModal";
-import {useCartStore} from "@/app/hooks/useCartStore";
+import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
+import {IProductWithRelated} from "@/app/actions/getProductById";
 
 type Props = {
-    product: IProduct | IRelatedProduct;
+    product: IProductWithRelated | IRelatedProduct;
     list?: boolean;
     colors?: boolean;
 };
@@ -56,27 +57,11 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const hasMoreColors = product.colors.length > visibleColors.length;
 
     const handleAddToCart = () => {
-        // if (!selectedSize) {
-        //     toast("Виберіть розмір", {
-        //         icon: "⚠️",
-        //     })
-        //     return
-        // }
-        // else if (!selectedSizeObj?.available) return;
-
         cart.addItem({
-            productId: product.id,
-            productColorId: product.colors[activeIdx].id,
+            ...createProductSelection(product, activeIdx),
             quantity: 1,
-            sizes: product.colors[activeIdx].sizes,
-            color: product.colors[activeIdx].color,
-            colorName: product.colors[activeIdx].colorName,
-            discount: product.discount,
-            photoUrl: product.colors[activeIdx].images[0]?.url ?? "",
-            price: product.price,
-            productName: product.name.replace(/\s+(\S+)$/,` ${product.colors[activeIdx].colorName}, $1`),
-            slug: product.slug,
-            categorySlug: product.category!.slug
+            relatedProducts: "relatedTo" in product ? product.relatedTo : [],
+            isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();
 
@@ -228,7 +213,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     </p>
 
                     <div className="flex justify-between items-center w-full">
-                        <p className="font-bold text-gray-900 text-sm">
+                        <p className="font-bold text-gray-900 text-sm pl-1 sm:pl-0">
                             {product.price} грн
                         </p>
                         <button

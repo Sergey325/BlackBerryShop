@@ -96,6 +96,7 @@ model Category {
   season              Season
   isOnMainPage        Boolean? @default(false)
   hasLining           Boolean? @default(false)
+  isDecoration        Boolean? @default(false)
 
   products Product[]
 
@@ -183,7 +184,7 @@ model OrderItem {
   quantity  Int
   color     String
   colorName String?
-  size      String
+  size      String?
   imageUrl  String
 }
 

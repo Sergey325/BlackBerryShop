@@ -1,6 +1,5 @@
 "use client"
 
-import {IProduct} from "@/app/actions/getProducts";
 import ProductImages from "@/app/(pages)/catalog/[category]/[productId]/components/ProductImages";
 import {useMemo, useState} from "react";
 import {useSearchParams} from "next/navigation";
@@ -8,8 +7,8 @@ import ChooseVariant from "@/app/(pages)/catalog/[category]/[productId]/componen
 import Accordion from "@/app/components/reusable/Accordion";
 import Link from "next/link";
 import {ICategory} from "@/app/actions/getCategories";
-import ProductCarouselRow from "@/app/(pages)/catalog/[category]/[productId]/components/ProductCarouselRow";
 import {IProductWithRelated} from "@/app/actions/getProductById";
+import RelatedAndCustomization from "@/app/(pages)/catalog/[category]/[productId]/components/RelatedAndCustomization";
 
 type Props = {
     product: IProductWithRelated
@@ -31,14 +30,14 @@ const ProductClient = ({ product, category }: Props) => {
 
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
-            <nav className="hidden sm:flex items-center gap-1.5 text-sm text-gray-400 self-start">
+            <nav className="flex items-center gap-1.5 text-sm text-gray-400 self-start">
                 <Link href="/" draggable={false} className="hover:text-gray-600 transition-colors">Головна</Link>
                 <span>›</span>
                 <Link href="/catalog" draggable={false} className="hover:text-gray-600 transition-colors">Каталог</Link>
                 <span>›</span>
                 <Link href={`/catalog/${category.slug}`} draggable={false} className="hover:text-gray-600 transition-colors">{category.name}</Link>
                 <span>›</span>
-                <span className="text-gray-700">{product.name}</span>
+                <span className="text-gray-700 max-w-[125px] sm:max-w-fit truncate">{product.name}</span>
             </nav>
             <div className="border border-gray-200 rounded-xl py-3 px-2 lg:p-4 w-full bg-white shadow-xs">
                 <p className="text-lg lg:text-[28px] font-medium">
@@ -71,6 +70,7 @@ const ProductClient = ({ product, category }: Props) => {
                         <Accordion
                             title={"Способи доставки"}
                             content={["Доставка у відділення або поштомат - Нова Пошта"]}
+                            initialState={product.category?.isDecoration || false}
                         />
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 rounded-b-xl flex flex-col gap-2 w-full p-4">
@@ -81,21 +81,13 @@ const ProductClient = ({ product, category }: Props) => {
                                 "Apple pay, Google pay",
                                 "Оплата післяплатою (Передплата 150 грн)",
                             ]}
+                            initialState={product.category?.isDecoration || false}
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-col w-full gap-10">
-                <ProductCarouselRow
-                    title="Часто купують разом"
-                    products={product.relatedTo}
-                />
-                <ProductCarouselRow
-                    title="Варіанти кастомізації"
-                    products={product.relatedTo}
-                />
-            </div>
+            <RelatedAndCustomization related={product.relatedTo}/>
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full mt-5">
                 {/* Tab bar */}
@@ -113,8 +105,8 @@ const ProductClient = ({ product, category }: Props) => {
                     </button>
                     <button
                         onClick={() => setTab('specifications')}
-                        className={`py-4 text-center flex-1 font-semibold transition-colors text-sm md:text-base
-                ${tab === 'specifications'
+                        className={`py-4 text-center flex-1 font-semibold transition-colors text-sm md:text-base cursor-pointer
+                        ${tab === 'specifications'
                             ? 'border-b-2 -mb-[2px] border-primary text-primary'
                             : 'text-gray-500 hover:text-gray-700'
                         }`}

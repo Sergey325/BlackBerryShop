@@ -2,21 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import {IProduct, IProductColor} from "@/app/actions/getProducts";
+import {IProductColor} from "@/app/actions/getProducts";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import Counter from "@/app/components/reusable/Counter";
 import Button from "@/app/components/reusable/Button";
 import useCartModal from "@/app/hooks/useCartModal";
-import {useCartStore} from "@/app/hooks/useCartStore";
+import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import useSizesModal from "@/app/hooks/useSizesModal";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CheckBox from "@/app/components/reusable/CheckBox";
+import {IProductWithRelated} from "@/app/actions/getProductById";
 
 type Props = {
-    product: IProduct;
+    product: IProductWithRelated;
     selectedProductColor: IProductColor;
     hasLining: boolean;
 };
@@ -81,19 +82,16 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
         else if (!selectedSizeObj?.available) return;
 
         cart.addItem({
-            productId: product.id,
-            productColorId: selectedProductColor.id,
+            ...createProductSelection(
+                product,
+                product.colors.findIndex(
+                    c => c.id === selectedProductColor.id
+                )
+            ),
             quantity: count,
-            size: selectedSize!,
-            sizes: selectedProductColor.sizes,
-            color: selectedColorHex,
-            colorName: selectedProductColor.colorName,
-            discount: product.discount,
-            photoUrl: selectedProductColor.images[0]?.url ?? "",
-            price: product.price,
-            productName: product.name.replace(/\s+(\S+)$/,` ${selectedProductColor.colorName}, $1`),
-            slug: product.slug,
-            categorySlug: product.category!.slug
+            size: selectedSize,
+            relatedProducts: product.relatedTo,
+            isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();
 
@@ -139,35 +137,39 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
                 </div>
             </div>
 
-            <div className="flex justify-between text-sm font-medium text-zinc-600 mt-6">
-                <p>Виберіть розмір:</p>
-                <p
-                    className="text-sm text-primary font-medium underline decoration-[1.5px] cursor-pointer"
-                    onClick={() => sizesModal.onOpen()}
-                >
-                    Розмірна сітка
-                </p>
-            </div>
-
-            <div className="flex gap-2 mt-2">
-                {selectedProductColor.sizes.map((s) => (
-                    <div
-                        key={s.id}
-                        style={{
-                            borderWidth: selectedSize === s.size ? "2px" : "1px",
-                            borderColor: selectedSize === s.size ? "#823D9A" : "#454649",
-                            color: selectedSize === s.size ? "#823D9A" : "#454649",
-                            opacity: s.available ? 1 : 0.4,
-                            cursor: s.available ? "pointer" : "not-allowed",
-                        }}
-                        className="rounded-sm py-0.5 px-4 font-medium select-none"
-                        onClick={() => s.available && handleSizeChange(s.size)}
-                    >
-                        {s.size}
+            {
+                !product.category?.isDecoration &&
+                <div>
+                    <div className="flex justify-between text-sm font-medium text-zinc-600 mt-6">
+                        <p>Виберіть розмір:</p>
+                        <p
+                            className="text-sm text-primary font-medium underline decoration-[1.5px] cursor-pointer"
+                            onClick={() => sizesModal.onOpen()}
+                        >
+                            Розмірна сітка
+                        </p>
                     </div>
-                ))}
-            </div>
 
+                    <div className="flex gap-2 mt-2">
+                        {selectedProductColor.sizes.map((s) => (
+                            <div
+                                key={s.id}
+                                style={{
+                                    borderWidth: selectedSize === s.size ? "2px" : "1px",
+                                    borderColor: selectedSize === s.size ? "#823D9A" : "#454649",
+                                    color: selectedSize === s.size ? "#823D9A" : "#454649",
+                                    opacity: s.available ? 1 : 0.4,
+                                    cursor: s.available ? "pointer" : "not-allowed",
+                                }}
+                                className="rounded-sm py-0.5 px-4 font-medium select-none"
+                                onClick={() => s.available && handleSizeChange(s.size)}
+                            >
+                                {s.size}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            }
             {
                 hasLining &&
                 <div className="mt-5">

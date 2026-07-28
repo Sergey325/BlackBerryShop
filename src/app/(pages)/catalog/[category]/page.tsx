@@ -63,10 +63,10 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
                             {selectedCategory?.name}
                             <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full text-nowrap">
-                                {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
-                            </span>
+                            {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
+                        </span>
                         </h1>
-                        <p className="text-gray-500 text-sm max-w-sm leading-relaxed mb-6">
+                        <p className="text-gray-500 text-sm max-w-md leading-relaxed mb-6">
                             {selectedCategory?.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -91,7 +91,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     {/* Hero image — right side */}
                     <div className="relative w-[42%] shrink-0">
                         <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized
-                               className="object-cover object-top-right" />
+                               className="object-cover lg:object-scale-down object-top-right" />
                         {/* fade into banner bg */}
                         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-white to-transparent pointer-events-none" />
                     </div>
@@ -105,8 +105,8 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                         <div className="flex flex-col items-start gap-2 mb-1.5">
                             <h1 className="text-xl font-bold text-white">{selectedCategory?.name}</h1>
                             <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-nowrap">
-                                {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
-                            </span>
+                            {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
+                        </span>
                         </div>
                         <p className="text-white/75 text-xs leading-relaxed">{selectedCategory?.description}</p>
                     </div>

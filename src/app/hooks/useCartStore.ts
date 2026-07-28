@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartItem } from "@/app/types";
+import {CartItem, ProductSelection} from "@/app/types";
+import {IProduct, IRelatedProduct} from "@/app/actions/getProducts";
 
 type CartStore = {
     items: CartItem[];
@@ -10,6 +11,30 @@ type CartStore = {
     changeQuantity: (item: CartItem, quantity: number) => void;
     changeSize: (item: CartItem, size: string) => void;
 };
+
+export function createProductSelection(
+    product: IProduct | IRelatedProduct,
+    colorIndex = 0
+): ProductSelection {
+    const color = product.colors[colorIndex];
+
+    return {
+        productId: product.id,
+        productColorId: color.id,
+        sizes: color.sizes,
+        color: color.color,
+        colorName: color.colorName,
+        discount: product.discount,
+        photoUrl: color.images[0]?.url ?? "",
+        price: product.price,
+        productName: product.name.replace(
+            /\s+(\S+)$/,
+            ` ${color.colorName}, $1`
+        ),
+        slug: product.slug,
+        categorySlug: product.category!.slug,
+    };
+}
 
 export const useCartStore = create<CartStore>()(
     persist(

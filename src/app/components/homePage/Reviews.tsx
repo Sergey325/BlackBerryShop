@@ -1,13 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import TestimonialCard from "@/app/components/homePage/TestimonialCard";
-import {useRef} from "react";
-import {CustomNext, CustomPrev} from "@/app/components/homePage/BestSellers";
 import {GoHeartFill} from "react-icons/go";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const reviews = [
@@ -40,7 +38,7 @@ const reviews = [
         name: 'Марина',
         date: '5 квітня',
         text: 'Доброго вечора ❤️\n' +
-            'Посилку сьогодні отримали . Дуже дякуємо, діти задоволені 🥰👌🏻',
+            'Посилку сьогодні отримали . Дуже дякуємо, діти задоволені🥰👌🏻',
         image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530245/BlackBerry/Reviews/review-4_asvoku.jpg',
     },
     {
@@ -94,7 +92,7 @@ const reviews = [
         id: 10,
         name: 'Катерина',
         date: '12 травня',
-        text: 'Добрый день. Неожиданно пришла раньше балаклава, как раз на праздник доченьке. Она очень довольна. Спасибо Вам большое 💛💙',
+        text: 'Добрый день. Неожиданно пришла раньше балаклава, как раз на праздник доченьке. Она очень довольна. Спасибо Вам большое💛💙',
         image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530252/BlackBerry/Reviews/review-10_aqqkhc.jpg',
     },{
         id: 11,
@@ -106,7 +104,7 @@ const reviews = [
         id: 12,
         name: 'Катерина',
         date: '12 травня',
-        text: 'Дякую, в нас сталась любов )',
+        text: 'Дякую, в нас сталась любов)',
         image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530255/BlackBerry/Reviews/review-12_jfv6es.jpg',
     },{
         id: 13,
@@ -137,7 +135,7 @@ const reviews = [
         id: 17,
         name: 'Катерина',
         date: '12 травня',
-        text: 'Дякуємо за шапочки ❤️',
+        text: 'Дякуємо за шапочки❤️',
         image: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530261/BlackBerry/Reviews/review-17_axfysi.jpg',
     },{
         id: 18,
@@ -247,12 +245,9 @@ function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
 // ─── Section ────────────────────────────────────────────────────────────────
 
 export function Reviews() {
-    const carouselDesktopRef = useRef<Carousel | null>(null);
-    const carouselMobileRef = useRef<Carousel | null>(null);
-
     return (
         <section className="pb-12 sm:pb-16">
-            <div className="mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto px-4 sm:px-4 lg:px-4">
 
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 lg:mb-8 -mx-2 flex items-center gap-2">
                     Відгуки наших клієнтів
@@ -262,51 +257,30 @@ export function Reviews() {
                 </h2>
 
                 {/* ── Desktop / tablet carousel (hidden on mobile) ── */}
-                <div className="hidden lg:block relative px-5">
-                    <CustomPrev onClick={() => carouselDesktopRef.current?.previous(1)} />
-
-                    <Carousel
+                <div className="hidden lg:block relative ">
+                    <CarouselWrapper
+                        itemClass="px-2"
+                        carouselClass="py-2"
                         responsive={{
                             desktop: { breakpoint: { max: 3000, min: 1280 }, items: 3, slidesToSlide: 1 },
                             tablet:  { breakpoint: { max: 1280, min: 640  }, items: 2, slidesToSlide: 1 },
                         }}
-                        ref={carouselDesktopRef}
-                        infinite
-                        swipeable
-                        draggable
-                        arrows={false}
-                        showDots={false}
-                        itemClass="px-2"
-                        containerClass="py-2"
                     >
                         {reviews.map((r) => <TestimonialCard key={r.id} photoSrc={r.image} date={r.date} author={r.name} photoAlt={r.image} quote={r.text}/>)}
-                        {/*{reviews.map((r) => <ReviewCardFull key={r.id} review={r} />)}*/}
-                    </Carousel>
-
-                    <CustomNext onClick={() => carouselDesktopRef.current?.next(1)} />
+                    </CarouselWrapper>
                 </div>
 
                 {/* ── Mobile carousel (3 compact cards) ── */}
                 <div className="lg:hidden relative">
-                    <CustomPrev onClick={() => carouselMobileRef.current?.previous(1)} />
-
-                    <Carousel
+                    <CarouselWrapper
+                        itemClass="px-1"
+                        containerClass="py-2"
                         responsive={{
                             mobile: { breakpoint: { max: 1024, min: 0 }, items: 3, slidesToSlide: 1 },
                         }}
-                        infinite
-                        swipeable
-                        draggable
-                        ref={carouselMobileRef}
-                        showDots={false}
-                        arrows={false}
-                        itemClass="px-1"
-                        containerClass="py-2"
                     >
                         {reviews.map((r) => <ReviewCardCompact key={r.id} review={r} />)}
-                    </Carousel>
-
-                    <CustomNext onClick={() => carouselMobileRef.current?.next(1)} />
+                    </CarouselWrapper>
                 </div>
             </div>
         </section>

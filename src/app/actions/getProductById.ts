@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import {IProduct, IRelatedProduct} from "./getProducts"; // путь скорректируй под себя
+import {IProduct, IRelatedProduct} from "./getProducts";
 
 export interface IProductWithRelated extends IProduct {
     relatedTo: IRelatedProduct[];
@@ -51,6 +51,7 @@ export async function getProductById(productId: string): Promise<IProductWithRel
                                         id: true,
                                         name: true,
                                         slug: true,
+                                        isDecoration: true
                                     },
                                 },
                                 colors: {

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import Header from "@/app/components/Header";
-import ClientOnly from "@/app/components/reusable/ClientOnly";
+import Header from "@/app/components/navbar/Header";
 import ToasterProvider from "@/app/Providers/ToasterProvider";
 import BackToTop from "@/app/components/reusable/BackToTop";
 import Container from "@/app/components/reusable/Container";
@@ -12,7 +11,6 @@ import SizesModal from "@/app/components/modals/SizesModal";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
-
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -48,18 +46,19 @@ export default function RootLayout({
                                      children,
                                    }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="uk" className={`${montserrat.variable} min-h-screen antialiased`}>
-            <body className="min-h-full 2xl:px-0 flex flex-col font-(family-name:--font-montserrat) bg-gray-50 w-full">
-                <ClientOnly>
-                    <ToasterProvider/>
-                    <Header/>
-                    <BackToTop/>
-                    <CartModal/>
-                    <SizesModal/>
-                </ClientOnly>
+        <html lang="uk" className={`${montserrat.variable} antialiased`}>
+            <body className="2xl:px-0 font-(family-name:--font-montserrat) bg-gray-50 w-full min-h-screen flex flex-col">
+                <Header/>
+                <ToasterProvider/>
+                <BackToTop/>
+                <CartModal/>
+                <SizesModal/>
+                {/*<ClientOnly>*/}
+                {/*    */}
+                {/*</ClientOnly>*/}
                 <Container>
-                    <main className="flex-auto mb-5 w-full">
-                        <div className=" w-full h-full">
+                    <main className="flex-1 mb-5 w-full">
+                        <div className="w-full h-full">
                             {children}
                         </div>
                     </main>

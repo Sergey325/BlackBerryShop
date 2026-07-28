@@ -1,7 +1,7 @@
 import {OrderStatus, PaymentMethod} from "@prisma/client";
 import {JSX} from "react";
 import {ICategory} from "@/app/actions/getCategories";
-import {IProductSize} from "@/app/actions/getProducts";
+import {IProductSize, IRelatedProduct} from "@/app/actions/getProducts";
 
 export type City = {
     ref: string;
@@ -23,6 +23,11 @@ export type ContactData = {
     comment: string;
 };
 
+export type ProductSelection = Omit<
+    CartItem,
+    "quantity" | "size" | "relatedProducts" | "isDecoration"
+>;
+
 export type CartItem = {
     productId: number;
     productColorId: number;
@@ -37,6 +42,8 @@ export type CartItem = {
     photoUrl: string;
     quantity: number;
     categorySlug: string;
+    isDecoration: boolean;
+    relatedProducts: IRelatedProduct[];
 };
 
 export interface IOrderItem {

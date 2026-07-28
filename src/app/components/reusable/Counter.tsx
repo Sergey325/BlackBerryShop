@@ -11,7 +11,7 @@ const Counter = ({onChange, initialNumber}: Props) => {
 
 
     return (
-        <div className="flex items-center border border-gray-300 font-medium text-zinc-700 select-none text-lg lg:text-xl">
+        <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden font-medium text-zinc-700 select-none text-lg lg:text-xl">
             <button
                 onClick={() => {
                     const newCount = Math.max(1, count - 1);

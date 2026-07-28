@@ -6,7 +6,7 @@ import {BiSearch} from "react-icons/bi";
 import InputFilter from "@/app/components/reusable/InputFilter";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
-import {Suspense, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {IProduct} from "@/app/actions/getProducts";
 import {ICategory} from "@/app/actions/getCategories";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
@@ -122,9 +122,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                         }`}>
                             {products.map(p =>
-                                <Suspense key={p.id} fallback={null}>
-                                    <ProductCard product={p} list={view === 'list'} colors/>
-                                </Suspense>
+                                <ProductCard key={p.id} product={p} list={view === 'list'} colors/>
                             )}
                         </div>
                         {/*<Pagination />*/}

@@ -45,7 +45,7 @@ const CartClient = () => {
     const deliveryRef = useRef<HTMLDivElement | null>(null);
 
     const onCheckout = async () => {
-        if (cart.items.find(item => !item.size)) {
+        if (cart.items.find(item => !item.size && !item.isDecoration)) {
             toast.error("Виберіть розмір")
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
@@ -179,12 +179,12 @@ const CartClient = () => {
     return (
         <div className="text-2xl md:text-4xl flex flex-col pt-10 gap-5 lg:gap-10 text-gray-800 mb-20 relative">
             Ваш кошик
-            <div className="flex flex-col 2xl:flex-row gap-10 lg:gap-20 items-start">
+            <div className="flex flex-col xl:flex-row gap-10 lg:gap-20 items-start">
 
-                <div className="flex flex-col w-full 2xl:w-4/6 gap-10 lg:gap-20 items-start ">
-                    <div className="flex flex-col  w-full gap-3 border border-primary/30  rounded-2xl p-6 bg-white shadow-xs divide-y divide-gray-300">
+                <div className="flex flex-col min-w-0 w-full xl:w-[60%] xl:shrink-0 gap-10 lg:gap-20 items-start ">
+                    <div className="flex flex-col  w-full gap-3 border border-primary/30  rounded-2xl px-3 py-6 bg-white shadow-xs divide-y divide-gray-300">
                         {/* Заголовок — только на десктопе */}
-                        <div className="hidden lg:grid grid-cols-[80px_1fr_120px_140px_40px_120px] gap-4 items-center pb-4 text-gray-600 text-sm md:text-base">
+                        <div className="hidden lg:grid grid-cols-[80px_1fr_120px_140px_30px_100px] gap-4 items-center pb-4 text-gray-600 text-sm md:text-base">
                             <div></div>
                             <div>Назва</div>
                             <div className="text-center">Ціна</div>
@@ -196,7 +196,7 @@ const CartClient = () => {
                         {/* Список товаров */}
                         {cart.items.map((item, i) => (
                             <div key={i} className="flex flex-col gap-4">
-                                <CartItem item={item} />
+                                <CartItem item={item} defaultExpanded={i === 0} />
                                 {/*<div className="w-full border-t border-gray-300" style={{visibility: i === cart.items.length-1 ? "hidden" : "visible"}}/>*/}
                             </div>
                         ))}
@@ -213,7 +213,7 @@ const CartClient = () => {
                         ))}
                     </div>
                 </div>
-                <div className="xl:sticky w-full xl:top-10">
+                <div className="xl:sticky w-full min-w-0 xl:flex-1 xl:top-20">
                     <CartSummary
                         totalPrice={totalPrice}
                         payment={payment}

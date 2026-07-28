@@ -58,12 +58,12 @@ export default async function CatalogPage() {
                     Каталог товарів
                 </h1>
                 <p className="text-gray-500 text-sm sm:text-base mb-8 sm:mb-10">
-                    <span className="inline items-baseline">
-                        Обирай улюблені аксесуари ручної роботи для дітей та дорослих
-                        <span className="inline-flex align-baseline ml-2 text-primary">
-                            <GoHeartFill className="size-5 translate-y-1" />
-                        </span>
+                <span className="inline items-baseline">
+                    Обирай улюблені аксесуари ручної роботи для дітей та дорослих
+                    <span className="inline-flex align-baseline ml-2 text-primary">
+                        <GoHeartFill className="size-5 translate-y-1" />
                     </span>
+                </span>
                 </p>
 
                 {/* Seasons */}

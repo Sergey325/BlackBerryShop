@@ -7,6 +7,7 @@ export default function Footer() {
 
     const navigation =
         <div className="flex flex-col gap-3 text-gray-400">
+            <Link href="/catalog" className="text-sm  hover:text-primary transition">Каталог</Link>
             <Link href="/about" className="text-sm  hover:text-primary transition">Про нас</Link>
             <Link href="/delivery" className="text-sm hover:text-primary transition">Доставка та оплата</Link>
             <Link href="/exchange" className="text-sm hover:text-primary transition">Обмін та повернення</Link>
@@ -46,8 +47,7 @@ export default function Footer() {
 
     return (
         <footer className="bg-black text-gray-400 mt-auto w-full">
-            <div className="max-w-[1366px] mx-auto px-6 pt-12">
-
+            <div className="max-w-[1414px] mx-auto px-6 pt-12">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
                     {/* Логотип + описание */}

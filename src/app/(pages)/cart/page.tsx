@@ -5,7 +5,6 @@ import EmptyState from "@/app/components/reusable/EmptyState";
 import CartClient from "@/app/(pages)/cart/CartClient";
 import {useCartStore} from "@/app/hooks/useCartStore";
 
-
 const CartPage = () => {
     const items = useCartStore(state => state.items);
 
@@ -18,9 +17,7 @@ const CartPage = () => {
     }
 
     return (
-        <ClientOnly>
-            <CartClient/>
-        </ClientOnly>
+        <CartClient/>
     );
 };
 

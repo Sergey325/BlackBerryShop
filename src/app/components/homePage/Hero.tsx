@@ -1,6 +1,6 @@
 "use client";
 
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import {FaHeart} from "react-icons/fa";
@@ -64,39 +64,11 @@ const responsive = {
     all: {breakpoint: {max: 4000, min: 0}, items: 1},
 };
 
-// function Dots({
-//       count,
-//       active,
-//       onSelect,
-//       className = '',
-//   }: {
-//     count: number;
-//     active: number;
-//     onSelect: (i: number) => void;
-//     className?: string;
-// }) {
-//     return (
-//         <div className={`flex items-center gap-2 ${className}`}>
-//             {Array.from({length: count}).map((_, i) => (
-//                 <button
-//                     key={i}
-//                     type="button"
-//                     onClick={() => onSelect(i)}
-//                     aria-label={`Слайд ${i + 1}`}
-//                     className={`block rounded-full transition-all cursor-pointer ${
-//                         i === active ? 'w-5 h-2 bg-primary' : 'w-2 h-2 bg-gray-300'
-//                     }`}
-//                 />
-//             ))}
-//         </div>
-//     );
-// }
-
-const CustomDot = ({ onMove, index, active }: any) => {
+const CustomDot = ({ onClick, index, active }: any) => {
     return (
         <button
-            onClick={() => onMove(index)}
-            className={`block rounded-full transition-all ${
+            onClick={() => onClick(index)}
+            className={`block rounded-full transition-all cursor-pointer ${
                 active
                     ? 'w-5 h-2 bg-primary'
                     : 'w-2 h-2 bg-gray-300'
@@ -110,6 +82,30 @@ const Hero = () => {
 
     const [isSliding, setIsSliding] = useState(false);
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <section className="relative overflow-hidden flex items-center rounded-xl lg:rounded-3xl min-h-[450px] lg:min-h-[650px] bg-gray-100 animate-pulse">
+                <div className="flex items-center px-4 lg:px-16 w-full lg:w-1/2 h-full my-auto">
+                    <div className="space-y-4 w-full">
+                        <div className="h-6 w-40 bg-gray-200 rounded-full" />
+                        <div className="h-10 w-3/4 bg-gray-200 rounded" />
+                        <div className="h-10 w-2/3 bg-gray-200 rounded" />
+                        <div className="h-4 w-1/2 bg-gray-200 rounded mt-6" />
+                        <div className="h-4 w-1/3 bg-gray-200 rounded" />
+                        <div className="h-12 w-48 bg-gray-200 rounded-full mt-8" />
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="relative overflow-hidden rounded-xl lg:rounded-3xl shadow-[0_0_20px_rgba(0,0,0,0.10)] select-none bg-linear-to-t from-black/70 via-black/40 to-black/10  lg:bg-none lg:bg-white">
             <div className={`relative z-10 w-[calc(100%+4px)] -ml-0.5`}>
@@ -117,6 +113,8 @@ const Hero = () => {
                     ref={carouselRef}
                     responsive={responsive}
                     arrows={false}
+                    ssr={true}
+                    deviceType="desktop"
                     swipeable
                     draggable
                     infinite
@@ -145,12 +143,12 @@ const Hero = () => {
                     itemClass="overflow-hidden relative!"
                 >
                     {slides.map((slide, i) => (
-                        <div key={i} className={`transition-filter duration-300 ${isSliding ? 'blur-[2px]' : ''}`}>
+                        <div key={i} className={`transition-filter duration-300 ${isSliding ? 'blur-[0px]' : ''}`}>
                             {/* ── Desktop ── */}
-                            <div className="hidden lg:flex items-center min-h-[650px] ">
+                            <div className="hidden lg:flex items-center min-h-[650px]">
 
                                 {/* Текстовая колонка — сплошной белый фон */}
-                                <div className="relative z-10 w-1/2 px-10 xl:px-16 ">
+                                <div className="relative z-10 w-1/2 px-10 xl:px-16">
                                     <span className="inline-flex items-center gap-1.5 bg-white/80 shadow-[0_0_5px_rgba(130,61,154,0.50)] transition
                                                      text-gray-600 rounded-full px-4 py-1.5
                                                      border border-primary mb-7">
@@ -186,7 +184,7 @@ const Hero = () => {
                                         src={optimizeCloudinaryUrl(slide.image, 1500)}
                                         alt={slide.alt}
                                         fill
-                                        unoptimized
+                                        priority
                                         draggable={false}
                                         className="object-cover object-center select-none"
                                     />

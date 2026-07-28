@@ -2,74 +2,111 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Great_Vibes } from "next/font/google";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { FaInstagram, FaTelegram } from "react-icons/fa";
 import Cart from "@/app/components/Cart";
 import {MdEmail, MdPhone} from "react-icons/md";
+import SearchBar from "@/app/components/navbar/SearchBar";
+import {BiSearch} from "react-icons/bi";
+import MobileSearchOverlay from "@/app/components/navbar/MobileSearchOverlay";
+import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";
+import { vladimir } from "@/app/fonts";
 
-const greatVibes = Great_Vibes({
-    weight: "400",
-    subsets: ["latin"],
-});
+const ContactDropdown = () => {
+    return (
+        <div className="relative group">
+            <button className="hover:opacity-60 hover:-translate-y-0.5 transition">
+                Контакти
+            </button>
+
+            <div
+                className="
+                    absolute
+                    left-1/2
+                    -translate-x-1/2
+                    top-full
+                    mt-2
+                    w-72
+                    rounded-md
+                    bg-white
+                    shadow-lg
+                    border
+                    border-gray-200
+                    opacity-0
+                    invisible
+                    group-hover:opacity-100
+                    group-hover:visible
+                    transition-all
+                    duration-300
+                    p-4
+                "
+            >
+                <div className="flex flex-col gap-2 text-sm">
+                    <a href="tel:+380682787526" className="flex items-center gap-2 text-sm hover:text-primary transition">
+                        <MdPhone className="size-5"/>
+                        +38 (068) 278-75-26
+                    </a>
+                    <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                       className="flex items-center gap-2 text-sm hover:text-primary transition">
+                        <FaInstagram className="size-5"/>
+                        @blackberry.shop.ua
+                    </a>
+                    <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                       className="flex items-center gap-2 text-sm hover:text-primary transition">
+                        <FaTelegram className="size-5"/>
+                        @blackberryshopua
+                    </a>
+                    <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm hover:text-primary transition">
+                        <MdEmail className="size-5"/>
+                        blackberry.shop.kh@gmail.com
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const mobileSearch = useMobileSearchModal();
+
+    const mobileMenuRef = useRef(null);
 
     useEffect(() => {
         if (menuOpen) {
-            document.body.classList.add('no-scroll');
+            document.body.classList.add("no-scroll");
         } else {
-            document.body.classList.remove('no-scroll');
+            document.body.classList.remove("no-scroll");
         }
-        return () => {
-            document.body.classList.remove('no-scroll');
-        };
+        return () => document.body.classList.remove("no-scroll");
     }, [menuOpen]);
 
     return (
-        <header className="w-full border-b border-gray-200 text-base bg-gray-50 relative z-20 select-none px-6">
-            <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-gray-50">
+        <header className="w-full border-b border-gray-200 text-base bg-white z-50 select-none px-6 top-0 shadow-sm sticky">
+            <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-white">
                 {/* Логотип */}
-                <div className="flex items-center gap-2 cursor-pointer bg-gray-50">
+                <div className="flex items-center tablet:gap-2 cursor-pointer bg-white">
                     <Link href="/" className="overflow-hidden">
-                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain bg-gray-50" />
+                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain bg-white" />
                     </Link>
-                    <Link href="/" className={`text-3xl bold mt-1.5 ${greatVibes.className}`}>
+                    <Link href="/" className={`text-3xl tablet:text-4xl bold ${vladimir.className}`}>
                         Black Berry
                     </Link>
                 </div>
 
                 {/* Десктоп навигация */}
-                {/*<nav className="hidden md:flex items-center text-lg gap-8">*/}
-                {/*    <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>*/}
-                {/*    /!*<Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Контакти</Link>*!/*/}
-                {/*    /!*<Link href="/contact" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Умови</Link>*!/*/}
-                {/*</nav>*/}
+                <nav className="hidden tablet:flex items-center text-base gap-8">
+                    <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>
+                    <Link href="/catalog" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Каталог</Link>
+                    <ContactDropdown/>
+                </nav>
 
                 {/* Десктоп телефон */}
-                <div className="flex gap-6 items-start self-start mr-3">
-                    <div className="hidden md:block relative group rounded-sm hover:shadow-[0_0_10px_rgba(0,0,0,0.1)] hover:bg-white transition-all duration-300 mt-2 py-3 px-4">
-                        <div className="flex items-center gap-2">
-                            <p className="">Зв&apos;язок з нами</p>
-                            <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer">
-                                <FaInstagram size={30} className="group-hover:text-pink-500 transition-all cursor-pointer hover:scale-115"/>
-                            </a>
-                            <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer">
-                                <FaTelegram size={30} className="group-hover:text-sky-500 transition-all cursor-pointer hover:scale-115" />
-                            </a>
-                        </div>
-                        <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
-                            <div className="pt-3 flex flex-col gap-2 text-sm">
-                                <a href="mailto:blackberry.shop.kh@gmail.com" className="hover:underline underline-offset-4 hover:-translate-y-0.5 transition">blackberry.shop.kh@gmail.com</a>
-                                <a href="tel:+380682787526" className="hover:-translate-y-0.5 transition">+38 (068) 278-75-26</a>
-                                <div className="text-gray-500">
-                                    <p>Режим роботи магазину:</p>
-                                    <p>ПН - ПТ: з 9:00 до 18:00</p>
-                                </div>
-                            </div>
-                        </div>
+                <div className="flex gap-6 items-center mr-3">
+                    <div className="hidden tablet:block">
+                        <SearchBar/>
                     </div>
-                    <div className="mt-[19px] hidden md:block">
+                    <div className="hidden tablet:block">
                         <Cart/>
                     </div>
 
@@ -77,7 +114,10 @@ export default function Header() {
 
 
                 {/* Бургер кнопка — только мобайл */}
-                <div className="md:hidden flex items-center gap-6">
+                <div className="tablet:hidden flex items-center gap-5">
+                    <button onClick={mobileSearch.onOpen} aria-label="Пошук">
+                        <BiSearch className="size-7" />
+                    </button>
                     <div className="-mt-1">
                         <Cart/>
                     </div>
@@ -94,12 +134,16 @@ export default function Header() {
             </div>
 
             {/* Мобильное меню */}
-            <div className={`md:hidden fixed inset-0 top-[72px] bg-gray-50 z-20 transition-all duration-300 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+            <div
+                ref={mobileMenuRef}
+                className={`md:hidden fixed inset-0 top-[72px] bg-white z-20 transition-all duration-300 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+            >
                 <nav className="flex flex-col h-full px-6 pt-8 pb-10 gap-0 overflow-y-auto">
 
                     {/* Навигация */}
                     <div className="flex flex-col gap-1">
                         {[
+                            { href: "/catalog", label: "Каталог" },
                             { href: "/about", label: "Про нас" },
                             { href: "/delivery", label: "Доставка та оплата" },
                             { href: "/exchange", label: "Обмін та повернення" },
@@ -154,7 +198,7 @@ export default function Header() {
 
                 </nav>
             </div>
-
+            <MobileSearchOverlay />
         </header>
     );
 }

@@ -1,4 +1,3 @@
-import {GoHeartFill} from "react-icons/go";
 
 const features = [
     {
@@ -67,9 +66,8 @@ const WhyUs = ({}) => {
     return (
         <section className="px-2">
             <div className="mx-auto px-4 lg:px-8 py-12 bg-primary/7 rounded-xl">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-10 sm:mb-14 flex items-center gap-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-10 sm:mb-14">
                     Чому обирають Black Berry?
-                    <GoHeartFill className="text-primary size-7" />
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-items-center gap-6 sm:gap-10">
