@@ -1,9 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
 import {FaArrowRightLong} from "react-icons/fa6";
 import {ICategory} from "@/app/actions/getCategories";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
+import AppLink from "@/app/components/reusable/AppLink";
 
 type Props = {
     category: ICategory;
@@ -12,10 +12,9 @@ type Props = {
 
 export default function CategoryCard({ category }: Props) {
     return (
-        <Link
+        <AppLink
             href={`/catalog/${category.slug}`}
-            draggable={false}
-            className="group bg-gray-100/60 backdrop-blur-sm rounded-2xl overflow-hidden
+            className="group backdrop-blur-xs rounded-2xl overflow-hidden
                        shadow-sm hover:shadow-md
                        transition-all duration-500 flex flex-col z-15 aspect-5/3"
         >
@@ -27,11 +26,11 @@ export default function CategoryCard({ category }: Props) {
                     fill
                     unoptimized
                     draggable={false}
-                    className="object-cover object-center
+                    className="object-scale-down object-top-right
                                transition-transform duration-500 group-hover:scale-105"
                 />
             </div>
-            <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10 group" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/25 to-black/10 group" />
 
             {/* Info */}
             <div className="absolute bottom-0 left-0 px-3 py-2.5 sm:px-4 sm:py-3 w-full flex items-center justify-between">
@@ -47,6 +46,6 @@ export default function CategoryCard({ category }: Props) {
                     <FaArrowRightLong className="size-3 sm:size-4 text-white" />
                 </div>
             </div>
-        </Link>
+        </AppLink>
     );
 }

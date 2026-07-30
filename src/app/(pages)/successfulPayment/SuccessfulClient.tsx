@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/app/hooks/useCartStore";
 import Loader from "@/app/components/reusable/Loader";
 import {OrderStatus, Prisma} from "@prisma/client";
-import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import AppLink from "@/app/components/reusable/AppLink";
 
 
 type Props = {
@@ -163,7 +163,7 @@ function SocialLinks() {
 
             <div className="flex justify-center gap-4 mt-4">
 
-                <a
+                <AppLink
                     href="https://www.instagram.com/blackberry.shop.ua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -171,10 +171,10 @@ function SocialLinks() {
                 >
                     <FaInstagram className="size-6"/>
                     Instagram
-                </a>
+                </AppLink>
 
 
-                <a
+                <AppLink
                     href="https://t.me/blackberryshopua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -182,7 +182,7 @@ function SocialLinks() {
                 >
                     <FaTelegram className="size-6"/>
                     Telegram
-                </a>
+                </AppLink>
 
             </div>
 
@@ -194,12 +194,12 @@ function SocialLinks() {
 
 function BackButton() {
     return (
-        <Link
+        <AppLink
             href="/"
             className="inline-block mt-8 text-purple-600 hover:underline"
         >
             Повернутися на головну
-        </Link>
+        </AppLink>
     );
 }
 

@@ -183,7 +183,7 @@ function getFlakes(count: number): Flake[] {
 }
 
 export function SnowParticles() {
-    const count = useResponsiveCount(300, 35);
+    const count = useResponsiveCount(300, 30);
     const flakes = getFlakes(count);
 
     const [durMin, durMax] = useResponsiveRange(
@@ -257,7 +257,7 @@ function getPetalsBase(count: number): PetalBase[] {
 }
 
 export function PetalParticles() {
-    const count = useResponsiveCount(16, 6);
+    const count = useResponsiveCount(16, 5);
     const [durMin, durMax] = useResponsiveRange(10, 18, 5, 9); // на мобилке в ~2 раза быстрее
     const base = getPetalsBase(count);
 

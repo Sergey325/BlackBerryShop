@@ -13,6 +13,8 @@ import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersC
 import {useClearFilters} from "@/app/hooks/useClearFilters";
 import EmptyState from "@/app/components/reusable/EmptyState";
 import {getFilterOptions} from "@/app/utils/getFilterOptions";
+import {useModalHistory} from "@/app/hooks/useModalHistory";
+import Button from "@/app/components/reusable/Button";
 
 
 type Props = {
@@ -28,6 +30,9 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
     const category = pathnameParams.category;
     const router = useRouter();
     const [filterOpen, setFilterOpen] = useState(false);
+
+    const closeFilter = useModalHistory(filterOpen, () => setFilterOpen(false));
+
     const currentSort = params.get("sorting") ?? "Featured";
     const view = params.get("view") ?? "grid";
 
@@ -139,12 +144,6 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
 
             {filterOpen && (
                 <div className="absolute">
-                    {/* backdrop */}
-                    <div
-                        className="sm:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-                        onClick={() => setFilterOpen(false)}
-                    />
-                    {/* sheet */}
                     <div className="sm:hidden fixed inset-0 z-50 flex flex-col bg-white">
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 shrink-0">
@@ -152,7 +151,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 <FiSliders className="w-4 h-4" />
                                 Фільтри
                             </div>
-                            <button onClick={() => setFilterOpen(false)} className="p-2 -mr-2 text-gray-400 hover:text-gray-900">
+                            <button onClick={closeFilter} className="p-2 -mr-2 text-gray-400 hover:text-gray-900">
                                 <FiX className="w-5 h-5" />
                             </button>
                         </div>
@@ -163,13 +162,9 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                         </div>
 
                         {/* Apply button */}
-                        <div className="px-4 pb-6 pt-3 border-t border-gray-100 shrink-0">
-                            <button
-                                onClick={clearFilters}
-                                className="w-full bg-primary hover:bg-primary/90 text-white py-3.5 rounded-2xl font-semibold text-sm transition-colors"
-                            >
-                                Прибрати фільтри
-                            </button>
+                        <div className="px-4 pb-6 pt-3 border-t border-gray-100 shrink-0 flex gap-3 text-sm">
+                            <Button label="Скинути" onClick={clearFilters} outline />
+                            <Button label="Застосувати" onClick={closeFilter} />
                         </div>
                     </div>
                 </div>

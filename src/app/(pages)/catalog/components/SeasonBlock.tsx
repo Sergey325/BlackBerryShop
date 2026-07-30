@@ -12,7 +12,7 @@ export default function SeasonBlock({ season }: Props) {
         <div className="mb-6 lg:mb-12 select-none">
 
             {/* ── MOBILE ────────────────────────────────────────────────── */}
-            <div className="sm:hidden rounded-3xl relative overflow-hidden" style={{ backgroundColor: season.heroBg }}>
+            <div className={"sm:hidden rounded-3xl relative overflow-hidden "} style={{ backgroundColor: season.heroBg }}>
                 {/*{season.particles}*/}
                 {/* Banner: text left | image right — side by side, no wasted space */}
                 <div className="relative flex items-stretch min-h-[120px]">
@@ -36,7 +36,7 @@ export default function SeasonBlock({ season }: Props) {
                             src={season.heroImage}
                             alt={season.label}
                             fill
-                            className="object-cover object-right-top"
+                            className="object-scale-down object-top-right"
                         />
                         {/*/!* Fade right edge *!/*/}
                         {/*<div*/}
@@ -46,7 +46,7 @@ export default function SeasonBlock({ season }: Props) {
                         {/*/!* Fade left edge *!/*/}
                         <div
                             className="absolute inset-y-0 left-0 w-full pointer-events-none"
-                            style={{ background: `linear-gradient(to right, ${season.heroBg}, ${season.heroBg}33 92%)` }}
+                            style={{ background: `linear-gradient(to right, ${season.heroBg}, ${season.heroBg}33 82%)` }}
                         />
                         {/*/!* Fade bottom edge — сглаживает переход к карточкам *!/*/}
                         <div
@@ -87,7 +87,7 @@ export default function SeasonBlock({ season }: Props) {
                         alt={season.label}
                         fill
                         unoptimized
-                        className="object-cover object-right-top"
+                        className="object-scale-down object-top-right"
                         priority
                     />
                     {/* ← fade into season bg */}

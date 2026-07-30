@@ -9,38 +9,70 @@ type Props = {
     children?: ReactNode;
     initialState?: boolean;
     containerClass?: string;
+    buttonClass?: string;
+    openUp?: boolean;
 };
 
-const Accordion = ({title, content, children, initialState = false, containerClass}: Props) => {
+const Accordion = ({
+    title,
+    content,
+    children,
+    initialState = false,
+    containerClass,
+    buttonClass,
+    openUp = false,
+}: Props) => {
     const [open, setOpen] = useState(initialState);
 
+    const body = (
+        <div
+            className={`grid transition-all duration-300 ${containerClass} ${
+                open ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"
+            }`}
+        >
+            <div className="overflow-hidden">
+                {children ? (
+                    children
+                ) : (
+                    <ul role="list" className="list-disc marker:text-lg space-y-2 pl-5">
+                        {content?.map((item, index) => (
+                            <li className="text-sm" key={index}>
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </div>
+    );
+
+    const header = (
+        <button
+            onClick={() => setOpen(!open)}
+            className={`w-full flex items-center justify-between font-medium ${buttonClass} cursor-pointer`}
+        >
+            {title}
+            <FaChevronDown
+                className={`shrink-0 transition-transform duration-300 ${
+                    open ? "rotate-180" : ""
+                }`}
+            />
+        </button>
+    );
 
     return (
-        <div className="">
-            <button
-                onClick={() => setOpen(!open)}
-                className={`w-full flex items-center justify-between font-medium ${containerClass}`}
-            >
-                {title}
-                <FaChevronDown className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
-            </button>
-            <div
-                className={`grid transition-all duration-300 ${open ? "grid-rows-[1fr] pt-2" : "grid-rows-[0fr]"}`}
-            >
-                <div className="overflow-hidden">
-                    {children ? (
-                        children
-                    ) : (
-                        <ul role="list" className="list-disc marker:text-lg space-y-2 pl-5">
-                            {content?.map((item, index) => (
-                                <li className="text-sm" key={index}>
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            </div>
+        <div className="flex flex-col">
+            {openUp ? (
+                <>
+                    {body}
+                    {header}
+                </>
+            ) : (
+                <>
+                    {header}
+                    {body}
+                </>
+            )}
         </div>
     );
 };

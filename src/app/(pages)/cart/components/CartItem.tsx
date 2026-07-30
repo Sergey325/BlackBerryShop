@@ -178,10 +178,10 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                         : relatedProducts.length > 0
                             ? "Супутні товари"
                                 : "Варіанти кастомізації"}
-                    containerClass="text-sm text-primary hover:text-primary/70 transition-colors duration-300 gap-2! justify-normal cursor-pointer"
+                    buttonClass="text-sm text-primary hover:text-primary/70 transition-colors duration-300 gap-2! justify-normal cursor-pointer ml-1"
                     initialState={defaultExpanded}
                 >
-                    <div className="mt-3 flex flex-col gap-4">
+                    <div className="mt-3 flex flex-col gap-4 ml-1">
                         {/* Связанные товары — список */}
                         {relatedProducts.length > 0 && (
                             <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">

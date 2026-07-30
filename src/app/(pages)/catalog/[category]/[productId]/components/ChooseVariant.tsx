@@ -189,7 +189,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
             }
 
             <div style={{marginTop: hasLining ? "8px" : "24px"}} className="flex flex-col md:flex-row gap-4 md:gap-8 md:items-center">
-                <div className="flex gap-3 items-end">
+                <div className="flex gap-5 items-end">
 
                     <div className="flex gap-1.5 items-center">
                     <span className="text-2xl lg:text-[36px] font-medium">

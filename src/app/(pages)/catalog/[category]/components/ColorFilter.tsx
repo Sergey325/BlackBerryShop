@@ -35,7 +35,7 @@ const ColorFilter = ({
             onClick={changeUrl}
             title={title}
             className={`
-                w-7 h-7 rounded-full shadow-sm border transition-all hover:scale-110
+                w-7 h-7 rounded-full shadow-sm border transition-all hover:scale-110 cursor-pointer
                 ${isChecked
                 ? "border-primary scale-110"
                 : "border-gray-400/50"

@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link";
 import Image from "next/image";
 import {useEffect, useRef, useState} from "react";
 import { FaInstagram, FaTelegram } from "react-icons/fa";
@@ -11,6 +10,7 @@ import {BiSearch} from "react-icons/bi";
 import MobileSearchOverlay from "@/app/components/navbar/MobileSearchOverlay";
 import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";
 import { vladimir } from "@/app/fonts";
+import AppLink from "@/app/components/reusable/AppLink";
 
 const ContactDropdown = () => {
     return (
@@ -31,7 +31,7 @@ const ContactDropdown = () => {
                     bg-white
                     shadow-lg
                     border
-                    border-gray-200
+                    border-primary/30
                     opacity-0
                     invisible
                     group-hover:opacity-100
@@ -42,24 +42,24 @@ const ContactDropdown = () => {
                 "
             >
                 <div className="flex flex-col gap-2 text-sm">
-                    <a href="tel:+380682787526" className="flex items-center gap-2 text-sm hover:text-primary transition">
+                    <AppLink href="tel:+380682787526" className="flex items-center gap-2 text-sm hover:text-primary transition">
                         <MdPhone className="size-5"/>
                         +38 (068) 278-75-26
-                    </a>
-                    <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                    </AppLink>
+                    <AppLink href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-sm hover:text-primary transition">
                         <FaInstagram className="size-5"/>
                         @blackberry.shop.ua
-                    </a>
-                    <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                    </AppLink>
+                    <AppLink href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-sm hover:text-primary transition">
                         <FaTelegram className="size-5"/>
                         @blackberryshopua
-                    </a>
-                    <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm hover:text-primary transition">
+                    </AppLink>
+                    <AppLink href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm hover:text-primary transition">
                         <MdEmail className="size-5"/>
                         blackberry.shop.kh@gmail.com
-                    </a>
+                    </AppLink>
                 </div>
             </div>
         </div>
@@ -86,18 +86,18 @@ export default function Header() {
             <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-white">
                 {/* Логотип */}
                 <div className="flex items-center tablet:gap-2 cursor-pointer bg-white">
-                    <Link href="/" className="overflow-hidden">
-                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} className="h-8 w-auto object-contain bg-white" />
-                    </Link>
-                    <Link href="/" className={`text-3xl tablet:text-4xl bold ${vladimir.className}`}>
+                    <AppLink href="/" className="overflow-hidden">
+                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} draggable={false} className="h-8 w-auto object-contain bg-white"/>
+                    </AppLink>
+                    <AppLink href="/" className={`text-3xl tablet:text-4xl bold ${vladimir.className}`}>
                         Black Berry
-                    </Link>
+                    </AppLink>
                 </div>
 
                 {/* Десктоп навигация */}
                 <nav className="hidden tablet:flex items-center text-base gap-8">
-                    <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>
-                    <Link href="/catalog" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Каталог</Link>
+                    <AppLink href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</AppLink>
+                    <AppLink href="/catalog" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Каталог</AppLink>
                     <ContactDropdown/>
                 </nav>
 
@@ -138,7 +138,7 @@ export default function Header() {
                 ref={mobileMenuRef}
                 className={`md:hidden fixed inset-0 top-[72px] bg-white z-20 transition-all duration-300 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
             >
-                <nav className="flex flex-col h-full px-6 pt-8 pb-10 gap-0 overflow-y-auto">
+                <nav className="flex flex-col h-full px-6 pb-10 gap-0 overflow-y-auto">
 
                     {/* Навигация */}
                     <div className="flex flex-col gap-1">
@@ -148,14 +148,14 @@ export default function Header() {
                             { href: "/delivery", label: "Доставка та оплата" },
                             { href: "/exchange", label: "Обмін та повернення" },
                         ].map(({ href, label }) => (
-                            <Link
+                            <AppLink
                                 key={href}
                                 href={href}
                                 onClick={() => setMenuOpen(false)}
                                 className="text-lg font-medium py-3 border-b border-gray-800 hover:text-gray-600 transition"
                             >
                                 {label}
-                            </Link>
+                            </AppLink>
                         ))}
                     </div>
 
@@ -164,23 +164,23 @@ export default function Header() {
                         <p className="text-lg">
                             Контакти
                         </p>
-                        <a href="tel:+380682787526" className="flex items-center gap-3 transition">
+                        <AppLink href="tel:+380682787526" className="flex items-center gap-3 transition">
                             <MdPhone size={18} />
                             <span>+38 (068) 278-75-26</span>
-                        </a>
-                        <a href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-3 hover:text-gray-600 transition">
+                        </AppLink>
+                        <AppLink href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-3 hover:text-gray-600 transition">
                             <MdEmail size={18} />
                             <span>blackberry.shop.kh@gmail.com</span>
-                        </a>
+                        </AppLink>
                         <div className="flex items-center gap-4">
-                            <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                            <AppLink href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                                className=" hover:text-pink-500 transition">
                                 <FaInstagram className="size-8"/>
-                            </a>
-                            <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                            </AppLink>
+                            <AppLink href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                                className=" hover:text-sky-500 transition">
                                 <FaTelegram className="size-[30.5px]"/>
-                            </a>
+                            </AppLink>
                         </div>
                     </div>
 

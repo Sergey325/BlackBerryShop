@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { BiSearch, BiX } from "react-icons/bi";
 import Image from "next/image";
-import Link from "next/link";
 import { useProductSearch } from "@/app/hooks/useProductSearch";
 import {AiOutlineLoading} from "react-icons/ai";
+import AppLink from "@/app/components/reusable/AppLink";
 
 export default function SearchBar() {
     const [open, setOpen] = useState(false);
@@ -76,7 +76,7 @@ export default function SearchBar() {
                     )}
                     {!isPending &&
                         results.map((product) => (
-                            <Link
+                            <AppLink
                                 key={product.id}
                                 href={`/catalog/${product.category?.slug}/${product.id}`}
                                 onClick={handleClose}
@@ -89,7 +89,7 @@ export default function SearchBar() {
                                     <span className="text-sm truncate">{product.name}</span>
                                     <span className="text-sm font-medium">{product.price} ₴</span>
                                 </div>
-                            </Link>
+                            </AppLink>
                         ))}
                 </div>
             )}

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AppLink from "@/app/components/reusable/AppLink";
 import { MdDownload } from "react-icons/md";
 
 export default function OfferPage() {
@@ -16,14 +16,14 @@ export default function OfferPage() {
 
             {/* Кнопка скачать */}
 
-            <Link
+            <AppLink
                 href="/docs/oferta.pdf"
                 // download
                 className="flex items-center justify-center gap-2 border border-gray-300 rounded-md py-3 px-6 hover:bg-gray-50 transition w-fit"
             >
                 <MdDownload size={20} />
                 Завантажити повний текст договору (.pdf)
-            </Link>
+            </AppLink>
 
     {/* Краткая выжимка */}
     <div className="flex flex-col gap-6">

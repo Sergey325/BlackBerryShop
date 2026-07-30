@@ -57,7 +57,7 @@ export default function RootLayout({
                 {/*    */}
                 {/*</ClientOnly>*/}
                 <Container>
-                    <main className="flex-1 mb-5 w-full">
+                    <main className="flex-1 mb-15 w-full">
                         <div className="w-full h-full">
                             {children}
                         </div>

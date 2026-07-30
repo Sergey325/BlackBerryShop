@@ -1,6 +1,5 @@
 import {getProducts, IProductsParams} from "@/app/actions/getProducts";
 import {getCategories} from "@/app/actions/getCategories";
-import Link from "next/link";
 import Image from "next/image";
 import {FiSliders} from "react-icons/fi";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
@@ -11,6 +10,7 @@ import EmptyState from "@/app/components/reusable/EmptyState";
 import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
 import {FaHeart} from "react-icons/fa";
 import {getFilterOptions} from "@/app/utils/getFilterOptions";
+import AppLink from "@/app/components/reusable/AppLink";
 
 type Props = {
     params: Promise<{ category: string }>;
@@ -48,9 +48,9 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* Breadcrumb — desktop */}
                 <nav className="hidden sm:flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
+                    <AppLink href="/" className="hover:text-gray-600 transition-colors">Головна</AppLink>
                     <span>›</span>
-                    <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
+                    <AppLink href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</AppLink>
                     <span>›</span>
                     <span className="text-gray-700">{selectedCategory?.name}</span>
                 </nav>
@@ -58,7 +58,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                 {/* ── Banner ────────────────────────────────────────────── */}
 
                 {/* Desktop */}
-                <div className="hidden sm:flex items-stretch bg-white rounded-3xl overflow-hidden mb-8 min-h-[220px] shadow-sm select-none">
+                <div className={`hidden sm:flex items-stretch rounded-3xl overflow-hidden mb-8 min-h-[220px] shadow-sm select-none ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
                     <div className="flex-1 px-10 py-8 flex flex-col justify-center">
                         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
                             {selectedCategory?.name}
@@ -66,7 +66,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                             {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                         </span>
                         </h1>
-                        <p className="text-gray-500 text-sm max-w-md leading-relaxed mb-6">
+                        <p className="text-gray-700 text-sm max-w-md leading-relaxed mb-6">
                             {selectedCategory?.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -91,16 +91,16 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     {/* Hero image — right side */}
                     <div className="relative w-[42%] shrink-0">
                         <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized
-                               className="object-cover lg:object-scale-down object-top-right" />
+                               className="object-scale-down object-top-right" />{/* object-cover lg:object-scale-down object-top-right */}
                         {/* fade into banner bg */}
-                        <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-white to-transparent pointer-events-none" />
+                        {/*<div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r bg-amber-50 to-transparent pointer-events-none" />*/}
                     </div>
                 </div>
 
                 {/* Mobile */}
-                <div className="sm:hidden relative h-56 rounded-2xl overflow-hidden mb-4">
-                    <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized className="object-cover object-top" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+                <div className={`sm:hidden relative h-56 rounded-2xl overflow-hidden mb-4 ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
+                    <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
+                    <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10" />
                     <div className="absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
                         <div className="flex flex-col items-start gap-2 mb-1.5">
                             <h1 className="text-xl font-bold text-white">{selectedCategory?.name}</h1>

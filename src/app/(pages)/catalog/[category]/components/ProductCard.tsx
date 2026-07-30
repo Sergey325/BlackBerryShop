@@ -7,10 +7,10 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
-import Link from "next/link";
 import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import {IProductWithRelated} from "@/app/actions/getProductById";
+import AppLink from "@/app/components/reusable/AppLink";
 
 type Props = {
     product: IProductWithRelated | IRelatedProduct;
@@ -79,13 +79,13 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     if (list) {
         return (
             <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
-                <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+                <AppLink href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
                     <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none group-hover:scale-105 transition-transform"/>
-                </Link>
+                </AppLink>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
+                    <AppLink href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
                         <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
-                    </Link>
+                    </AppLink>
                     {
                         visibleColors.length > 1 && colors &&
                         <div className="-mb-4">
@@ -127,9 +127,8 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     }
 
     return (
-        <Link
+        <AppLink
             key={product.id}
-            draggable={false}
             onMouseDown={(e) => {
                 start.current = { x: e.clientX, y: e.clientY };
                 dragged.current = false;
@@ -208,13 +207,15 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
             <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full h-full">
                 <div className="min-w-0 flex flex-col w-full h-full justify-between">
 
-                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[36px]">
+                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[36px] break-all sm:wrap-break-word">
                         {product.name}
                     </p>
 
                     <div className="flex justify-between items-center w-full">
-                        <p className="font-bold text-gray-900 text-sm pl-1 sm:pl-0">
-                            {product.price} грн
+                        <p className="font-bold text-gray-900 text-sm sm:text-base pl-1 sm:pl-0">
+                            {product.price}
+                            <span className="sm:hidden"> ₴</span>
+                            <span className="hidden sm:inline"> грн</span>
                         </p>
                         <button
                             onClick={(e) => {
@@ -233,7 +234,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
 
                 </div>
             </div>
-        </Link>
+        </AppLink>
     );
 };
 

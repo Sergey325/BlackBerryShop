@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
-import Link from "next/link";
 import { FaTimesCircle } from "react-icons/fa";
 import SuccessfulClient from "./SuccessfulClient";
+import AppLink from "@/app/components/reusable/AppLink";
 
 type Props = {
     searchParams: Promise<{ id?: string }>;
@@ -37,12 +37,12 @@ export default async function SuccessfulPayment({ searchParams }: Props) {
                     Перевірте посилання або зверніться до підтримки.
                 </p>
 
-                <Link
+                <AppLink
                     href="/"
                     className="text-purple-600 hover:underline"
                 >
                     На головну
-                </Link>
+                </AppLink>
             </div>
         );
     }

@@ -5,8 +5,8 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import {FaHeart} from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import AppLink from "@/app/components/reusable/AppLink";
 
 type BannerSlide = {
     image: string;
@@ -169,12 +169,12 @@ const Hero = () => {
                                         {slide.features.map((f, fi) => <li key={fi}>{f}</li>)}
                                     </ul>
 
-                                    <Link
+                                    <AppLink
                                         href={slide.ctaHref}
                                         className="mt-10 w-full max-w-[480px] bg-primary hover:bg-[#6e3382]
                                                text-white px-6 py-3 rounded-full transition-colors cursor-pointer block text-center">
                                         {slide.ctaLabel}
-                                    </Link>
+                                    </AppLink>
 
                                     {/*<Dots count={slides.length} active={active} onSelect={goTo} className="mt-12" />*/}
                                 </div>
@@ -237,12 +237,12 @@ const Hero = () => {
                                         {slide.features.map((f, fi) => <li key={fi}>{f}</li>)}
                                     </ul>
 
-                                    <Link
+                                    <AppLink
                                         href={slide.ctaHref}
                                         className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382] text-white px-6 py-3 rounded-full transition-colors cursor-pointer text-center"
                                     >
                                         {slide.ctaLabel}
-                                    </Link>
+                                    </AppLink>
 
                                     {/*<Dots count={slides.length} active={active} onSelect={goTo} />*/}
                                 </div>

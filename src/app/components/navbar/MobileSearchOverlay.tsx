@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BiSearch, BiArrowBack } from "react-icons/bi";
 import Image from "next/image";
-import Link from "next/link";
 import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";
 import {useProductSearch} from "@/app/hooks/useProductSearch";
 import Loader from "@/app/components/reusable/Loader";
+import {useModalHistory} from "@/app/hooks/useModalHistory";
+import AppLink from "@/app/components/reusable/AppLink";
 
 export default function MobileSearchOverlay() {
     const { isOpen, onClose } = useMobileSearchModal();
+    useModalHistory(isOpen, onClose);
     const { value, setValue, results, isPending, reset } = useProductSearch();
     const [showModal, setShowModal] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -78,11 +80,11 @@ export default function MobileSearchOverlay() {
                 )}
                 {!isPending &&
                     results.map((product) => (
-                        <Link
+                        <AppLink
                             key={product.id}
                             href={`catalog/${product.category?.slug}/${product.id}`}
                             onClick={handleClose}
-                            className="flex items-center gap-3 p-4 hover:bg-gray-50 transition border-b border-gray-100"
+                            className="flex items-center gap-3 p-4 hover:bg-gray-50 transition border-b border-gray-200"
                         >
                             <div className="relative w-14 h-14 shrink-0 rounded overflow-hidden bg-gray-100">
                                 <Image src={product.colors[0].images[0].url} alt={product.name} fill className="object-cover" />
@@ -91,7 +93,7 @@ export default function MobileSearchOverlay() {
                                 <span className="text-sm truncate">{product.name}</span>
                                 <span className="text-sm font-medium">{product.price} ₴</span>
                             </div>
-                        </Link>
+                        </AppLink>
                     ))}
             </div>
         </div>

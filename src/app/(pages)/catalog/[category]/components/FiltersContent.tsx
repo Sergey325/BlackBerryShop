@@ -1,7 +1,6 @@
 "use client"
 
 import FilterSection from "@/app/(pages)/catalog/[category]/components/FilterSection";
-import Link from "next/link";
 import PriceRange from "@/app/(pages)/catalog/[category]/components/PriceRange";
 import {ICategory} from "@/app/actions/getCategories";
 import CheckBox from "@/app/components/reusable/CheckBox";
@@ -9,6 +8,7 @@ import {useSearchParams} from "next/navigation";
 import ColorFilter from "@/app/(pages)/catalog/[category]/components/ColorFilter";
 import qs from "query-string";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
+import AppLink from "@/app/components/reusable/AppLink";
 
 
 type Props = {
@@ -53,10 +53,9 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
                         return (
                             <li key={cat.slug}>
-                                <Link
+                                <AppLink
                                     href={href}
                                     scroll={false}
-                                    draggable={false}
                                     className={`flex items-center justify-between text-sm px-2.5 py-1.5 rounded-lg transition-colors ${
                                         cat.slug === selectedCategorySlug
                                             ? 'bg-primary/10 text-primary font-semibold'
@@ -67,7 +66,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                                     <span className="text-xs text-gray-400">
                                         {cat._count.products}
                                     </span>
-                                </Link>
+                                </AppLink>
                             </li>
                         );
                     })}

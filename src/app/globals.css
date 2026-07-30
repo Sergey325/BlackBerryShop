@@ -2,6 +2,8 @@
 
 @theme {
     --color-primary: #823D9A;
+    --color-winter: #ede9fe;
+    --color-summer: #fdf2f8;
     --breakpoint-laptop: 1175px;
     --breakpoint-tablet: 872px;
 }
@@ -23,6 +25,10 @@ html, body, #root {
 html {
     background: #f9fafb;
     scrollbar-gutter: stable;
+}
+
+button {
+    cursor: pointer;
 }
 
 ::selection {

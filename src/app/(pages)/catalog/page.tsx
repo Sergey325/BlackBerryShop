@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import {sortSeasonsByCurrent} from "@/app/utils/sortSeasons";
 import {GoHeartFill} from "react-icons/go";
 import {PetalParticles, SnowParticles} from "@/app/(pages)/catalog/components/SeasonParticles";
 import SeasonBlock from "@/app/(pages)/catalog/components/SeasonBlock";
 import {getCategories} from "@/app/actions/getCategories";
+import AppLink from "@/app/components/reusable/AppLink";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const seasonsConfig = [
@@ -12,7 +12,7 @@ const seasonsConfig = [
         label: 'Весна / Літо',
         icon: '☀️',
         desc: 'Легкі та яскраві аксесуари для сонячних днів',
-        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783528322/BlackBerry/Banners/IMG_1613_iumsmj.png',
+        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403242/BlackBerry/Banners/IMG_1613_hlahun.png',
         heroBg: '#fdf2f8',
         particles: <PetalParticles />,
     },
@@ -21,7 +21,7 @@ const seasonsConfig = [
         label: 'Осінь / Зима',
         icon: '❄️',
         desc: 'Теплі та затишні аксесуари для холодних днів',
-        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1783528323/BlackBerry/Banners/IMG_1604_xdb575.png',
+        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403241/BlackBerry/Banners/IMG_1604_efzqvf.png',
         heroBg: '#ede9fe',
         particles: <SnowParticles />,
     },
@@ -46,9 +46,9 @@ export default async function CatalogPage() {
 
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <Link href="/" className="hover:text-gray-600 transition-colors">
+                    <AppLink href="/" className="hover:text-gray-600 transition-colors">
                         Головна
-                    </Link>
+                    </AppLink>
                     <span>›</span>
                     <span className="text-gray-700">Каталог</span>
                 </nav>
