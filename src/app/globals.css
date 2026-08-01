@@ -31,6 +31,16 @@ button {
     cursor: pointer;
 }
 
+img {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+a {
+    -webkit-user-drag: none;
+}
+
 ::selection {
     background-color: #823D9A;
     color: white;

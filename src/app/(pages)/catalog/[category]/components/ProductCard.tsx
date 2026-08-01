@@ -10,7 +10,7 @@ import {useSearchParams} from "next/navigation";
 import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import {IProductWithRelated} from "@/app/actions/getProductById";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 type Props = {
     product: IProductWithRelated | IRelatedProduct;
@@ -79,13 +79,13 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     if (list) {
         return (
             <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
-                <AppLink href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+                <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
                     <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none group-hover:scale-105 transition-transform"/>
-                </AppLink>
+                </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <AppLink href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
+                    <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
                         <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
-                    </AppLink>
+                    </Link>
                     {
                         visibleColors.length > 1 && colors &&
                         <div className="-mb-4">
@@ -127,7 +127,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     }
 
     return (
-        <AppLink
+        <Link
             key={product.id}
             onMouseDown={(e) => {
                 start.current = { x: e.clientX, y: e.clientY };
@@ -156,14 +156,17 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
         >
             {/* Product image */}
             <div
-                className="aspect-square relative bg-white rounded-t-2xl flex items-center justify-center">
-                <Image
-                    src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
-                    alt={product.name}
-                    fill unoptimized
-                    draggable={false}
-                    className="object-contain w-full h-full rounded-lg p-3"
-                />
+                className="aspect-square relative bg-white rounded-t-2xl flex items-center justify-center p-3">
+                <div className="relative size-full">
+                    <Image
+                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
+                        alt={product.name}
+                        fill unoptimized
+                        draggable={false}
+                        className="object-contain rounded-xl "
+                    />
+                </div>
+
                 {/* Color swatches */}
                 {
                     visibleColors.length > 1 && colors &&
@@ -234,7 +237,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
 
                 </div>
             </div>
-        </AppLink>
+        </Link>
     );
 };
 

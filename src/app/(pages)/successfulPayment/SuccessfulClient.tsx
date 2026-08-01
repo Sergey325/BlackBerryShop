@@ -13,7 +13,7 @@ import { useCartStore } from "@/app/hooks/useCartStore";
 import Loader from "@/app/components/reusable/Loader";
 import {OrderStatus, Prisma} from "@prisma/client";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 
 type Props = {
@@ -163,7 +163,7 @@ function SocialLinks() {
 
             <div className="flex justify-center gap-4 mt-4">
 
-                <AppLink
+                <Link
                     href="https://www.instagram.com/blackberry.shop.ua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -171,10 +171,10 @@ function SocialLinks() {
                 >
                     <FaInstagram className="size-6"/>
                     Instagram
-                </AppLink>
+                </Link>
 
 
-                <AppLink
+                <Link
                     href="https://t.me/blackberryshopua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -182,7 +182,7 @@ function SocialLinks() {
                 >
                     <FaTelegram className="size-6"/>
                     Telegram
-                </AppLink>
+                </Link>
 
             </div>
 
@@ -194,12 +194,12 @@ function SocialLinks() {
 
 function BackButton() {
     return (
-        <AppLink
+        <Link
             href="/"
             className="inline-block mt-8 text-purple-600 hover:underline"
         >
             Повернутися на головну
-        </AppLink>
+        </Link>
     );
 }
 

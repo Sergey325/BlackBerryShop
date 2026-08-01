@@ -3,7 +3,7 @@ import {FaArrowRightLong} from "react-icons/fa6";
 import {getCategories, ICategory} from "@/app/actions/getCategories";
 import Accordion from "@/app/components/reusable/Accordion";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 // const CategoryCard = ({cat}: {cat: ICategory}) =>
 //     <Link
@@ -44,23 +44,23 @@ const Categories = async () => {
                         {/*<span className="text-white">💜</span>*/}
                         <GoHeartFill className="text-primary size-7" />
                     </h2>
-                    <AppLink
+                    <Link
                         href={`/catalog`}
                         draggable={false}
                         className="hidden sm:flex items-center gap-1.5 text-base text-gray-600 hover:text-primary transition-transform cursor-pointer hover:translate-x-2">
                         Перейти до каталогу
                         <FaArrowRightLong className="size-4" />
-                    </AppLink>
+                    </Link>
                 </div>
                 {/* Mobile "view all" */}
                 <div className="sm:hidden flex justify-start mb-3">
-                    <AppLink
+                    <Link
                         href={`/catalog`}
                         className="flex items-center gap-1.5 text-sm text-primary font-medium"
                     >
                         Перейти до каталогу
                         <FaArrowRightLong className="size-4" />
-                    </AppLink>
+                    </Link>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {categories

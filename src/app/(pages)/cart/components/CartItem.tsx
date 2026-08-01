@@ -90,7 +90,7 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                         width={80}
                         height={80}
                         draggable={false}
-                        className="object-contain select-none"
+                        className="object-contain select-none rounded-lg"
                         onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                     />
 
@@ -188,18 +188,18 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                                 {relatedProducts.map((related) => (
                                     <div
                                         key={related.id}
-                                        className="flex items-center gap-3 p-2 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300"
+                                        className="flex items-center gap-3 pr-2 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300"
                                     >
                                         <Image
                                             src={optimizeCloudinaryUrl(related.colors[0].images[0].url, 100)}
                                             alt={related.name}
-                                            width={48}
-                                            height={48}
+                                            width={80}
+                                            height={80}
                                             draggable={false}
                                             unoptimized
-                                            className="object-contain rounded-md shrink-0 select-none"
+                                            className="object-contain rounded-l-lg shrink-0 select-none"
                                         />
-                                        <div className="flex flex-col flex-1 min-w-0">
+                                        <div className="flex flex-col flex-1 min-w-0 gap-1">
                                                 <span
                                                     onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                                                     className="text-sm font-medium truncate transition-colors hover:text-primary cursor-pointer">{related.name}
@@ -244,10 +244,10 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                                         className="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300 h-full select-none"
                                     >
                                         <Image
-                                            src={optimizeCloudinaryUrl(variant.colors[0].images[0].url, 150)}
+                                            src={optimizeCloudinaryUrl(variant.colors[0].images[0].url, 200)}
                                             alt={variant.name}
-                                            width={64}
-                                            height={64}
+                                            width={100}
+                                            height={100}
                                             draggable={false}
                                             unoptimized
                                             className="object-contain rounded-md select-none"

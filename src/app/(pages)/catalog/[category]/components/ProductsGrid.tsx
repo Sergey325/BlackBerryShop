@@ -95,7 +95,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
 
                         <button
                             onClick={() => setFilterOpen(true)}
-                            className="sm:hidden flex items-center gap-1.5 text-sm bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-3 py-2 rounded-xl transition-colors"
+                            className="sm:hidden flex items-center gap-1.5 text-sm bg-white border border-primary/30 hover:bg-gray-300 text-gray-800 px-1.5 sm:px-3 py-2 rounded-xl transition-colors"
                         >
                             <FiSliders className="size-4 text-primary" />
                             Фільтри
@@ -109,6 +109,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 value={currentSort}
                                 onChange={() => {}}
                                 className=""
+                                buttonClassName="px-2! sm:px-4! gap-0! sm:gap-2!"
                             />
                         </div>
                     </div>

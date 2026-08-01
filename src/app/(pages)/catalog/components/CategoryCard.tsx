@@ -3,20 +3,19 @@ import {FaArrowRightLong} from "react-icons/fa6";
 import {ICategory} from "@/app/actions/getCategories";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 type Props = {
     category: ICategory;
 }
 
-
 export default function CategoryCard({ category }: Props) {
     return (
-        <AppLink
+        <Link
             href={`/catalog/${category.slug}`}
-            className="group backdrop-blur-xs rounded-2xl overflow-hidden
-                       shadow-sm hover:shadow-md
-                       transition-all duration-500 flex flex-col z-15 aspect-5/3"
+            className="group sm:backdrop-blur-xs rounded-2xl overflow-hidden
+                       shadow-sm hover:shadow-md relative
+                       transition-all duration-500 flex flex-col z-10 aspect-5/3"
         >
             {/* Photo */}
             <div className="relative h-full w-full overflow-hidden">
@@ -46,6 +45,6 @@ export default function CategoryCard({ category }: Props) {
                     <FaArrowRightLong className="size-3 sm:size-4 text-white" />
                 </div>
             </div>
-        </AppLink>
+        </Link>
     );
 }

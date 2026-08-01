@@ -60,7 +60,7 @@ const ProductImages = ({ productColor }: Props) => {
                                 unoptimized
                                 draggable={false}
                                 priority
-                                className="object-contain h-full mx-auto select-none cursor-zoom-in"
+                                className="object-contain h-full mx-auto select-none cursor-zoom-in rounded-lg"
                                 alt={slide.url}
                             />
                         </PhotoView>
@@ -111,12 +111,12 @@ const ProductImages = ({ productColor }: Props) => {
                             ))}
                         </div>
 
-                        <div className="flex-1 items-center justify-center min-w-0">
+                        <div className="flex-1 items-center justify-center min-w-0 py-6">
                             <Image
                                 src={optimizeCloudinaryUrl(selectedImage, 1000)}
                                 width={550} height={550}
                                 draggable={false}
-                                className="object-contain aspect-square w-full select-none pointer-events-none mx-auto py-6 max-w-[500px]"
+                                className="object-contain aspect-square w-full select-none pointer-events-none mx-auto max-w-[500px] rounded-lg"
                                 alt="ProductImage"
                                 priority unoptimized
                             />

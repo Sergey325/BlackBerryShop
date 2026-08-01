@@ -1,39 +1,39 @@
 import { FaInstagram, FaTelegram } from "react-icons/fa";
 import { MdEmail, MdPhone } from "react-icons/md";
 import FooterSection from "@/app/components/FooterSection";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 export default function Footer() {
 
     const navigation =
         <div className="flex flex-col gap-3 text-gray-400">
-            <AppLink href="/catalog" className="text-sm  hover:text-primary transition">Каталог</AppLink>
-            <AppLink href="/about" className="text-sm  hover:text-primary transition">Про нас</AppLink>
-            <AppLink href="/delivery" className="text-sm hover:text-primary transition">Доставка та оплата</AppLink>
-            <AppLink href="/exchange" className="text-sm hover:text-primary transition">Обмін та повернення</AppLink>
-            <AppLink href="/offer" className="text-sm hover:text-primary transition">Договір публічної оферти</AppLink>
+            <Link href="/catalog" className="text-sm  hover:text-primary transition">Каталог</Link>
+            <Link href="/about" className="text-sm  hover:text-primary transition">Про нас</Link>
+            <Link href="/delivery" className="text-sm hover:text-primary transition">Доставка та оплата</Link>
+            <Link href="/exchange" className="text-sm hover:text-primary transition">Обмін та повернення</Link>
+            <Link href="/offer" className="text-sm hover:text-primary transition">Договір публічної оферти</Link>
         </div>
 
     const contacts =
         <div className="flex flex-col gap-3 text-gray-400">
-            <AppLink href="tel:+380682787526" className="flex items-center gap-2 text-sm hover:text-primary transition">
+            <Link href="tel:+380682787526" className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <MdPhone className="size-5"/>
                 +38 (068) 278-75-26
-            </AppLink>
-            <AppLink href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm hover:text-primary transition">
+            </Link>
+            <Link href="mailto:blackberry.shop.kh@gmail.com" className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <MdEmail className="size-5"/>
                 blackberry.shop.kh@gmail.com
-            </AppLink>
-            <AppLink href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+            </Link>
+            <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <FaInstagram className="size-5"/>
                 @blackberry.shop.ua
-            </AppLink>
-            <AppLink href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+            </Link>
+            <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <FaTelegram className="size-5"/>
                 @blackberryshopua
-            </AppLink>
+            </Link>
         </div>
 
     const operatingHours =
@@ -52,21 +52,21 @@ export default function Footer() {
 
                     {/* Логотип + описание */}
                     <div className="flex flex-col gap-4">
-                        <AppLink href="/" className="text-white text-2xl font-bold">
+                        <Link href="/" className="text-white text-2xl font-bold">
                             Black Berry
-                        </AppLink>
+                        </Link>
                         <p className="text-sm md:text-base leading-relaxed">
                             Магазин якісних товарів ручної роботи. Працюємо з любов&apos;ю до кожного замовлення.
                         </p>
                         <div className="flex gap-5 mt-2">
-                            <AppLink href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                            <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                                className="hover:text-pink-500 transition">
                                 <FaInstagram className="size-10" />
-                            </AppLink>
-                            <AppLink href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                            </Link>
+                            <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                                className="hover:text-sky-500 transition">
                                 <FaTelegram className="size-[38.5px]" />
-                            </AppLink>
+                            </Link>
                         </div>
                     </div>
 

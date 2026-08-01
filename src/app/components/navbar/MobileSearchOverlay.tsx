@@ -7,7 +7,7 @@ import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";
 import {useProductSearch} from "@/app/hooks/useProductSearch";
 import Loader from "@/app/components/reusable/Loader";
 import {useModalHistory} from "@/app/hooks/useModalHistory";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 export default function MobileSearchOverlay() {
     const { isOpen, onClose } = useMobileSearchModal();
@@ -80,7 +80,7 @@ export default function MobileSearchOverlay() {
                 )}
                 {!isPending &&
                     results.map((product) => (
-                        <AppLink
+                        <Link
                             key={product.id}
                             href={`catalog/${product.category?.slug}/${product.id}`}
                             onClick={handleClose}
@@ -93,7 +93,7 @@ export default function MobileSearchOverlay() {
                                 <span className="text-sm truncate">{product.name}</span>
                                 <span className="text-sm font-medium">{product.price} ₴</span>
                             </div>
-                        </AppLink>
+                        </Link>
                     ))}
             </div>
         </div>

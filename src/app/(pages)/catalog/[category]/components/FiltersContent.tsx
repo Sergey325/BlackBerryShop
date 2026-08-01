@@ -8,7 +8,7 @@ import {useSearchParams} from "next/navigation";
 import ColorFilter from "@/app/(pages)/catalog/[category]/components/ColorFilter";
 import qs from "query-string";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 
 type Props = {
@@ -53,7 +53,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
                         return (
                             <li key={cat.slug}>
-                                <AppLink
+                                <Link
                                     href={href}
                                     scroll={false}
                                     className={`flex items-center justify-between text-sm px-2.5 py-1.5 rounded-lg transition-colors ${
@@ -66,7 +66,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                                     <span className="text-xs text-gray-400">
                                         {cat._count.products}
                                     </span>
-                                </AppLink>
+                                </Link>
                             </li>
                         );
                     })}

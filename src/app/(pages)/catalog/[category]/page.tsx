@@ -10,7 +10,7 @@ import EmptyState from "@/app/components/reusable/EmptyState";
 import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
 import {FaHeart} from "react-icons/fa";
 import {getFilterOptions} from "@/app/utils/getFilterOptions";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 type Props = {
     params: Promise<{ category: string }>;
@@ -48,9 +48,9 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* Breadcrumb — desktop */}
                 <nav className="hidden sm:flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <AppLink href="/" className="hover:text-gray-600 transition-colors">Головна</AppLink>
+                    <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
                     <span>›</span>
-                    <AppLink href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</AppLink>
+                    <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
                     <span>›</span>
                     <span className="text-gray-700">{selectedCategory?.name}</span>
                 </nav>

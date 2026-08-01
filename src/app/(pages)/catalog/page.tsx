@@ -3,7 +3,7 @@ import {GoHeartFill} from "react-icons/go";
 import {PetalParticles, SnowParticles} from "@/app/(pages)/catalog/components/SeasonParticles";
 import SeasonBlock from "@/app/(pages)/catalog/components/SeasonBlock";
 import {getCategories} from "@/app/actions/getCategories";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const seasonsConfig = [
@@ -46,9 +46,9 @@ export default async function CatalogPage() {
 
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <AppLink href="/" className="hover:text-gray-600 transition-colors">
+                    <Link href="/" className="hover:text-gray-600 transition-colors">
                         Головна
-                    </AppLink>
+                    </Link>
                     <span>›</span>
                     <span className="text-gray-700">Каталог</span>
                 </nav>

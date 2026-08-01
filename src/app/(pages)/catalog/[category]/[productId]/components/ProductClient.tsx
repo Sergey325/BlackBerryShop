@@ -8,7 +8,7 @@ import Accordion from "@/app/components/reusable/Accordion";
 import {ICategory} from "@/app/actions/getCategories";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import RelatedAndCustomization from "@/app/(pages)/catalog/[category]/[productId]/components/RelatedAndCustomization";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 type Props = {
     product: IProductWithRelated
@@ -31,20 +31,23 @@ const ProductClient = ({ product, category }: Props) => {
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
             <nav className="flex items-center gap-1.5 text-sm text-gray-400 self-start max-w-full">
-                <AppLink href="/" className="hover:text-gray-600 transition-colors">Головна</AppLink>
+                <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
                 <span>›</span>
-                <AppLink href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</AppLink>
+                <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
                 <span>›</span>
-                <AppLink href={`/catalog/${category.slug}`} className="hover:text-gray-600 transition-colors">{category.name}</AppLink>
+                <Link href={`/catalog/${category.slug}`} className="hover:text-gray-600 transition-colors">{category.name}</Link>
                 <span>›</span>
                 <span className="text-gray-700 truncate">{product.name}</span>
             </nav>
             <div className="border border-gray-200 rounded-xl py-3 px-2 lg:p-4 w-full bg-white shadow-xs">
                 <p className="text-lg lg:text-[28px] font-medium">
-                    {product.name.replace(
-                    /\s+(\S+)$/,
-                    ` ${selectedProductColor.colorName}, $1`
-                    )}
+                    {product.name.includes(" ")
+                        ? product.name.replace(
+                            /\s+(\S+)$/,
+                            ` ${selectedProductColor.colorName}, $1`
+                        )
+                        : `${product.name} ${selectedProductColor.colorName}`
+                    }
                 </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-3 md:gap-10 lg:gap-4 items-stretch w-full bg-transparent">

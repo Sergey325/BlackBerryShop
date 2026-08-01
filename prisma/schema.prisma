@@ -86,6 +86,17 @@ model ProductRelation {
   @@unique([fromProductId, toProductId])
 }
 
+model Banner {
+  id       Int      @id @default(autoincrement())
+  image    String
+  badge    String?
+  title    String
+  features String[]
+  ctaHref  String?
+  ctaLabel String?
+  order    Int      @default(0)
+}
+
 model Category {
   id                  Int      @id @default(autoincrement())
   name                String

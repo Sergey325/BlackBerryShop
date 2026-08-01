@@ -9,7 +9,7 @@ type Props = {
 const FooterSection = ({title, children,}: Props) => (
     <>
         <div className="sm:hidden text-white">
-            <Accordion title={title}>
+            <Accordion title={title} containerClass="mt-1">
                 {children}
             </Accordion>
         </div>

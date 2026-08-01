@@ -1,5 +1,5 @@
 import {FaInstagram, FaTelegram} from "react-icons/fa";
-import AppLink from "@/app/components/reusable/AppLink";
+import Link from "next/link";
 
 export default function ExchangePage() {
     return (
@@ -58,16 +58,16 @@ export default function ExchangePage() {
                     Щоб оформити повернення або обмін — зв&apos;яжіться з нами в наших соцмережах.
                 </p>
                 <div className="flex justify-center gap-4 mt-4 text-base md:text-lg">
-                    <AppLink href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                    <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-pink-600 hover:text-pink-700 transition">
                         <FaInstagram className="size-6"/>
                         Instagram
-                    </AppLink>
-                    <AppLink href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                    </Link>
+                    <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-sky-600 hover:text-sky-700 transition">
                         <FaTelegram className="size-6"/>
                         Telegram
-                    </AppLink>
+                    </Link>
                 </div>
             </div>
         </div>
