@@ -32,7 +32,7 @@ function RelatedAndCustomizationSkeleton() {
             <div className="flex flex-col gap-4">
                 {/* Скелетон списка связанных товаров */}
                 <div className="flex flex-col gap-2 max-h-72 overflow-hidden pr-1">
-                    {Array.from({ length: 3 }).map((_, i) => (
+                    {Array.from({ length: 2 }).map((_, i) => (
                         <div
                             key={`related-skeleton-${i}`}
                             className="flex items-center gap-3 pr-2 rounded-lg border border-gray-200 h-[80px]"

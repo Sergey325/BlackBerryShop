@@ -28,17 +28,17 @@ const paymentOptions = [
 const CartClient = () => {
     const cart = useCartStore();
     const [payment, setPayment] = useState(paymentOptions[0]);
-    const [relatedByProductId, setRelatedByProductId] = useState<RelatedProductsByProductId>({});
     const productIdsKey = useMemo((): string => {
         return [...new Set(cart.items.map(item => item.productId))]
             .sort((a, b) => a - b)
             .join(",");
     }, [cart.items]);
 
+    const [relatedByProductId, setRelatedByProductId] = useState<RelatedProductsByProductId>({});
     const [loadedKey, setLoadedKey] = useState<string | null>(null);
+    const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-    const isRelatedLoading = !!productIdsKey && loadedKey !== productIdsKey;
-
+    const isRelatedLoading = !!productIdsKey && loadedKey !== productIdsKey && !hasLoadedOnce;
 
     useEffect(() => {
         if (!productIdsKey) return;
@@ -58,6 +58,7 @@ const CartClient = () => {
             }
         }).finally(() => {
             setLoadedKey(productIdsKey);
+            setHasLoadedOnce(true);
         });
 
         return () => controller.abort();
