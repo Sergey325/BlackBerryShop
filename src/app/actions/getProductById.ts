@@ -2,6 +2,7 @@
 
 import prisma from "@/app/lib/prisma";
 import {IProduct, IRelatedProduct} from "./getProducts";
+import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
 
 export interface IProductWithRelated extends IProduct {
     relatedTo: IRelatedProduct[];
@@ -39,31 +40,7 @@ export async function getProductById(productId: string): Promise<IProductWithRel
                     orderBy: { order: "asc" },
                     include: {
                         toProduct: {
-                            select: {
-                                id: true,
-                                name: true,
-                                slug: true,
-                                price: true,
-                                discount: true,
-                                material: true,
-                                category: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        slug: true,
-                                        isDecoration: true
-                                    },
-                                },
-                                colors: {
-                                    include: {
-                                        images: {
-                                            take: 1,
-                                            orderBy: { order: "asc" },
-                                        },
-                                        sizes: true,
-                                    },
-                                },
-                            },
+                            select: relatedProductSelect,
                         },
                     },
                 },

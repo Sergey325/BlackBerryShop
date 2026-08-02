@@ -60,7 +60,6 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
         cart.addItem({
             ...createProductSelection(product, activeIdx),
             quantity: 1,
-            relatedProducts: "relatedTo" in product ? product.relatedTo : [],
             isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();

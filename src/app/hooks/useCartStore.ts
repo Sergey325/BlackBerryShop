@@ -12,6 +12,16 @@ type CartStore = {
     changeSize: (item: CartItem, size: string) => void;
 };
 
+type LegacyCartItem = CartItem & {
+    relatedProducts?: unknown;
+};
+
+function migrateCartItem(item: LegacyCartItem): CartItem {
+    const migratedItem: LegacyCartItem = {...item};
+    delete migratedItem.relatedProducts;
+    return migratedItem;
+}
+
 export function createProductSelection(
     product: IProduct | IRelatedProduct,
     colorIndex = 0
@@ -138,6 +148,17 @@ export const useCartStore = create<CartStore>()(
         }),
         {
             name: "cart-storage",
+            version: 1,
+            migrate: (persistedState): CartStore => {
+                const state = persistedState as CartStore & {
+                    items?: LegacyCartItem[];
+                };
+
+                return {
+                    ...state,
+                    items: (state.items ?? []).map(migrateCartItem),
+                };
+            },
         }
     )
 );

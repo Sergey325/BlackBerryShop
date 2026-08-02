@@ -1,7 +1,7 @@
 "use client"
 
 import CartItem from "@/app/(pages)/cart/components/CartItem";
-import {useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import CartSummary from "@/app/(pages)/cart/components/CartSummary";
 import axios from "axios";
 import {useCartStore} from "@/app/hooks/useCartStore";
@@ -15,6 +15,9 @@ import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTo
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {isValidUAPhone, validateName} from "@/app/utils/validation";
 import {getCookie} from "@/app/utils/getCookie";
+import type {IRelatedProduct} from "@/app/actions/getProducts";
+
+type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
 
 
 const paymentOptions = [
@@ -25,6 +28,40 @@ const paymentOptions = [
 const CartClient = () => {
     const cart = useCartStore();
     const [payment, setPayment] = useState(paymentOptions[0]);
+    const [relatedByProductId, setRelatedByProductId] = useState<RelatedProductsByProductId>({});
+    const productIdsKey = useMemo((): string => {
+        return [...new Set(cart.items.map(item => item.productId))]
+            .sort((a, b) => a - b)
+            .join(",");
+    }, [cart.items]);
+
+    const [loadedKey, setLoadedKey] = useState<string | null>(null);
+
+    const isRelatedLoading = !!productIdsKey && loadedKey !== productIdsKey;
+
+
+    useEffect(() => {
+        if (!productIdsKey) return;
+
+        const controller = new AbortController();
+        const productIds: number[] = productIdsKey.split(",").map(Number);
+
+        axios.post<RelatedProductsByProductId>(
+            "/api/products/related",
+            { productIds },
+            { signal: controller.signal }
+        ).then(response => {
+            setRelatedByProductId(response.data);
+        }).catch(error => {
+            if (!axios.isCancel(error)) {
+                console.error(error);
+            }
+        }).finally(() => {
+            setLoadedKey(productIdsKey);
+        });
+
+        return () => controller.abort();
+    }, [productIdsKey]);
 
     const [selectedCity, setSelectedCity] = useState<City | null>(null);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
@@ -195,8 +232,16 @@ const CartClient = () => {
 
                         {/* Список товаров */}
                         {cart.items.map((item, i) => (
-                            <div key={i} className="flex flex-col gap-4">
-                                <CartItem item={item} defaultExpanded={i === 0} />
+                            <div
+                                key={`${item.productColorId}-${item.size ?? ""}`}
+                                className="flex flex-col gap-4"
+                            >
+                                <CartItem
+                                    item={item}
+                                    related={relatedByProductId[item.productId] ?? []}
+                                    defaultExpanded={i === 0}
+                                    isLoading={isRelatedLoading}
+                                />
                                 {/*<div className="w-full border-t border-gray-300" style={{visibility: i === cart.items.length-1 ? "hidden" : "visible"}}/>*/}
                             </div>
                         ))}

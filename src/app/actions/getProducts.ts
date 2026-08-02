@@ -97,7 +97,7 @@ export async function getProducts(params: IProductsParams = {}) {
             FROM "Product"
             WHERE
                 name ILIKE ${"%" + title + "%"}
-                OR similarity(name, ${title}) > 0.2
+                OR similarity(name, ${title}) > 0.15
             ORDER BY score DESC
             LIMIT 100
         ` : null;

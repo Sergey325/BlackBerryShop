@@ -49,7 +49,7 @@ export default function MobileSearchOverlay() {
 
     return (
         <div
-            className={`md:hidden fixed inset-0 bg-white z-[60] flex flex-col transition-all duration-300 ${
+            className={`tablet::hidden fixed inset-0 bg-white z-[60] flex flex-col transition-all duration-300 ${
                 showModal ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
             }`}
         >

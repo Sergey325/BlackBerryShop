@@ -86,11 +86,23 @@ export default function Header() {
             <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-white">
                 {/* Логотип */}
                 <div className="flex items-center tablet:gap-2 cursor-pointer bg-white">
-                    <Link href="/" className="overflow-hidden">
-                        <Image src="/imgLogo.png" alt="BlackBerry" width={60} height={80} draggable={false} className="h-8 w-auto object-contain bg-white"/>
-                    </Link>
-                    <Link href="/" className={`text-3xl tablet:text-4xl bold ${vladimir.className}`}>
-                        Black Berry
+                    <Link
+                        href="/"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center tablet:gap-2 cursor-pointer bg-white"
+                    >
+                        <Image
+                            src="/imgLogo.png"
+                            alt="BlackBerry"
+                            width={60}
+                            height={80}
+                            draggable={false}
+                            className="h-8 w-auto object-contain bg-white"
+                        />
+
+                        <span className={`text-3xl tablet:text-4xl font-bold ${vladimir.className}`}>
+        Black Berry
+    </span>
                     </Link>
                 </div>
 

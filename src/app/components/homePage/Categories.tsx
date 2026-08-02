@@ -70,7 +70,13 @@ const Categories = async () => {
                         ))}
                 </div>
                 <div className="">
-                    <Accordion title={"Показати всі"} openUp containerClass="mt-2" buttonClass="justify-center gap-2 text-sm sm:text-base text-gray-600 hover:text-primary transition-colors duration-300">
+                    <Accordion
+                        title={"Показати всі"}
+                        openTitle={"Згорнути"}
+                        openUp
+                        containerClass="mt-2"
+                        buttonClass="justify-center gap-2 text-sm sm:text-base text-gray-600 hover:text-primary transition-colors duration-300"
+                    >
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-2">
                             {categories
                                 .filter((cat: ICategory) => !cat.isOnMainPage)

@@ -5,6 +5,7 @@ import {FaChevronDown} from "react-icons/fa";
 
 type Props = {
     title: string;
+    openTitle?: string; // лейбл в открытом состоянии, по умолчанию = title
     content?: string[]
     children?: ReactNode;
     initialState?: boolean;
@@ -14,15 +15,18 @@ type Props = {
 };
 
 const Accordion = ({
-    title,
-    content,
-    children,
-    initialState = false,
-    containerClass,
-    buttonClass,
-    openUp = false,
-}: Props) => {
+                       title,
+                       openTitle,
+                       content,
+                       children,
+                       initialState = false,
+                       containerClass,
+                       buttonClass,
+                       openUp = false,
+                   }: Props) => {
     const [open, setOpen] = useState(initialState);
+
+    const label = open && openTitle ? openTitle : title;
 
     const body = (
         <div
@@ -51,7 +55,7 @@ const Accordion = ({
             onClick={() => setOpen(!open)}
             className={`w-full flex items-center justify-between font-medium ${buttonClass} cursor-pointer`}
         >
-            {title}
+            {label}
             <FaChevronDown
                 className={`shrink-0 transition-transform duration-300 ${
                     open ? "rotate-180" : ""

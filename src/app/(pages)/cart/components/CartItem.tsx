@@ -14,13 +14,59 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import Accordion from "@/app/components/reusable/Accordion";
 import {FiTrash2} from "react-icons/fi";
+import type {IRelatedProduct} from "@/app/actions/getProducts";
 
 type Props = {
     item: CartItemType,
     defaultExpanded: boolean,
+    related: IRelatedProduct[],
+    isLoading: boolean,
 };
 
-const CartItem = ({item, defaultExpanded = false}: Props) => {
+function RelatedAndCustomizationSkeleton() {
+    return (
+        <div className="h-[444px] flex flex-col gap-4 ml-1 animate-pulse">
+            {/* Заголовок аккордеона */}
+            <div className="h-5 w-48 bg-gray-200 rounded-md" />
+
+            <div className="flex flex-col gap-4">
+                {/* Скелетон списка связанных товаров */}
+                <div className="flex flex-col gap-2 max-h-72 overflow-hidden pr-1">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div
+                            key={`related-skeleton-${i}`}
+                            className="flex items-center gap-3 pr-2 rounded-lg border border-gray-200 h-[80px]"
+                        >
+                            <div className="w-20 h-20 bg-gray-200 rounded-l-lg shrink-0" />
+                            <div className="flex flex-col flex-1 min-w-0 gap-2">
+                                <div className="h-3.5 w-3/4 bg-gray-200 rounded" />
+                                <div className="h-3 w-1/3 bg-gray-200 rounded" />
+                            </div>
+                            <div className="w-16 h-7 bg-gray-200 rounded-md shrink-0" />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Скелетон карусели кастомизации */}
+                <div className="flex gap-3 px-6 overflow-hidden">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div
+                            key={`custom-skeleton-${i}`}
+                            className="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 w-[110px] shrink-0"
+                        >
+                            <div className="w-[100px] h-[100px] bg-gray-200 rounded-md" />
+                            <div className="h-3 w-full bg-gray-200 rounded" />
+                            <div className="h-3 w-2/3 bg-gray-200 rounded" />
+                            <div className="w-full h-7 bg-gray-200 rounded-md mt-1" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) => {
     const router = useRouter()
     const cart = useCartStore()
     const cartItem = cart.items.find(
@@ -30,7 +76,7 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
         i.color === item.color
     )
 
-    const { relatedProducts, customizationOptions } = item.relatedProducts.reduce(
+    const { relatedProducts, customizationOptions } = related.reduce(
         (acc, product) => {
             if (product.category?.isDecoration) {
                 acc.customizationOptions.push(product);
@@ -49,8 +95,8 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
             return acc;
         },
         {
-            relatedProducts: [] as typeof item.relatedProducts,
-            customizationOptions: [] as typeof item.relatedProducts,
+            relatedProducts: [] as typeof related,
+            customizationOptions: [] as typeof related,
         }
     );
 
@@ -73,6 +119,10 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
             },
         }))  
     }, [cart, item]);
+
+    if (isLoading) {
+        return <RelatedAndCustomizationSkeleton />;
+    }
 
     return (
         <div className="mb-6">
@@ -213,7 +263,6 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                                                     0
                                                 ),
                                                 quantity: 1,
-                                                relatedProducts: [],
                                                 isDecoration: false
                                             })}
                                             className="text-xs font-medium px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-300 shrink-0 cursor-pointer"
@@ -268,12 +317,11 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                                                     0
                                                 ),
                                                 quantity: 1,
-                                                relatedProducts: [],
                                                 isDecoration: true
                                             })}
                                             className="text-xs font-medium w-full px-2 py-1.5 rounded-md bg-primary text-white hover:bg-primary/80 transition-colors duration-300 cursor-pointer"
                                         >
-                                            Обрати
+                                            Додати
                                         </button>
                                     </div>
                                 ))}

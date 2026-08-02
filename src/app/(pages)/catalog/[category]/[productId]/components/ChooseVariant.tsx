@@ -73,13 +73,13 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
     };
 
     const handleAddToCart = () => {
-        if (!selectedSize) {
+        if (!selectedSize && product.colors[0].sizes.length > 1) {
             toast("Виберіть розмір", {
                 icon: "⚠️",
             })
             return
         }
-        else if (!selectedSizeObj?.available) return;
+        else if (selectedSizeObj && !selectedSizeObj?.available) return;
 
         cart.addItem({
             ...createProductSelection(
@@ -90,7 +90,6 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
             ),
             quantity: count,
             size: selectedSize,
-            relatedProducts: product.relatedTo,
             isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();
@@ -138,7 +137,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
             </div>
 
             {
-                !product.category?.isDecoration &&
+                selectedProductColor.sizes.length > 1 &&
                 <div>
                     <div className="flex justify-between text-sm font-medium text-zinc-600 mt-6">
                         <p>Виберіть розмір:</p>
