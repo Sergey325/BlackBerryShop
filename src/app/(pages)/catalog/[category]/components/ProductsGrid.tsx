@@ -76,8 +76,6 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
             <div className="flex gap-4 w-full">
                 <div className="flex flex-col lg:flex-row w-full gap-2 lg:gap-4 lg:justify-between">
                     <div className="flex gap-2 lg:gap-4 order-2">
-
-
                         {/*gridView*/}
                         <div className="flex items-center bg-white border border-primary/30 rounded-xl p-1 gap-2">
                             {(['grid', 'list'] as const).map(m => (
@@ -109,7 +107,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 value={currentSort}
                                 onChange={() => {}}
                                 className=""
-                                buttonClassName="px-2! sm:px-4! gap-0! sm:gap-2!"
+                                buttonClassName="pl-2! pr-1.5! sm:pl-4! sm:pr-3! gap-0! sm:gap-2!"
                             />
                         </div>
                     </div>

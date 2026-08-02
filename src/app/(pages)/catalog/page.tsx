@@ -43,7 +43,6 @@ export default async function CatalogPage() {
     return (
         <main className="min-h-screen bg-gray-50">
             <div className="py-6 sm:py-10">
-
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
                     <Link href="/" className="hover:text-gray-600 transition-colors">

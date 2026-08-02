@@ -161,7 +161,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
                                     opacity: s.available ? 1 : 0.4,
                                     cursor: s.available ? "pointer" : "not-allowed",
                                 }}
-                                className="rounded-sm py-0.5 px-4 font-medium select-none"
+                                className="rounded-lg py-0.5 px-4 font-medium select-none"
                                 onClick={() => s.available && handleSizeChange(s.size)}
                             >
                                 {s.size}

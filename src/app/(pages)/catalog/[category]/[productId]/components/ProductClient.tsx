@@ -122,7 +122,7 @@ const ProductClient = ({ product, category }: Props) => {
                 <div className="p-6 w-full">
                     {tab === 'description' && (
                         <p className="text-sm lg:text-base whitespace-pre-line">
-                            {category.productsDescription}
+                            {product.description ? product.description : category.productsDescription}
                         </p>
                     )}
                     {tab === 'specifications' && (() => {

@@ -47,7 +47,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
             <div className="mx-auto py-6">
 
                 {/* Breadcrumb — desktop */}
-                <nav className="hidden sm:flex items-center gap-1.5 text-sm text-gray-400 mb-5">
+                <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
                     <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
                     <span>›</span>
                     <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>

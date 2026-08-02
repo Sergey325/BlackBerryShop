@@ -33,7 +33,12 @@ export async function POST(request: Request) {
 
         let order = await prisma.order.update({
             where: { invoiceId },
-            data: { status: newStatus as any },
+            data: {
+                status: newStatus as any,
+                ...(newStatus === "PAID" && {
+                    paidAt: new Date(),
+                }),
+            },
             include: { items: true },
         });
 

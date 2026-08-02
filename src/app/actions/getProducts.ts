@@ -57,7 +57,7 @@ export interface IProduct {
     id: number;
     name: string;
     slug: string;
-    description: string;
+    description: string | null;
     price: number;
     discount: number;
     material: IProductMaterial | null;
@@ -102,21 +102,6 @@ export async function getProducts(params: IProductsParams = {}) {
             LIMIT 100
         ` : null;
 
-        if (size?.length) {
-            where.colors = {
-                some: {
-                    sizes: {
-                        some: {
-                            size: {
-                                in: size,
-                            },
-                            available: true,
-                        },
-                    },
-                },
-            };
-        }
-
         if (material?.length) {
             where.material = {
                 name: {
@@ -125,14 +110,26 @@ export async function getProducts(params: IProductsParams = {}) {
             };
         }
 
-        if (color?.length) {
+        if (size?.length || color?.length) {
             where.colors = {
                 some: {
-                    color: {
-                        in: color
-                    }
-                }
-            }
+                    ...(color?.length && {
+                        color: {
+                            in: color,
+                        },
+                    }),
+                    ...(size?.length && {
+                        sizes: {
+                            some: {
+                                size: {
+                                    in: size,
+                                },
+                                available: true,
+                            },
+                        },
+                    }),
+                },
+            };
         }
 
         if (category) {

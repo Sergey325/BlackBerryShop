@@ -11,9 +11,9 @@ import Counter from "@/app/components/reusable/Counter";
 import Dropdown from "@/app/components/reusable/DropDown";
 import "react-multi-carousel/lib/styles.css";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
-import {MdDelete} from "react-icons/md";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import Accordion from "@/app/components/reusable/Accordion";
+import {FiTrash2} from "react-icons/fi";
 
 type Props = {
     item: CartItemType,
@@ -114,14 +114,14 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                                             value={item.size}
                                             textCenter
                                             className="max-w-min"
-                                            buttonClassName={"px-2! py-1! rounded-md!"}
+                                            buttonClassName={"pl-2! pr-1.5! py-1! rounded-md!"}
                                         />
                                         :
                                         <Dropdown
                                             placeholder="Виберіть розмір"
                                             options={sizeOptions}
                                             className="max-w-min"
-                                            buttonClassName={"px-2! py-1.5! rounded-md!"}
+                                            buttonClassName={"pl-2! pr-1.5! py-1.5! rounded-md!"}
                                         />
                                 }
                                 <div className="flex items-center gap-2">
@@ -145,8 +145,8 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
                         <Counter key={item.quantity} onChange={handleChangeQuantity} initialNumber={item.quantity}/>
                         <div className="lg:hidden block justify-self-center">
                             <ToolTip label="Видалити">
-                                <MdDelete
-                                    className="text-red-500 hover:text-red-300 transition cursor-pointer size-7"
+                                <FiTrash2
+                                    className="text-red-500 hover:text-red-300 transition cursor-pointer size-6"
                                     onClick={() => cart.removeItem(item.productColorId, item.size)}
                                 />
                             </ToolTip>
@@ -161,8 +161,8 @@ const CartItem = ({item, defaultExpanded = false}: Props) => {
 
                 <div className="hidden lg:block">
                     <ToolTip label="Видалити">
-                        <MdDelete
-                            className="text-red-500 hover:text-red-300 transition cursor-pointer size-8"
+                        <FiTrash2
+                            className="text-red-500 hover:text-red-300 transition cursor-pointer size-7"
                             onClick={() => cart.removeItem(item.productColorId, item.size)}
                         />
                     </ToolTip>

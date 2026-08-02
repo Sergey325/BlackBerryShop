@@ -75,7 +75,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
             {/* Colors */}
             {
-                options.colors.length > 1 &&
+                options.colors.length > 0 &&
                 <FilterSection title="Колір">
                     <div className="flex flex-wrap gap-2.5 p-1">
                         {options.colors.map((c,  index) => (
@@ -95,7 +95,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
             {/* Sizes */}
             {
-                options.sizes.length > 1 &&
+                options.sizes.length > 0 &&
                 <FilterSection title="Розмір">
                     <ul className="space-y-2">
                         {options.sizes.map((s, i) => (
@@ -117,7 +117,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
             {/* Materials */}
             {
-                options.materials.length > 1 &&
+                options.materials.length > 0 &&
                 <FilterSection title="Матеріал">
                     <ul className="space-y-2">
                         {options.materials.map((m, i) => (
