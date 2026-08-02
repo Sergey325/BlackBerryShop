@@ -17,9 +17,13 @@ type Props = {
     searchParams: Promise<IProductsParams>;
 };
 
-function normalizeArray(value?: string | string[]) {
+function normalizeArray(value?: string | string[]): string[] | undefined {
     if (!value) return undefined;
-    return Array.isArray(value) ? value : [value];
+
+    const values = Array.isArray(value) ? value : [value];
+    const normalizedValues = values.filter(Boolean);
+
+    return normalizedValues.length ? Array.from(new Set(normalizedValues)) : undefined;
 }
 
 const CategoryPage = async ({ params, searchParams }: Props) => {

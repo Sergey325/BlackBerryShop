@@ -32,9 +32,15 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const initialIdx = useMemo(() => {
         const colors = searchParams.getAll('color');          // все color-параметры
         if (!colors.length) return 0;
-        const last = colors[colors.length - 1];               // берём последний
-        const idx = product.colors.findIndex(c => c.color.toLowerCase() === last.toLowerCase());
-        return idx !== -1 ? idx : 0;
+
+        for (let i = colors.length - 1; i >= 0; i--) {
+            const idx = product.colors.findIndex(
+                c => c.color.toLowerCase() === colors[i].toLowerCase()
+            );
+            if (idx !== -1) return idx;
+        }
+
+        return 0;
     }, [searchParams, product.colors]);
 
     const [activeIdx, setActiveIdx] = useState(initialIdx);

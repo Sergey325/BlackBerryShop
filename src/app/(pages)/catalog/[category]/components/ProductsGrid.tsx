@@ -36,6 +36,23 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
     const currentSort = params.get("sorting") ?? "Featured";
     const view = params.get("view") ?? "grid";
 
+    // The URL is updated before the new RSC payload with `products` arrives.
+    // While that navigation is pending, do not render products from the previous
+    // color combination that no longer match the current URL.
+    const selectedColors: Set<string> = new Set(
+        params.getAll("color").map((color: string) => color.toLowerCase())
+    );
+    const visibleProducts: IProduct[] = (products ?? []).filter((product: IProduct) => {
+        if (selectedColors.size === 0) return true;
+
+        return product.colors.some((productColor) =>
+            selectedColors.has(productColor.color.toLowerCase())
+        );
+    });
+    const productsRenderKey: string = `${params.toString()}::${visibleProducts
+        .map((product: IProduct) => product.id)
+        .join(",")}`;
+
     const { clearFilters } = useClearFilters(`/catalog/${selectedCategorySlug}`);
 
     // const [perPage, setPerPage]       = useState('24');
@@ -118,14 +135,14 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                 </div>
             </div>
             {
-                products && products.length > 0  ?
+                visibleProducts.length > 0  ?
                     <div className="flex-1 min-w-0">
-                        <div className={`grid gap-3 sm:gap-4 ${
+                        <div key={productsRenderKey} className={`grid gap-3 sm:gap-4 ${
                             view === 'list'
                                 ? 'grid-cols-1'
                                 : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                         }`}>
-                            {products.map(p =>
+                            {visibleProducts.map(p =>
                                 <ProductCard key={p.id} product={p} list={view === 'list'} colors/>
                             )}
                         </div>
@@ -157,7 +174,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
 
                         {/* Scrollable filter content */}
                         <div className="flex-1 overflow-y-auto px-4 pb-4">
-                            <FiltersContent categories={categories} selectedCategorySlug={selectedCategorySlug} options={getFilterOptions(products)} />
+                            <FiltersContent categories={categories} selectedCategorySlug={selectedCategorySlug} options={getFilterOptions(visibleProducts)} />
                         </div>
 
                         {/* Apply button */}

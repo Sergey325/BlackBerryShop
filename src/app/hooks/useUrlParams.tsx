@@ -1,6 +1,5 @@
 import {useRouter, useSearchParams} from "next/navigation";
 import {useCallback, useEffect} from "react";
-import qs from "query-string";
 
 type Props = {
     multiplyParameter?: boolean
@@ -20,51 +19,34 @@ const useUrlParams = ({urlValue, urlParameter, multiplyParameter, setIsChecked, 
     }, [params, setIsChecked, urlParameter, urlValue]);
 
     const changeUrl = useCallback(() => {
-        let currentQuery = {};
+        const query = new URLSearchParams(params?.toString());
+        const existingValues = query.getAll(urlParameter);
+        const shouldRemoveValue = existingValues.includes(urlValue);
 
-        if (params) {
-            currentQuery = qs.parse(params.toString());
+        query.delete(urlParameter);
+
+        if (multiplyParameter) {
+            const updatedValues = shouldRemoveValue
+                ? existingValues.filter(value => value !== urlValue)
+                : [...existingValues, urlValue];
+
+            updatedValues.forEach(value => {
+                if (value) query.append(urlParameter, value);
+            });
+        } else if (!shouldRemoveValue && urlValue) {
+            query.set(urlParameter, urlValue);
         }
 
-        const existingValues = params?.getAll(urlParameter) || [];
+        const queryString = query.toString();
 
-        if (existingValues.includes(urlValue)) {
-            const updatedQuery = {
-                ...currentQuery,
-                [urlParameter]: existingValues.filter(value => value !== urlValue),
-            };
-            const url = qs.stringifyUrl({
-                url: baseUrl,
-                query: updatedQuery,
-            }, { skipNull: true });
-            router.replace(url, {
+        router.replace(
+            queryString ? `${baseUrl}?${queryString}` : baseUrl,
+            {
                 scroll: false,
-            });
-        } else {
-            let updatedQuery;
-
-            if (multiplyParameter) {
-                const updatedValues = [...existingValues, urlValue];
-                updatedQuery = {
-                    ...currentQuery,
-                    [urlParameter]: updatedValues,
-                };
-            } else {
-                updatedQuery = {
-                    ...currentQuery,
-                    [urlParameter]: urlValue,
-                };
             }
-
-            const url = qs.stringifyUrl({
-                url: baseUrl,
-                query: updatedQuery,
-            }, { skipNull: true });
-            router.replace(url, {
-                scroll: false,
-            });
-        }
+        );
     }, [params, urlParameter, urlValue, baseUrl, router, multiplyParameter]);
+
     return {
         changeUrl,
     }
