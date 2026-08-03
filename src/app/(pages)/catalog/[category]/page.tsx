@@ -56,7 +56,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     <span>›</span>
                     <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
                     <span>›</span>
-                    <span className="text-gray-700">{selectedCategory?.name}</span>
+                    <span className="text-gray-700 text-nowrap truncate">{selectedCategory?.name}</span>
                 </nav>
 
                 {/* ── Banner ────────────────────────────────────────────── */}

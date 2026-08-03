@@ -30,8 +30,9 @@ model Product {
   materialId Int?
   material   Material? @relation(fields: [materialId], references: [id])
 
-  relatedTo   ProductRelation[] @relation("ProductRelation_From")
-  relatedFrom ProductRelation[] @relation("ProductRelation_To")
+  relatedTo         ProductRelation[]  @relation("ProductRelation_From")
+  relatedFrom       ProductRelation[]  @relation("ProductRelation_To")
+  promoCodeProducts PromoCodeProduct[]
 }
 
 model ProductColor {
@@ -111,7 +112,8 @@ model Category {
 
   products Product[]
 
-  specifications CategorySpecification[]
+  specifications      CategorySpecification[]
+  promoCodeCategories PromoCodeCategory[]
 }
 
 enum Season {
@@ -182,7 +184,14 @@ model Order {
   updatedAt DateTime  @updatedAt
   paidAt    DateTime?
 
-  items OrderItem[]
+  items       OrderItem[]
+  promoCodeId Int?
+  promoCode   PromoCode?  @relation(fields: [promoCodeId], references: [id])
+
+  // снэпшот на момент применения — не зависит от последующих правок PromoCode
+  promoCodeSnapshot      String? // сам код, например "SALE20"
+  discountPercentApplied Float?
+  discountAmount         Float? // сумма скидки в валюте, посчитанная на момент заказа
 }
 
 model OrderItem {
@@ -205,6 +214,60 @@ model TelegramUser {
   chatId String  @unique
   name   String?
   role   String  @default("ADMIN")
+}
+
+model PromoCode {
+  id              Int    @id @default(autoincrement())
+  code            String @unique
+  discountPercent Float // 1-100, без ограничения максимальной суммы скидки
+
+  scopeType PromoScopeType @default(ALL)
+
+  startsAt  DateTime?
+  expiresAt DateTime?
+
+  maxUses   Int? // null = без ограничения по количеству
+  usedCount Int  @default(0)
+
+  isActive  Boolean @default(true) // ручное вкл/выкл
+  isDeleted Boolean @default(false) // soft delete, скрыт из админки
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories PromoCodeCategory[]
+  products   PromoCodeProduct[]
+  orders     Order[]
+}
+
+enum PromoScopeType {
+  ALL // действует на весь каталог
+  CATEGORY
+  PRODUCT
+}
+
+model PromoCodeCategory {
+  id Int @id @default(autoincrement())
+
+  promoCodeId Int
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, categoryId])
+}
+
+model PromoCodeProduct {
+  id Int @id @default(autoincrement())
+
+  promoCodeId Int
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([promoCodeId, productId])
 }
 
 model MonthlyExpense {

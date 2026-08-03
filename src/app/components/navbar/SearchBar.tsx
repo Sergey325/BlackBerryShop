@@ -40,7 +40,7 @@ export default function SearchBar() {
                 className={`py-2 mt-1 transition-[opacity,transform,color] ${open ? "opacity-0 pointer-events-none absolute" : "opacity-100"} cursor-pointer hover:text-primary`}
                 aria-label="Пошук"
             >
-                <BiSearch className="size-7"/>
+                <BiSearch className="size-6 md:size-8"/>
             </button>
 
             <div

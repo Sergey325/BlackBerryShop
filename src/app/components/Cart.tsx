@@ -1,13 +1,10 @@
 "use client"
 
-
 import {useMemo} from "react";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import {useRouter} from "next/navigation";
 import {LuShoppingCart} from "react-icons/lu";
 import toast from "react-hot-toast";
-
-
 
 const Cart = () => {
     const items = useCartStore(state => state.items);

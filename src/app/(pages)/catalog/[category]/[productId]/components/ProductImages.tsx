@@ -111,7 +111,7 @@ const ProductImages = ({ productColor }: Props) => {
                             ))}
                         </div>
 
-                        <div className="flex-1 items-center justify-center min-w-0 py-6">
+                        <div className="flex-1 items-center justify-center min-w-0 py-2">
                             <Image
                                 src={optimizeCloudinaryUrl(selectedImage, 1000)}
                                 width={550} height={550}

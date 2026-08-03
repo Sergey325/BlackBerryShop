@@ -174,6 +174,7 @@ const Hero = ({banners}: Props) => {
                                     {
                                         banner.ctaHref && banner.ctaLabel &&
                                         <Link
+                                            draggable={false}
                                             href={banner.ctaHref || ""}
                                             className="mt-10 w-full max-w-[480px] bg-primary hover:bg-[#6e3382]
                                                 text-white px-6 py-3 rounded-full transition-colors cursor-pointer block text-center">
@@ -220,8 +221,15 @@ const Hero = ({banners}: Props) => {
                                     className="object-cover object-center select-none"
                                 />
 
-                                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/35 to-black/10" />
+                                <div className="absolute inset-0 bg-black/10" />
 
+                                <div
+                                    className="absolute inset-0"
+                                    style={{
+                                        background:
+                                            "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)",
+                                    }}
+                                />
                                 <div className="relative z-10 flex flex-col gap-4 justify-between min-h-[450px] px-6 pt-10 pb-12">
                                     {
                                         banner.badge &&

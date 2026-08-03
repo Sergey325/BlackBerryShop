@@ -138,7 +138,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
 
             {
                 selectedProductColor.sizes.length > 1 &&
-                <div>
+                <div className="mt-auto">
                     <div className="flex justify-between text-sm font-medium text-zinc-600 mt-6">
                         <p>Виберіть розмір:</p>
                         <p
@@ -187,7 +187,16 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
                 </div>
             }
 
-            <div style={{marginTop: hasLining ? "8px" : "24px"}} className="flex flex-col md:flex-row gap-4 md:gap-8 md:items-center">
+            <div
+                style={{
+                    marginTop:
+                        !hasLining && selectedProductColor.sizes.length <= 1
+                            ? "auto"
+                            : selectedProductColor.sizes.length > 1
+                                ? "8px"
+                                : "24px",
+                }}
+                className="flex flex-col md:flex-row gap-4 md:gap-8 md:items-center">
                 <div className="flex gap-5 items-end">
 
                     <div className="flex gap-1.5 items-center">

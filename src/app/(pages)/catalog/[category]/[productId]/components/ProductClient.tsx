@@ -35,7 +35,7 @@ const ProductClient = ({ product, category }: Props) => {
                 <span>›</span>
                 <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
                 <span>›</span>
-                <Link href={`/catalog/${category.slug}`} className="hover:text-gray-600 transition-colors">{category.name}</Link>
+                <Link href={`/catalog/${category.slug}`} className="hover:text-gray-600 transition-colors text-nowrap truncate">{category.name}</Link>
                 <span>›</span>
                 <span className="text-gray-700 truncate">{product.name}</span>
             </nav>
@@ -62,7 +62,7 @@ const ProductClient = ({ product, category }: Props) => {
                         {/*<StarRating rating={rating} onChange={setRating} />*/}
                         <p className="text-sm md:text-base text-green-700 font-medium">В наявності</p>
                     </div>
-                    <div className="bg-white border border-y-2 border-gray-200 flex flex-col p-4 gap-1 w-full">
+                    <div className="bg-white flex-1 border border-y-2 border-gray-200 flex flex-col p-4 gap-1 w-full">
                         <ChooseVariant
                             product={product}
                             selectedProductColor={selectedProductColor}
