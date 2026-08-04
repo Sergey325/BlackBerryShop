@@ -85,9 +85,9 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                                 className="h-8 w-auto object-contain bg-white"
                             />
 
-                            <span className={`text-3xl tablet:text-4xl font-bold ${vladimir.className}`}>
-                        Black Berry
-                    </span>
+                            <span className={`mt-0.5 text-3xl tablet:text-4xl font-bold ${vladimir.className}`}>
+                                Black Berry
+                            </span>
                         </Link>
                     </div>
 

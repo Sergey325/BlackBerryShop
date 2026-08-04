@@ -83,7 +83,7 @@ export interface IOrder {
 }
 
 export type Season = {
-    id: "AUTUMN_WINTER" | "SPRING_SUMMER" | string;
+    id: "WINTER" | "SUMMER";
     label: string;
     icon: string;
     desc: string;

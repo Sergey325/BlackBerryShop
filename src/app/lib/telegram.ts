@@ -30,12 +30,12 @@ export async function sendTelegramMessage(chatId: string, text: string) {
         );
         const data = await response.json();
 
-        console.log({
-            user: chatId,
-            status: response.status,
-            ok: response.ok,
-            data,
-        });
+        // console.log({
+        //     user: chatId,
+        //     status: response.status,
+        //     ok: response.ok,
+        //     data,
+        // });
     } catch (error) {
         console.log(error);
     }

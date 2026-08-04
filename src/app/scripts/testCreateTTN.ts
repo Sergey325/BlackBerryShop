@@ -112,8 +112,8 @@ async function testCreateTTN() {
 
     const data = await res.json();
 
-    console.log("=== RAW RESPONSE ===");
-    console.log(JSON.stringify(data, null, 2));
+    // console.log("=== RAW RESPONSE ===");
+    // console.log(JSON.stringify(data, null, 2));
 
     if (data.success) {
         console.log("\n✅ ТТН успішно створено!");

@@ -20,8 +20,6 @@ export async function getBanners() {
             orderBy: [{ order: "asc" }, { id: "asc" }],
         });
 
-        console.log(banners);
-
         return banners
     } catch (error) {
         console.error("Failed to get banners:", error);

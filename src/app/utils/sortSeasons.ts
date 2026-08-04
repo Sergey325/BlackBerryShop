@@ -7,8 +7,8 @@ export function getActiveSeasonType(): Season["id"] {
     const isAutumnWinter = month >= 7 || month <= 1;
 
     return isAutumnWinter
-        ? "AUTUMN_WINTER"
-        : "SPRING_SUMMER";
+        ? "WINTER"
+        : "SUMMER";
 }
 
 export function sortSeasonsByCurrent(seasons: Season[]) {

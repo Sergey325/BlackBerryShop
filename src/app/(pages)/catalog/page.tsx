@@ -8,7 +8,7 @@ import Link from "next/link";
 // ─── Data ──────────────────────────────────────────────────────────────────
 const seasonsConfig = [
     {
-        id: 'SUMMER',
+        id: 'SUMMER' as "WINTER" | "SUMMER",
         label: 'Весна / Літо',
         icon: '☀️',
         desc: 'Легкі та яскраві аксесуари для сонячних днів',
@@ -17,7 +17,7 @@ const seasonsConfig = [
         particles: <PetalParticles />,
     },
     {
-        id: 'WINTER',
+        id: 'WINTER' as "WINTER" | "SUMMER",
         label: 'Осінь / Зима',
         icon: '❄️',
         desc: 'Теплі та затишні аксесуари для холодних днів',
@@ -42,7 +42,7 @@ export default async function CatalogPage() {
 
     return (
         <main className="min-h-screen bg-gray-50">
-            <div className="py-6 sm:py-10">
+            <div className="py-6">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
                     <Link href="/" className="hover:text-gray-600 transition-colors">

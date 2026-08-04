@@ -9,9 +9,44 @@ interface RelatedProductsRequest {
 
 export type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
 
+function parseRelatedProductsRequest(rawBody: string): RelatedProductsRequest | null {
+    if (!rawBody.trim()) {
+        return null;
+    }
+
+    try {
+        const parsedBody: unknown = JSON.parse(rawBody);
+
+        if (
+            parsedBody === null ||
+            typeof parsedBody !== "object" ||
+            Array.isArray(parsedBody)
+        ) {
+            return {};
+        }
+
+        return parsedBody as RelatedProductsRequest;
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            return null;
+        }
+
+        throw error;
+    }
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
     try {
-        const body: RelatedProductsRequest = await request.json();
+        const rawBody: string = await request.text();
+        const body: RelatedProductsRequest | null =
+            parseRelatedProductsRequest(rawBody);
+
+        if (!body) {
+            return NextResponse.json(
+                {message: "Request body must be valid JSON"},
+                {status: 400}
+            );
+        }
 
         if (
             !Array.isArray(body.productIds) ||

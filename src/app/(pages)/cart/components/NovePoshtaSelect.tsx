@@ -90,7 +90,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                                     key={city.ref}
                                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                     onClick={() => {
-                                        console.log(city)
+                                        // console.log(city)
                                         setSelectedCity(city);
                                         setIsLoading(true)
                                         setCities([]);
@@ -150,7 +150,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             <div
                                 key={w.ref}
                                 onClick={() => {
-                                    console.log(w)
+                                    // console.log(w)
                                     setSelectedWarehouse(w);
                                     setWarehouseQuery(w.description);
                                     setIsWarehousesOpen(false);

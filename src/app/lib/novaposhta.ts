@@ -144,7 +144,7 @@ async function getOrCreateRecipient({
 // }
 
 async function getWarehouseRef(cityRef: string, warehouseNumber: string) {
-    console.log(`[getWarehouseRef] cityRef: ${cityRef}, warehouseNumber: "${warehouseNumber}"`);
+    // console.log(`[getWarehouseRef] cityRef: ${cityRef}, warehouseNumber: "${warehouseNumber}"`);
 
     const res = await fetch(API_URL, {
         method: "POST",
@@ -160,11 +160,11 @@ async function getWarehouseRef(cityRef: string, warehouseNumber: string) {
     });
 
     const data = await res.json();
-    console.log(`[getWarehouseRef] found ${data.data?.length ?? 0} warehouses`);
+    // console.log(`[getWarehouseRef] found ${data.data?.length ?? 0} warehouses`);
     if (data.data?.length > 0) {
-        console.log(`[getWarehouseRef] result Ref: ${data.data[0].Ref}, Number: ${data.data[0].Number}, Description: ${data.data[0].Description}`);
+        // console.log(`[getWarehouseRef] result Ref: ${data.data[0].Ref}, Number: ${data.data[0].Number}, Description: ${data.data[0].Description}`);
     } else {
-        console.log(`[getWarehouseRef] ❌ no warehouse found for warehouseNumber="${warehouseNumber}"`);
+        // console.log(`[getWarehouseRef] ❌ no warehouse found for warehouseNumber="${warehouseNumber}"`);
     }
 
     return data.data[0]?.Ref;
@@ -193,22 +193,22 @@ export async function createTTN({
     serviceType: string;
     description: string;
 }) {
-    console.log("[createTTN] called with:", {
-        recipientFirstName,
-        recipientLastName,
-        recipientPhone,
-        recipientCityRef,
-        recipientWarehouseNumber,
-        cost,
-        serviceType,
-        description,
-    });
+    // console.log("[createTTN] called with:", {
+    //     recipientFirstName,
+    //     recipientLastName,
+    //     recipientPhone,
+    //     recipientCityRef,
+    //     recipientWarehouseNumber,
+    //     cost,
+    //     serviceType,
+    //     description,
+    // });
 
     const senderWarehouseRef = await getWarehouseRef(
         process.env.NOVA_POSHTA_SENDER_CITY_REF!,
         "121"
     );
-    console.log("[createTTN] senderWarehouseRef:", senderWarehouseRef);
+    // console.log("[createTTN] senderWarehouseRef:", senderWarehouseRef);
 
     // const recipientWarehouseRef = await getWarehouseRef(
     //     recipientCityRef,
@@ -222,7 +222,7 @@ export async function createTTN({
         phone: recipientPhone,
         cityRef: recipientCityRef,
     });
-    console.log("[createTTN] recipientRef:", recipientRef, "contactRecipientRef:", contactRecipientRef);
+    // console.log("[createTTN] recipientRef:", recipientRef, "contactRecipientRef:", contactRecipientRef);
 
     const payload = {
         apiKey: API_KEY,
@@ -261,7 +261,7 @@ export async function createTTN({
             AfterpaymentOnGoodsCost: codAmount > 0 ? String(codAmount) : undefined,
         },
     };
-    console.log("[createTTN] InternetDocument payload methodProperties:", JSON.stringify(payload.methodProperties, null, 2));
+    // console.log("[createTTN] InternetDocument payload methodProperties:", JSON.stringify(payload.methodProperties, null, 2));
 
     const res = await fetch(API_URL, {
         method: "POST",
@@ -269,7 +269,7 @@ export async function createTTN({
     });
 
     const data = await res.json();
-    console.log("[createTTN] InternetDocument response:", JSON.stringify(data, null, 2));
+    // console.log("[createTTN] InternetDocument response:", JSON.stringify(data, null, 2));
 
     if (!data.success) {
         console.error("NP TTN creation error:", data.errors);

@@ -71,7 +71,7 @@ export default function MobileSearchOverlay() {
 
             <div className="flex-1 overflow-y-auto search-scrollbar">
                 {isPending &&
-                    <div className="h-full flex items-center justify-center">
+                    <div className="h-1/3 flex items-center justify-center">
                         <Loader isFullScreen={false}/>
                     </div>
                 }

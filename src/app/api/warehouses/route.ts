@@ -27,7 +27,7 @@ export async function POST(request: Request) {
             number: w.Number,
             description: w.Description,
         }));
-        console.log("server",warehouses, data, process.env.NOVA_POSHTA_API_KEY);
+
         return NextResponse.json(warehouses, { status: 200 });
     } catch (error) {
         return NextResponse.json(error, { status: 500 });

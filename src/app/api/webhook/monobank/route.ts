@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        console.log("Webhook received:", body);
+        // console.log("Webhook received:", body);
 
         const { status } = body;
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
         const newStatus = statusMap[status];
         if (!newStatus) {
-            console.log("Unknown status, skipping:", status);
+            // console.log("Unknown status, skipping:", status);
             return NextResponse.json(null, { status: 200 });
         }
 

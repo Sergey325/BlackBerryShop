@@ -43,25 +43,30 @@ const CartClient = () => {
     useEffect(() => {
         if (!productIdsKey) return;
 
-        const controller = new AbortController();
+        let isCurrent = true;
         const productIds: number[] = productIdsKey.split(",").map(Number);
 
         axios.post<RelatedProductsByProductId>(
             "/api/products/related",
-            { productIds },
-            { signal: controller.signal }
+            { productIds }
         ).then(response => {
-            setRelatedByProductId(response.data);
+            if (isCurrent) {
+                setRelatedByProductId(response.data);
+            }
         }).catch(error => {
-            if (!axios.isCancel(error)) {
+            if (isCurrent) {
                 console.error(error);
             }
         }).finally(() => {
-            setLoadedKey(productIdsKey);
-            setHasLoadedOnce(true);
+            if (isCurrent) {
+                setLoadedKey(productIdsKey);
+                setHasLoadedOnce(true);
+            }
         });
 
-        return () => controller.abort();
+        return () => {
+            isCurrent = false;
+        };
     }, [productIdsKey]);
 
     const [selectedCity, setSelectedCity] = useState<City | null>(null);
