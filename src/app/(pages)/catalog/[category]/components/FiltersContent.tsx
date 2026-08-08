@@ -56,7 +56,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                                 <Link
                                     href={href}
                                     scroll={false}
-                                    className={`flex items-center justify-between text-sm px-2.5 py-1.5 rounded-lg transition-colors ${
+                                    className={`flex items-center justify-between text-sm px-2.5 py-1.5 rounded-lg transition-colors gap-0.5 ${
                                         cat.slug === selectedCategorySlug
                                             ? 'bg-primary/10 text-primary font-semibold'
                                             : 'text-gray-600 hover:bg-gray-100'

@@ -22,11 +22,26 @@ const ProductClient = ({ product, category }: Props) => {
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
     // Выбранный цвет — на уровне родителя, чтобы шарить между ProductImages и ChooseVariant
-    const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
-    const selectedColorName = params.get("colorName") ?? product.colors[0]?.colorName;
-    const selectedProductColor = useMemo(() => {
-        return product.colors.find(c => c.color === selectedColorHex && c.colorName === selectedColorName) ?? product.colors[0];
-    }, [product, selectedColorHex, selectedColorName]);
+    // const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
+    // const selectedColorName = params.get("colorName") ?? product.colors[0]?.colorName;
+    const selectedColorId: number = Number(params.get("colorId") ?? product.colors[0]?.id);
+    const selectedSize: string | null = params.get("size");
+    const [selectedProductColor, isAvailable, lowStockQuantity] = useMemo(() => {
+        const color =
+            product.colors.find(color => color.id === selectedColorId) ?? product.colors[0];
+        const size = color.sizes.find(item => item.size === selectedSize)
+            ?? (color.sizes.length === 1 ? color.sizes[0] : undefined);
+
+        return [
+            color,
+            size
+                ? size.available && (size.quantity === null || size.quantity > 0)
+                : color.sizes.some(item => item.available && (item.quantity === null || item.quantity > 0)),
+            size?.quantity !== null && size?.quantity !== undefined && size.quantity <= 10 && size.quantity > 0
+                ? size.quantity
+                : null,
+        ] as const;
+    }, [product.colors, selectedColorId, selectedSize]);
 
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
@@ -41,13 +56,14 @@ const ProductClient = ({ product, category }: Props) => {
             </nav>
             <div className="border border-gray-200 rounded-xl py-3 px-2 lg:p-4 w-full bg-white shadow-xs">
                 <p className="text-lg lg:text-[28px] font-medium">
-                    {product.name.includes(" ")
-                        ? product.name.replace(
-                            /\s+(\S+)$/,
-                            ` ${selectedProductColor.colorName}, $1`
-                        )
-                        : `${product.name} ${selectedProductColor.colorName}`
-                    }
+                    {product.name}
+                    {/*{product.name.includes(" ")*/}
+                    {/*    ? product.name.replace(*/}
+                    {/*        /\s+(\S+)$/,*/}
+                    {/*        ` ${selectedProductColor.colorName}, $1`*/}
+                    {/*    )*/}
+                    {/*    : `${product.name} ${selectedProductColor.colorName}`*/}
+                    {/*}*/}
                 </p>
             </div>
             <div className="flex flex-col lg:flex-row gap-3 md:gap-10 lg:gap-4 items-stretch w-full bg-transparent">
@@ -60,13 +76,25 @@ const ProductClient = ({ product, category }: Props) => {
                             <p>Унісекс</p>
                         </div>
                         {/*<StarRating rating={rating} onChange={setRating} />*/}
-                        <p className="text-sm md:text-base text-green-700 font-medium">В наявності</p>
+                        {
+                            isAvailable
+                                ?
+                                <p className="text-sm md:text-base text-green-700 font-medium">
+                                    {lowStockQuantity !== null
+                                        ? `В наявності — залишилося ${lowStockQuantity} шт.`
+                                        : "В наявності"}
+                                </p>
+                                :
+                                <p className="text-sm md:text-base text-red-700 font-medium">Не в наявності</p>
+
+                        }
                     </div>
                     <div className="bg-white flex-1 border border-y-2 border-gray-200 flex flex-col p-4 gap-1 w-full">
                         <ChooseVariant
                             product={product}
                             selectedProductColor={selectedProductColor}
                             hasLining={category.hasLining || false}// hasLining={category.specifications.some(s => s.name === "Підкладка")}
+                            isAvailable={isAvailable}
                         />
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">

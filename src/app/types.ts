@@ -49,6 +49,7 @@ export interface IOrderItem {
     id: number;
     orderId: number;
     productId: number;
+    productSizeId: number | null;
     name: string;
     price: number;
     quantity: number;

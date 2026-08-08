@@ -1,8 +1,8 @@
 "use client"
 
 import CartItem from "@/app/(pages)/cart/components/CartItem";
-import {useEffect, useMemo, useRef, useState} from "react";
-import CartSummary from "@/app/(pages)/cart/components/CartSummary";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import CartSummary, {AppliedPromoCode} from "@/app/(pages)/cart/components/CartSummary";
 import axios from "axios";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import NovaPoshtaSelect from "@/app/(pages)/cart/components/NovePoshtaSelect";
@@ -12,12 +12,19 @@ import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
-import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {isValidUAPhone, validateName} from "@/app/utils/validation";
 import {getCookie} from "@/app/utils/getCookie";
 import type {IRelatedProduct} from "@/app/actions/getProducts";
+import type {IProductSize} from "@/app/actions/getProducts";
+import type {CartItem as CartItemType} from "@/app/types";
 
 type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
+type InventoryResponse = {
+    items: {
+        productColorId: number;
+        sizes: IProductSize[];
+    }[];
+};
 
 
 const paymentOptions = [
@@ -27,7 +34,13 @@ const paymentOptions = [
 
 const CartClient = () => {
     const cart = useCartStore();
+    const cartItemsRef = useRef<CartItemType[]>(cart.items);
+    const replaceCartItems = cart.replaceItems;
     const [payment, setPayment] = useState(paymentOptions[0]);
+    const [appliedPromoCode, setAppliedPromoCode] = useState<AppliedPromoCode | null>(null);
+    const handlePromoCodeChange = useCallback((promoCode: AppliedPromoCode | null): void => {
+        setAppliedPromoCode(promoCode);
+    }, []);
     const productIdsKey = useMemo((): string => {
         return [...new Set(cart.items.map(item => item.productId))]
             .sort((a, b) => a - b)
@@ -37,6 +50,101 @@ const CartClient = () => {
     const [relatedByProductId, setRelatedByProductId] = useState<RelatedProductsByProductId>({});
     const [loadedKey, setLoadedKey] = useState<string | null>(null);
     const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+
+    useEffect((): void => {
+        cartItemsRef.current = cart.items;
+    }, [cart.items]);
+
+    const syncCartInventory = useCallback(async (blockOnError: boolean): Promise<boolean> => {
+        const currentItems: CartItemType[] = cartItemsRef.current;
+
+        if (currentItems.length === 0) return true;
+
+        try {
+            const response = await axios.post<InventoryResponse>("/api/inventory", {
+                productColorIds: [...new Set(currentItems.map((item: CartItemType): number => item.productColorId))],
+            });
+            const inventoryByColorId = new Map(
+                response.data.items.map((item) => [item.productColorId, item.sizes] as const)
+            );
+            const updatedItems: CartItemType[] = [];
+            let adjustedCount = 0;
+            let removedCount = 0;
+            let inventoryChanged = false;
+
+            for (const item of currentItems) {
+                const sizes: IProductSize[] | undefined = inventoryByColorId.get(item.productColorId);
+                const selectedSize: IProductSize | undefined = sizes?.find(
+                    (size: IProductSize): boolean => size.size === item.size
+                ) ?? (sizes?.length === 1 ? sizes[0] : undefined);
+
+                if (!item.size && sizes && sizes.length > 1) {
+                    const hasAvailableSize: boolean = sizes.some(
+                        (size: IProductSize): boolean =>
+                            size.available && (size.quantity === null || size.quantity > 0)
+                    );
+
+                    if (!hasAvailableSize) {
+                        removedCount += 1;
+                        continue;
+                    }
+
+                    if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
+                    updatedItems.push({...item, sizes});
+                    continue;
+                }
+
+                if (
+                    !selectedSize
+                    || !selectedSize.available
+                    || (selectedSize.quantity !== null && selectedSize.quantity <= 0)
+                ) {
+                    removedCount += 1;
+                    continue;
+                }
+
+                const quantity: number = selectedSize.quantity === null
+                    ? item.quantity
+                    : Math.min(item.quantity, selectedSize.quantity);
+
+                if (quantity !== item.quantity) adjustedCount += 1;
+                if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
+
+                updatedItems.push({...item, sizes: sizes ?? item.sizes, quantity});
+            }
+
+            if (adjustedCount > 0 || removedCount > 0 || inventoryChanged) {
+                cartItemsRef.current = updatedItems;
+                replaceCartItems(updatedItems);
+            }
+
+            if (adjustedCount > 0 && removedCount > 0) {
+                toast.error("Залишки змінилися: кількість скориговано, недоступні товари видалено");
+            } else if (adjustedCount > 0) {
+                toast.error("Обрана кількість недоступна. Кількість у кошику скориговано");
+            } else if (removedCount > 0) {
+                toast.error("Деяких товарів вже немає в наявності. Їх видалено з кошика");
+            }
+
+            return adjustedCount === 0 && removedCount === 0;
+        } catch (error: unknown) {
+            console.error(error);
+            if (blockOnError) {
+                toast.error("Не вдалося перевірити актуальні залишки. Спробуйте ще раз");
+            }
+            return false;
+        }
+    }, [replaceCartItems]);
+
+    useEffect(() => {
+        void syncCartInventory(false);
+        const handleFocus = (): void => {
+            void syncCartInventory(false);
+        };
+
+        window.addEventListener("focus", handleFocus);
+        return (): void => window.removeEventListener("focus", handleFocus);
+    }, [syncCartInventory]);
 
     const isRelatedLoading = !!productIdsKey && loadedKey !== productIdsKey && !hasLoadedOnce;
 
@@ -83,6 +191,10 @@ const CartClient = () => {
 
         return Math.round(total * 100) / 100;
     }, [cart.items]);
+    const promoCartItems = useMemo(() => cart.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+    })), [cart.items]);
 
     const contactRef = useRef<HTMLDivElement | null>(null);
     const deliveryRef = useRef<HTMLDivElement | null>(null);
@@ -129,6 +241,9 @@ const CartClient = () => {
             return;
         }
         else {
+            const inventoryIsCurrent: boolean = await syncCartInventory(true);
+            if (!inventoryIsCurrent) return;
+
             const fbp = getCookie('_fbp');
             const fbc = getCookie('_fbc');
 
@@ -148,7 +263,7 @@ const CartClient = () => {
                     warehouseRef: selectedWarehouse.ref,
                 },
                 paymentMethod: payment.value,
-                totalAmount: payment.value === "CASH_ON_DELIVERY" ? 150 : totalPrice,
+                promoCode: appliedPromoCode?.code ?? null,
                 items: cart.items.map(item => ({
                     productId: Number(item.productId),
                     name: item.productName,
@@ -177,10 +292,21 @@ const CartClient = () => {
             //     })),
             // });
 
-            const res = await axios.post("/api/checkout", data);
+            try {
+                const res = await axios.post("/api/checkout", data);
 
-            if (res.data.redirectUrl) {
-                window.location.href = res.data.redirectUrl; // редирект на оплату
+                if (res.data.redirectUrl) {
+                    window.location.href = res.data.redirectUrl; // редирект на оплату
+                }
+            } catch (error: unknown) {
+                if (axios.isAxiosError(error) && error.response?.status === 409) {
+                    await syncCartInventory(false);
+                }
+                const message: string = axios.isAxiosError<{error?: string}>(error)
+                    ? error.response?.data?.error ?? "Не вдалося оформити замовлення"
+                    : "Не вдалося оформити замовлення";
+
+                toast.error(message);
             }
         }
     }
@@ -267,6 +393,9 @@ const CartClient = () => {
                 <div className="xl:sticky w-full min-w-0 xl:flex-1 xl:top-20">
                     <CartSummary
                         totalPrice={totalPrice}
+                        items={promoCartItems}
+                        appliedPromoCode={appliedPromoCode}
+                        onPromoCodeChange={handlePromoCodeChange}
                         payment={payment}
                         address={
                             {

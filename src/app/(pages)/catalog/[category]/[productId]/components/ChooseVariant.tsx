@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {IProductColor} from "@/app/actions/getProducts";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
@@ -9,7 +9,6 @@ import Button from "@/app/components/reusable/Button";
 import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import useSizesModal from "@/app/hooks/useSizesModal";
-import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
@@ -20,9 +19,10 @@ type Props = {
     product: IProductWithRelated;
     selectedProductColor: IProductColor;
     hasLining: boolean;
+    isAvailable: boolean;
 };
 
-const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
+const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }: Props) => {
     const params = useSearchParams();
     const router = useRouter();
 
@@ -38,7 +38,8 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
 
     // Размер зависит от выбранного цвета
     const selectedSize = params.get("size") ?? "";
-    const productNameFromUrl = params?.get("product");
+    const colorIdFromUrl = params.get("colorId");
+    const searchParamsString = params.toString();
 
     const cartModal = useCartModal();
     const cart = useCartStore();
@@ -46,40 +47,64 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
 
     const selectedSizeObj = selectedProductColor.sizes.find(
         (s) => s.size === selectedSize
+    ) ?? (selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0] : undefined);
+    const selectedSizeAvailable: boolean = Boolean(
+        selectedSizeObj?.available
+        && (selectedSizeObj.quantity === null || (selectedSizeObj.quantity ?? 0) > 0)
     );
+    const existingCartQuantity: number = useMemo((): number => {
+        return cart.items.find(item =>
+            item.productColorId === selectedProductColor.id
+            && item.size === selectedSize
+        )?.quantity ?? 0;
+    }, [cart.items, selectedProductColor.id, selectedSize]);
+    const maximumToAdd: number | null | undefined = selectedSizeObj?.quantity === null
+        ? null
+        : selectedSizeObj?.quantity === undefined
+            ? undefined
+            : Math.max(0, selectedSizeObj.quantity - existingCartQuantity);
 
     useEffect(() => {
-        if (!productNameFromUrl) {
-            const qs = new URLSearchParams(params);
-            qs.set("colorName", selectedProductColor.colorName);
-            qs.set("color", selectedColorHex);
-            if (selectedSize) qs.set("size", selectedSize);
-            router.replace(`?${qs.toString()}`);
-        }
-    }, [productNameFromUrl]);
+        if (colorIdFromUrl) return;
+
+        const qs = new URLSearchParams(searchParamsString);
+        qs.set("colorId", selectedProductColor.id.toString());
+        router.replace(`?${qs.toString()}`, {scroll: false});
+    }, [colorIdFromUrl, router, searchParamsString, selectedProductColor.id]);
 
     const handleColorChange = (colorItem: IProductColor) => {
+        setCount(1);
         const qs = new URLSearchParams(params);
-        qs.set("color", colorItem.color);
-        qs.set("colorName", colorItem.colorName);
+        // qs.set("color", colorItem.color);
+        // qs.set("colorName", colorItem.colorName);
+        qs.set("colorId", colorItem.id.toString());
         qs.delete("size");
         router.push(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleSizeChange = (size: string) => {
+        setCount(1);
         const qs = new URLSearchParams(params);
         qs.set("size", size);
         router.push(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleAddToCart = () => {
-        if (!selectedSize && product.colors[0].sizes.length > 1) {
+        if (!selectedSize && selectedProductColor.sizes.length > 1) {
             toast("Виберіть розмір", {
                 icon: "⚠️",
             })
             return
         }
-        else if (selectedSizeObj && !selectedSizeObj?.available) return;
+        else if (!selectedSizeAvailable) {
+            toast.error("Цього варіанта вже немає в наявності");
+            return;
+        }
+        else if (maximumToAdd !== null && maximumToAdd !== undefined && count > maximumToAdd) {
+            setCount(Math.max(1, maximumToAdd));
+            toast.error("Обрана кількість недоступна. Кількість скориговано");
+            return;
+        }
 
         cart.addItem({
             ...createProductSelection(
@@ -157,11 +182,11 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
                                     borderWidth: selectedSize === s.size ? "2px" : "1px",
                                     borderColor: selectedSize === s.size ? "#823D9A" : "#454649",
                                     color: selectedSize === s.size ? "#823D9A" : "#454649",
-                                    opacity: s.available ? 1 : 0.4,
-                                    cursor: s.available ? "pointer" : "not-allowed",
+                                    opacity: s.available && (s.quantity === null || s.quantity > 0) ? 1 : 0.4,
+                                    cursor: s.available && (s.quantity === null || s.quantity > 0) ? "pointer" : "not-allowed",
                                 }}
                                 className="rounded-lg py-0.5 px-4 font-medium select-none"
-                                onClick={() => s.available && handleSizeChange(s.size)}
+                                onClick={() => s.available && (s.quantity === null || s.quantity > 0) && handleSizeChange(s.size)}
                             >
                                 {s.size}
                             </div>
@@ -213,12 +238,19 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining }: Props) => {
                         </span>
                         </div>
                     ) : null}
-                    <Counter initialNumber={count} onChange={setCount} />
+                    <Counter
+                        initialNumber={count}
+                        max={maximumToAdd === 0 ? 1 : maximumToAdd}
+                        disabled={!selectedSizeAvailable || maximumToAdd === 0}
+                        onChange={setCount}
+                        onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
+                    />
 
                 </div>
                 <div className="flex justify-between w-full mt-1">
                     <Button
                         label="Додати до кошика"
+                        disabled={!isAvailable || maximumToAdd === 0}
                         onClick={() => handleAddToCart()}
                     />
                 </div>

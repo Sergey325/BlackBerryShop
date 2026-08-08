@@ -118,12 +118,12 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {
                     <div className="flex gap-6 w-full">
-                        <div className="hidden sm:flex max-h-min flex-col gap-4 bg-white rounded-xl px-4 md:px-6 py-2 md:py-4 shadow-sm">
+                        <div className="hidden sm:flex flex-col h-fit gap-4 bg-white rounded-xl px-4 md:px-6 py-2 md:py-4 shadow-sm">
                             <div className="flex items-center gap-1.5 font-semibold text-gray-900 w-52 shrink-0">
                                 <FiSliders className="w-4 h-4" />
                                 Фільтри
                             </div>
-                            <aside className="hidden sm:block w-52 shrink-0 self-start">
+                            <aside className="hidden sm:block w-52 shrink-0">
                                 <FiltersContent categories={categories} selectedCategorySlug={selectedCategory?.slug} options={getFilterOptions(products)} />
                             </aside>
                         </div>

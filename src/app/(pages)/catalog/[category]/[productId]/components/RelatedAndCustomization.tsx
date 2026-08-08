@@ -44,7 +44,7 @@ const RelatedAndCustomization = ({related}: Props) => {
                         }}
                     >
                         {relatedProducts.map((p, i) => (
-                            <div key={p.id+i} className="py-1">
+                            <div key={p.id+i} className="py-1 h-full">
                                 <ProductCard product={p}/>
                             </div>
                         ))}
@@ -67,7 +67,7 @@ const RelatedAndCustomization = ({related}: Props) => {
                         }}
                     >
                         {customizationOptions.map((p, i) => (
-                            <div key={p.id+i} className="py-1">
+                            <div key={p.id+i} className="py-1 h-full">
                                 <ProductCard product={p}/>
                             </div>
                         ))}

@@ -12,6 +12,7 @@ export const relatedProductSelect = {
             id: true,
             name: true,
             slug: true,
+            season: true,
             isDecoration: true,
         },
     },

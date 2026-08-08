@@ -41,7 +41,7 @@ const BestSellers = ({products}: Props) => {
                 {/* Carousel — extra horizontal padding so custom arrows don't clip */}
                 <CarouselWrapper itemClass="px-1 sm:px-2" carouselClass="py-2" responsive={carouselResponsive}>
                     {bestSellerProducts.map((p, i) => (
-                        <div key={p.id+i} className="py-1">
+                        <div key={p.id+i} className="py-1 h-full">
                             <ProductCard product={p}/>
                         </div>
                     ))}

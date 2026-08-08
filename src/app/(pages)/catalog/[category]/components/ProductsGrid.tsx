@@ -137,7 +137,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
             {
                 visibleProducts.length > 0  ?
                     <div className="flex-1 min-w-0">
-                        <div key={productsRenderKey} className={`grid gap-3 sm:gap-4 ${
+                        <div key={productsRenderKey} className={`grid gap-4 sm:gap-6 ${
                             view === 'list'
                                 ? 'grid-cols-1'
                                 : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'

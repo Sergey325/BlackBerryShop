@@ -17,7 +17,6 @@ model Product {
   slug        String
   description String?
   price       Float
-  quantity    Int?
   discount    Float   @default(0)
 
   createdAt DateTime @default(now())
@@ -60,8 +59,10 @@ model ProductSize {
   id             Int          @id @default(autoincrement())
   size           String
   available      Boolean      @default(true)
+  quantity       Int?
   productColorId Int
   productColor   ProductColor @relation(fields: [productColorId], references: [id], onDelete: Cascade)
+  orderItems     OrderItem[]
 }
 
 model Material {
@@ -199,14 +200,18 @@ model OrderItem {
   orderId Int
   order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId Int
-  name      String
-  price     Float
-  quantity  Int
-  color     String
-  colorName String?
-  size      String?
-  imageUrl  String
+  productId     Int
+  productSizeId Int?
+  productSize   ProductSize? @relation(fields: [productSizeId], references: [id], onDelete: SetNull)
+  name          String
+  price         Float
+  quantity      Int
+  color         String
+  colorName     String?
+  size          String?
+  imageUrl      String
+
+  @@index([productSizeId])
 }
 
 model TelegramUser {
@@ -271,13 +276,14 @@ model PromoCodeProduct {
 }
 
 model MonthlyExpense {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   year        Int
   month       Int // 1-12
   amount      Float
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expenseDate DateTime? @db.Date
 
   @@index([year, month])
 }

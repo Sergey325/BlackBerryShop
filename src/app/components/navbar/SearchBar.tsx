@@ -67,7 +67,7 @@ export default function SearchBar() {
                 <div className="absolute top-full left-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white border border-primary rounded-lg shadow-lg z-50 overflow-hidden search-scrollbar">
                     {isPending && (
                         <div className="p-4 text-sm text-gray-500 flex gap-2 items-center">
-                            <AiOutlineLoading className="size-4 animate-spin"/>
+                            <AiOutlineLoading className="size-4 animate-spin text-primary"/>
                             <p>Пошук...</p>
                         </div>
                     )}

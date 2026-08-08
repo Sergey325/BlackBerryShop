@@ -2,6 +2,7 @@ import {useState, useEffect, useMemo, useRef, SetStateAction, Dispatch} from "re
 import axios from "axios";
 import useClickOutside from "@/app/hooks/useClickOutside";
 import {FiX} from "react-icons/fi";
+import {AiOutlineLoading} from "react-icons/ai";
 import {City, Warehouse} from "@/app/types";
 
 type Props = {
@@ -26,7 +27,8 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
 
     const [isWarehousesOpen, setIsWarehousesOpen] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false)
+    const [isCityLoading, setIsCityLoading] = useState(false);
+    const [isWarehouseLoading, setIsWarehouseLoading] = useState(false);
 
     const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -37,28 +39,61 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
 
     // Поиск городов с debounce
     useEffect(() => {
-        if (cityQuery.length < 2) return;
+        if (cityQuery.length < 2) {
+            return;
+        }
+
+        let isCurrent = true;
 
         const timeout = setTimeout(async () => {
             try {
                 const res = await axios.post("/api/cities", {
                     query: cityQuery,
                 });
-                setCities(res.data);
+                if (isCurrent) {
+                    setCities(res.data);
+                }
             } catch (e) {
                 console.error(e);
+            } finally {
+                if (isCurrent) {
+                    setIsCityLoading(false);
+                }
             }
         }, 300);
 
-        return () => clearTimeout(timeout);
+        return () => {
+            isCurrent = false;
+            clearTimeout(timeout);
+        };
     }, [cityQuery]);
     //
     // Загрузка отделений после выбора города
     useEffect(() => {
-        if (!selectedCity) return;
-        axios.post("/api/warehouses", { cityRef: selectedCity.ref }).then((res) => {
-            setWarehouses(res.data);
-        }).then(() => setIsLoading(false));
+        if (!selectedCity) {
+            return;
+        }
+
+        let isCurrent = true;
+
+        axios.post("/api/warehouses", { cityRef: selectedCity.ref })
+            .then((res) => {
+                if (isCurrent) {
+                    setWarehouses(res.data);
+                }
+            })
+            .catch((error: unknown) => {
+                console.error(error);
+            })
+            .finally(() => {
+                if (isCurrent) {
+                    setIsWarehouseLoading(false);
+                }
+            });
+
+        return () => {
+            isCurrent = false;
+        };
     }, [selectedCity]);
 
     return (
@@ -75,6 +110,8 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
 
                             setCityQuery(value);
                             setSelectedCity(null);
+                            setIsCityLoading(value.length >= 2);
+                            setIsWarehouseLoading(false);
 
                             if (value.length < 2) {
                                 setCities([]);
@@ -83,16 +120,24 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                         placeholder="Виберіть місто"
                         className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm"
                     />
-                    {cities.length > 0 && !selectedCity && (
-                        <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-auto">
-                            {cities.map((city) => (
+                    {(isCityLoading || cities.length > 0) && !selectedCity && (
+                        <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-auto shadow-lg">
+                            {isCityLoading && (
+                                <div className="p-4 text-sm text-gray-500 flex gap-2 items-center">
+                                    <AiOutlineLoading className="size-4 animate-spin text-primary" />
+                                    <p>Пошук...</p>
+                                </div>
+                            )}
+                            {!isCityLoading && cities.map((city) => (
                                 <div
                                     key={city.ref}
                                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                     onClick={() => {
                                         // console.log(city)
                                         setSelectedCity(city);
-                                        setIsLoading(true)
+                                        setIsCityLoading(false);
+                                        setIsWarehouseLoading(true);
+                                        setIsWarehousesOpen(true);
                                         setCities([]);
                                         setWarehouses([]);
                                         setSelectedWarehouse(null);
@@ -146,7 +191,14 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                 {isWarehousesOpen && !selectedWarehouse && (
                     <div className="border border-gray-200 rounded-md max-h-60 overflow-y-auto">
 
-                        {filteredWarehouses.map((w) => (
+                        {isWarehouseLoading && (
+                            <div className="p-4 text-sm text-gray-500 flex gap-2 items-center">
+                                <AiOutlineLoading className="size-4 animate-spin text-primary"/>
+                                <p>Пошук...</p>
+                            </div>
+                        )}
+
+                        {!isWarehouseLoading && filteredWarehouses.map((w) => (
                             <div
                                 key={w.ref}
                                 onClick={() => {
@@ -161,7 +213,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             </div>
                         ))}
 
-                        {filteredWarehouses.length === 0 && selectedCity && !isLoading && (
+                        {filteredWarehouses.length === 0 && selectedCity && !isWarehouseLoading && (
                             <div className="px-4 py-2 text-gray-400">
                                 Нічого не знайдено
                             </div>

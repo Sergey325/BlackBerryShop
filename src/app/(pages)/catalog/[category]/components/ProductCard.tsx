@@ -21,6 +21,12 @@ type Props = {
 const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const searchParams = useSearchParams();
 
+    const isAvailable: boolean = product.colors.some(color =>
+        color.sizes.some(size =>
+            size.available && (size.quantity === null || size.quantity > 0)
+        )
+    );
+
     const cartModal = useCartModal();
     const cart = useCartStore();
 
@@ -53,7 +59,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const [visibleCount, setVisibleCount] = useState(6);
 
     useEffect(() => {
-        const update = () => setVisibleCount(window.innerWidth < 640 ? list ? 7 : 4 : list ? 10 : 7);
+        const update = () => setVisibleCount(window.innerWidth < 640 ? list ? 7 : 4 : list ? 10 : 6);
         update();
         window.addEventListener('resize', update);
         return () => window.removeEventListener('resize', update);
@@ -62,7 +68,9 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const visibleColors = product.colors.slice(0, visibleCount);
     const hasMoreColors = product.colors.length > visibleColors.length;
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (): void => {
+        if (!isAvailable) return;
+
         cart.addItem({
             ...createProductSelection(product, activeIdx),
             quantity: 1,
@@ -85,7 +93,19 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
         return (
             <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
                 <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
-                    <Image src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)} alt={product.name} fill unoptimized draggable={false} className="object-cover select-none group-hover:scale-105 transition-transform"/>
+                    <Image
+                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)}
+                        alt={product.name}
+                        fill
+                        unoptimized
+                        draggable={false}
+                        className={`object-cover select-none transition-all ${isAvailable ? "group-hover:scale-105" : "grayscale opacity-60"}`}
+                    />
+                    {!isAvailable && (
+                        <div className="absolute inset-x-1.5 bottom-1.5 rounded-md bg-slate-900/80 px-1.5 py-1 text-center text-[10px] font-semibold leading-tight text-white backdrop-blur-sm">
+                            Немає в наявності
+                        </div>
+                    )}
                 </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
                     <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
@@ -119,8 +139,15 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     <div className="flex items-center justify-between">
                         <p className="font-bold text-gray-900 self-end">{product.price} грн</p>
                         <button
-                            onClick={() => handleAddToCart()}
-                            className="shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors cursor-pointer"
+                            type="button"
+                            onClick={handleAddToCart}
+                            disabled={!isAvailable}
+                            className={`shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors ${
+                                isAvailable
+                                    ? "bg-primary hover:bg-primary/90 cursor-pointer"
+                                    : "bg-slate-300 cursor-not-allowed"
+                            }`}
+                            aria-label={isAvailable ? `Додати ${product.name} до кошика` : `${product.name} немає в наявності`}
                         >
                             <MdOutlineShoppingCart className="size-4"/>
                             <span className="hidden sm:block">До кошика</span>
@@ -153,93 +180,95 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                 }
             }}
             href={`/catalog/${product.category?.slug || ""}/${product.id}`}
-            className="bg-primary/7 rounded-2xl border border-primary/50
-               shadow-sm hover:shadow-md hover:-translate-y-0.5
-               transition-all duration-200 group select-none cursor-pointer
-               w-full max-w-[280px]  mx-auto flex flex-col justify-between
-            "
+            className={`group mx-auto flex h-full w-full max-w-[300px] cursor-pointer select-none flex-col overflow-hidden rounded-2xl border border-primary/15 bg-white shadow-md  transition-all duration-300 hover:-translate-y-1 hover:border-primary/35  ${colors ? "sm:shadow-[0_3px_14px_rgba(15,23,42,0.09)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.14)]" : "sm:shadow-sm"}`}
         >
             {/* Product image */}
-            <div
-                className="aspect-square relative overflow-hidden shrink-0 bg-white rounded-t-2xl flex items-center justify-center p-3">
-                <div className="relative w-full h-full">
+            <div className="aspect-square shrink-0 bg-white p-2 sm:p-4">
+                <div className="relative size-full overflow-hidden rounded-lg">
                     <Image
                         src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
                         alt={product.name}
-                        fill unoptimized
+                        fill
+                        unoptimized
                         draggable={false}
-                        className="object-contain rounded-xl "
+                        className={`object-contain transition-all duration-500 ease-out ${
+                            isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-55"
+                        }`}
                     />
-                </div>
-
-                {/* Color swatches */}
-                {
-                    visibleColors.length > 1 && colors &&
-                    <div className="absolute bottom-0 left-2.5">
-                        <div className="flex gap-1.5 items-center">
-                            {visibleColors.map((c, i) => (
-                                <button
-                                    key={c.id}
-                                    onMouseEnter={() => setActiveIdx(i)}
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        // e.stopPropagation();
-                                        setActiveIdx(i)
-                                    }}
-                                    className={`size-4 rounded-full cursor-pointer border shadow-sm transition-transform hover:scale-125 ${
-                                        activeIdx === i
-                                            ? 'border-primary border-2 scale-125'
-                                            : 'border-gray-800'
-                                    }`}
-                                    style={{ backgroundColor: c.color }}
-                                    aria-label={`Колір ${i + 1}`}
-                                />
-                            ))}
-
-                            {hasMoreColors && (
-                                <span className="text-gray-600 text-xl leading-none">
-                                    ...
-                                </span>
-                            )}
+                    {!isAvailable && (
+                        <div className="absolute inset-0 flex items-end justify-center bg-white/10 p-2 sm:items-center">
+                            <span className="rounded-full bg-slate-900/80 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm sm:text-xs">
+                                Немає в наявності
+                            </span>
                         </div>
-
-
-                        <p className="text-[11px] text-gray-600 mt-1 -ml-1">
-                            Доступно {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
-                        </p>
-                    </div>
-                }
+                    )}
+                </div>
             </div>
 
-            {/* Info row */}
-            <div className="p-1 sm:py-2 sm:px-3 flex justify-between w-full h-full">
-                <div className="min-w-0 flex flex-col w-full h-full justify-between">
+            {/* Product details */}
+            <div className={`flex flex-1 flex-col px-2 pb-3 pt-2.5 sm:py-4 sm:px-3 ${product.category?.season === "WINTER" ? "bg-winter" : "bg-summer"}`}>
+                <p className="line-clamp-2 mb-1 text-xs font-medium leading-[18px] text-slate-700 transition-colors group-hover:text-slate-950 sm:text-sm sm:leading-5">
+                    {product.name}
+                </p>
 
-                    <p className="text-[12px] sm:text-sm text-slate-800 font-medium min-h-[36px] break-all sm:wrap-break-word">
-                        {product.name}
-                    </p>
+                {visibleColors.length > 1 && colors && (
+                    <div className="mt-1 mt-auto flex min-h-6 items-center gap-1.5" aria-label="Доступні кольори">
+                        {visibleColors.map((c, i) => (
+                            <button
+                                key={c.id}
+                                type="button"
+                                onMouseEnter={() => setActiveIdx(i)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setActiveIdx(i);
+                                }}
+                                className={`size-4 cursor-pointer rounded-full  transition-all hover:scale-110 ${
+                                    activeIdx === i
+                                        ? ' border border-primary'
+                                        : ' border border-slate-500'
+                                }`}
+                                style={{ backgroundColor: c.color }}
+                                aria-label={`Колір ${i + 1}`}
+                            />
+                        ))}
 
-                    <div className="flex justify-between items-center w-full">
-                        <p className="font-bold text-gray-900 text-sm sm:text-base pl-1 sm:pl-0">
-                            {product.price}
-                            <span className="sm:hidden"> ₴</span>
-                            <span className="hidden sm:inline"> грн</span>
-                        </p>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCart()
-                            }}
-                            className="
-                                shrink-0  size-7 sm:w-10 sm:h-10 bg-primary hover:bg-primary/90 active:bg-primary/60
-                                text-white rounded-full flex items-center justify-center cursor-pointer
-                            "
+                        {hasMoreColors && (
+                            <span className="ml-0.5 text-[12px] font-medium text-slate-700">
+                                +{product.colors.length - visibleColors.length}
+                            </span>
+                        )}
+
+                        <span
+                            className="hidden md:inline ml-auto truncate text-[11px] text-slate-500"
+                            title={product.colors[activeIdx].colorName}
                         >
-                            <MdOutlineShoppingCart className="size-4" />
-                        </button>
+                            {product.colors[activeIdx].colorName}
+                        </span>
                     </div>
+                )}
 
+                <div className={`${colors ? "mt-1" : "mt-auto pt-1"} flex w-full items-end justify-between gap-2 `}>
+                    <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
+                        {product.price} <span className="text-xs font-medium text-slate-500 sm:text-sm">грн</span>
+                    </p>
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAddToCart();
+                        }}
+                        disabled={!isAvailable}
+                        className={`flex size-9 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-colors sm:size-10 ${
+                            isAvailable
+                                ? "cursor-pointer bg-primary hover:bg-primary/90 active:bg-primary/80"
+                                : "cursor-not-allowed bg-slate-300 shadow-none"
+                        }`}
+                        aria-label={isAvailable ? `Додати ${product.name} до кошика` : `${product.name} немає в наявності`}
+                    >
+                        <MdOutlineShoppingCart className="size-[18px] sm:size-5" />
+                    </button>
                 </div>
             </div>
         </Link>

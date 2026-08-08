@@ -31,15 +31,129 @@ export async function POST(request: Request) {
 
 
 
-        let order = await prisma.order.update({
-            where: { invoiceId },
-            data: {
-                status: newStatus as any,
-                ...(newStatus === "PAID" && {
-                    paidAt: new Date(),
-                }),
-            },
-            include: { items: true },
+        let order = await prisma.$transaction(async (tx) => {
+            const existingOrder = await tx.order.findUniqueOrThrow({
+                where: {invoiceId},
+                select: {
+                    id: true,
+                    promoCodeId: true,
+                    items: {
+                        select: {
+                            productSizeId: true,
+                            productId: true,
+                            color: true,
+                            size: true,
+                            quantity: true,
+                        },
+                    },
+                },
+            });
+            let shouldCountPromoCode = false;
+
+            if (newStatus === "PAID") {
+                const paidTransition = await tx.order.updateMany({
+                    where: {
+                        id: existingOrder.id,
+                        paidAt: null,
+                    },
+                    data: {
+                        status: "PAID",
+                        paidAt: new Date(),
+                    },
+                });
+
+                shouldCountPromoCode = paidTransition.count === 1;
+
+                if (shouldCountPromoCode) {
+                    const requestedByProductSizeId = new Map<number, number>();
+
+                    for (const item of existingOrder.items) {
+                        let productSizeId: number | null = item.productSizeId;
+
+                        if (productSizeId === null) {
+                            const legacyMatches = await tx.productSize.findMany({
+                                where: {
+                                    productColor: {
+                                        productId: item.productId,
+                                        color: item.color,
+                                    },
+                                    ...(item.size ? {size: item.size} : {}),
+                                },
+                                select: {id: true},
+                                take: 2,
+                            });
+
+                            if (legacyMatches.length !== 1) {
+                                throw new Error(`Order ${existingOrder.id} item has no resolvable productSizeId`);
+                            }
+
+                            productSizeId = legacyMatches[0].id;
+                        }
+
+                        requestedByProductSizeId.set(
+                            productSizeId,
+                            (requestedByProductSizeId.get(productSizeId) ?? 0) + item.quantity
+                        );
+                    }
+
+                    for (const [productSizeId, requestedQuantity] of requestedByProductSizeId) {
+                        const updatedCount = await tx.$executeRaw`
+                            UPDATE "ProductSize"
+                            SET
+                                "quantity" = CASE
+                                    WHEN "quantity" IS NULL THEN NULL
+                                    ELSE "quantity" - ${requestedQuantity}
+                                END,
+                                "available" = CASE
+                                    WHEN "quantity" IS NULL THEN "available"
+                                    WHEN "quantity" - ${requestedQuantity} <= 0 THEN FALSE
+                                    ELSE "available"
+                                END
+                            WHERE
+                                "id" = ${productSizeId}
+                                AND "available" = TRUE
+                                AND ("quantity" IS NULL OR "quantity" >= ${requestedQuantity})
+                        `;
+
+                        if (updatedCount !== 1) {
+                            throw new Error(
+                                `Insufficient stock for productSize ${productSizeId} in paid order ${existingOrder.id}`
+                            );
+                        }
+                    }
+                }
+
+                if (!shouldCountPromoCode) {
+                    await tx.order.update({
+                        where: {id: existingOrder.id},
+                        data: {status: "PAID"},
+                    });
+                }
+            } else {
+                await tx.order.update({
+                    where: {id: existingOrder.id},
+                    data: {status: newStatus as "CANCELLED" | "REFUNDED"},
+                });
+            }
+
+            if (shouldCountPromoCode && existingOrder.promoCodeId !== null) {
+                await tx.$executeRaw`
+                    UPDATE "PromoCode"
+                    SET
+                        "usedCount" = "usedCount" + 1,
+                        "isActive" = CASE
+                            WHEN "maxUses" IS NOT NULL AND "usedCount" + 1 >= "maxUses" THEN FALSE
+                            ELSE "isActive"
+                        END,
+                        "updatedAt" = NOW()
+                    WHERE "id" = ${existingOrder.promoCodeId}
+                `;
+            }
+
+            return tx.order.findUniqueOrThrow({
+                where: {id: existingOrder.id},
+                include: {items: true},
+            });
         });
 
         orderId = order.id;

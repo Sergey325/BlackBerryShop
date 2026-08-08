@@ -10,6 +10,7 @@ type CartStore = {
     clearCart: () => void;
     changeQuantity: (item: CartItem, quantity: number) => void;
     changeSize: (item: CartItem, size: string) => void;
+    replaceItems: (items: CartItem[]) => void;
 };
 
 type LegacyCartItem = CartItem & {
@@ -37,10 +38,11 @@ export function createProductSelection(
         discount: product.discount,
         photoUrl: color.images[0]?.url ?? "",
         price: product.price,
-        productName: product.name.replace(
-            /\s+(\S+)$/,
-            ` ${color.colorName}, $1`
-        ),
+        productName: product.name,
+        // product.name.replace(
+        //     /\s+(\S+)$/,
+        //     ` ${color.colorName}, $1`
+        // ),
         slug: product.slug,
         categorySlug: product.category!.slug,
     };
@@ -143,6 +145,8 @@ export const useCartStore = create<CartStore>()(
                     });
                 }
             },
+
+            replaceItems: (items) => set({items}),
 
             clearCart: () => set({ items: [] }),
         }),

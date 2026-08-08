@@ -25,6 +25,7 @@ export interface IRelatedProduct {
 export interface IProductSize {
     id: number;
     size: string;
+    quantity: number | null;
     available: boolean;
     productColorId: number;
 }

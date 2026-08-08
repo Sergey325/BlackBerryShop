@@ -15,6 +15,8 @@ import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import Accordion from "@/app/components/reusable/Accordion";
 import {FiTrash2} from "react-icons/fi";
 import type {IRelatedProduct} from "@/app/actions/getProducts";
+import {getCartItemMaximum} from "@/app/utils/inventory";
+import toast from "react-hot-toast";
 
 type Props = {
     item: CartItemType,
@@ -103,6 +105,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
     const totalAmount = useMemo(() => {
         return calculateTotalPrice(cartItem?.price ?? 1, cartItem?.quantity ?? 1, cartItem?.discount ?? 0)
     }, [cartItem?.price, cartItem?.quantity, cartItem?.discount]);
+    const maximumQuantity: number | null | undefined = getCartItemMaximum(item);
 
     const handleChangeQuantity = useCallback((quantity: number) => {
         cart.changeQuantity(item, quantity);
@@ -111,13 +114,15 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
 
     const sizeOptions = useMemo(() => {
         if (!item.sizes) return []
-        return item.sizes.map((s) => ({
+        return item.sizes
+            .filter((s) => s.available && (s.quantity === null || s.quantity > 0))
+            .map((s) => ({
             value: s.size,
             label: s.size,
             onClick: function () {
                 cart.changeSize(item, this.value);
             },
-        }))  
+            }))
     }, [cart, item]);
 
     if (isLoading) {
@@ -125,7 +130,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
     }
 
     return (
-        <div className="mb-6">
+        <div className="mb-0">
             {/*<hr className="h-px bg-primary/30 border-0 w-full lg:hidden"/>*/}
 
             <div className="grid grid-cols-1 lg:grid-cols-[80px_minmax(0,1fr)_120px_140px_30px_100px] gap-4 items-center text-base lg:text-lg pb-4">
@@ -141,12 +146,14 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         height={80}
                         draggable={false}
                         className="object-contain select-none rounded-lg"
-                        onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                        // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                        onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)}
                     />
 
-                    <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex flex-col gap-4 min-w-0">
                         <span
-                            onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                            // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                            onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)}
                             className="font-medium text-base lg:text-base hover:text-primary transition-colors duration-300"
                         >
                             {item.productName}
@@ -191,15 +198,20 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
 
                 {/* Счётчик + удаление + цена (мобайл) */}
                 <div className="flex items-center justify-between lg:justify-center gap-3">
-                    <div className="flex items-center justify-between lg:justify-center gap-3">
-                        <Counter key={item.quantity} onChange={handleChangeQuantity} initialNumber={item.quantity}/>
+                    <div className="flex items-center justify-between lg:justify-center gap-5">
+                        <Counter
+                            key={`${item.quantity}-${maximumQuantity ?? "unlimited"}`}
+                            onChange={handleChangeQuantity}
+                            initialNumber={item.quantity}
+                            max={maximumQuantity}
+                            disabled={maximumQuantity === 0}
+                            onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
+                        />
                         <div className="lg:hidden block justify-self-center">
-                            <ToolTip label="Видалити">
-                                <FiTrash2
-                                    className="text-red-500 hover:text-red-300 transition cursor-pointer size-6"
-                                    onClick={() => cart.removeItem(item.productColorId, item.size)}
-                                />
-                            </ToolTip>
+                            <FiTrash2
+                                className="text-red-500 hover:text-red-300 transition cursor-pointer size-6"
+                                onClick={() => cart.removeItem(item.productColorId, item.size)}
+                            />
                         </div>
                     </div>
 
@@ -209,7 +221,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
 
                 {/* Удалить */}
 
-                <div className="hidden lg:block">
+                <div className="hidden lg:block mt-2">
                     <ToolTip label="Видалити">
                         <FiTrash2
                             className="text-red-500 hover:text-red-300 transition cursor-pointer size-7"
@@ -251,7 +263,9 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                         />
                                         <div className="flex flex-col flex-1 min-w-0 gap-1">
                                                 <span
-                                                    onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                                                    onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&colorId=${item.productColorId}`)}
+
+                                                    // onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                                                     className="text-sm font-medium truncate transition-colors hover:text-primary cursor-pointer">{related.name}
                                                 </span>
                                             <span className="text-xs text-gray-500">{related.price.toFixed(2)} грн</span>
@@ -302,7 +316,8 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                             className="object-contain rounded-md select-none"
                                         />
                                         <span
-                                            onClick={() => router.push(`/catalog/${variant.category?.slug}/${variant.id}?&color=%23${variant.colors[0].color?.slice(1)}&colorName=${variant.colors[0].colorName}`)}
+                                            //router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)
+                                            onClick={() => router.push(`/catalog/${variant.category?.slug}/${variant.id}?&colorId=%23${variant.colors[0].id}`)}
                                             className="text-xs font-medium text-center line-clamp-2 hover:text-primary cursor-pointer transition-colors"
                                         >
                                             {variant.name}

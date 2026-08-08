@@ -7,6 +7,7 @@ export interface IRelatedProductCategory {
     id: number;
     name: string;
     slug: string;
+    season: Season;
     isDecoration: boolean | null;
 }
 
