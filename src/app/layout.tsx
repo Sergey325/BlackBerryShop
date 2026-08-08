@@ -63,6 +63,8 @@ export default function RootLayout({
                         </div>
                     </main>
                 </Container>
+                <Analytics/>
+                <SpeedInsights/>
                 <Footer/>
                 <Script id="facebook-pixel" strategy="afterInteractive">
                 {`
