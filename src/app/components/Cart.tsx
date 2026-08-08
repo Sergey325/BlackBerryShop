@@ -1,13 +1,10 @@
 "use client"
 
-
 import {useMemo} from "react";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import {useRouter} from "next/navigation";
 import {LuShoppingCart} from "react-icons/lu";
 import toast from "react-hot-toast";
-
-
 
 const Cart = () => {
     const items = useCartStore(state => state.items);
@@ -29,7 +26,7 @@ const Cart = () => {
                 router.push("/cart")
             }
         }}>
-            <LuShoppingCart className="text-gray-900 group-hover:text-[#823D9A] text-2xl md:text-3xl" />
+            <LuShoppingCart className="text-gray-900 group-hover:text-primary text-2xl md:text-3xl" />
             <span
                 style={{
                     display: amountCart ? "block" : "none",
@@ -37,11 +34,14 @@ const Cart = () => {
                 className="
                 text-zinc-700 text-sm
                 absolute top-[-6px] right-[-16px]
+                aspect-square
                 rounded-full
-                group-hover:text-[#823D9A]
+                group-hover:text-primary
                 border
+                size-5
+                text-center
                 bg-gray-50
-                px-1.5
+                px-1
             ">
                 {amountCart ? amountCart : ""}
             </span>

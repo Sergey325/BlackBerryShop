@@ -6,9 +6,11 @@ const Container: React.FC<ContainerProps> = ({children}) => {
     return (
         <div
             className="
+                w-full
                 max-w-[1414px]
-                px-6
-                lg:mx-auto
+                mx-auto
+                px-4
+                lg:px-6
             "
         >
             {children}

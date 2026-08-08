@@ -1,14 +1,52 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartItem } from "@/app/types";
+import {CartItem, ProductSelection} from "@/app/types";
+import {IProduct, IRelatedProduct} from "@/app/actions/getProducts";
 
 type CartStore = {
     items: CartItem[];
     addItem: (item: CartItem) => void;
-    removeItem: (productColorId: number, size: string) => void;
+    removeItem: (productColorId: number, size?: string) => void;
     clearCart: () => void;
     changeQuantity: (item: CartItem, quantity: number) => void;
+    changeSize: (item: CartItem, size: string) => void;
+    replaceItems: (items: CartItem[]) => void;
 };
+
+type LegacyCartItem = CartItem & {
+    relatedProducts?: unknown;
+};
+
+function migrateCartItem(item: LegacyCartItem): CartItem {
+    const migratedItem: LegacyCartItem = {...item};
+    delete migratedItem.relatedProducts;
+    return migratedItem;
+}
+
+export function createProductSelection(
+    product: IProduct | IRelatedProduct,
+    colorIndex = 0
+): ProductSelection {
+    const color = product.colors[colorIndex];
+
+    return {
+        productId: product.id,
+        productColorId: color.id,
+        sizes: color.sizes,
+        color: color.color,
+        colorName: color.colorName,
+        discount: product.discount,
+        photoUrl: color.images[0]?.url ?? "",
+        price: product.price,
+        productName: product.name,
+        // product.name.replace(
+        //     /\s+(\S+)$/,
+        //     ` ${color.colorName}, $1`
+        // ),
+        slug: product.slug,
+        categorySlug: product.category!.slug,
+    };
+}
 
 export const useCartStore = create<CartStore>()(
     persist(
@@ -68,10 +106,63 @@ export const useCartStore = create<CartStore>()(
                 set({ items: updated });
             },
 
+            changeSize: (item, newSize) => {
+                const items = get().items;
+
+                const existing = items.find(
+                    i =>
+                        i.productColorId === item.productColorId &&
+                        i.size === newSize
+                );
+
+                if (existing) {
+                    set({
+                        items: items
+                            .filter(
+                                i =>
+                                    !(
+                                        i.productColorId === item.productColorId &&
+                                        i.size === item.size
+                                    )
+                            )
+                            .map(i =>
+                                i === existing
+                                    ? {
+                                        ...i,
+                                        quantity: i.quantity + item.quantity,
+                                    }
+                                    : i
+                            ),
+                    });
+                } else {
+                    set({
+                        items: items.map(i =>
+                            i.productColorId === item.productColorId &&
+                            i.size === item.size
+                                ? { ...i, size: newSize }
+                                : i
+                        ),
+                    });
+                }
+            },
+
+            replaceItems: (items) => set({items}),
+
             clearCart: () => set({ items: [] }),
         }),
         {
             name: "cart-storage",
+            version: 1,
+            migrate: (persistedState): CartStore => {
+                const state = persistedState as CartStore & {
+                    items?: LegacyCartItem[];
+                };
+
+                return {
+                    ...state,
+                    items: (state.items ?? []).map(migrateCartItem),
+                };
+            },
         }
     )
 );

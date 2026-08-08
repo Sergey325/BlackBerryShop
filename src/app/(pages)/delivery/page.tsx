@@ -1,4 +1,5 @@
 import {FaTruck, FaCreditCard, FaMobileAlt, FaInstagram, FaTelegram} from "react-icons/fa";
+import Link from "next/link";
 
 export default function DeliveryPage() {
     return (
@@ -23,7 +24,7 @@ export default function DeliveryPage() {
                         <p className="font-medium">Доставка у відділення Нової Пошти</p>
                         <p className="text-sm text-gray-600 mt-1">
                             Оберіть зручне відділення під час оформлення замовлення — товар буде
-                            відправлено протягом 1-2 робочих днів.
+                            відправлено протягом 1-4 робочих днів.
                         </p>
                     </div>
 
@@ -99,16 +100,16 @@ export default function DeliveryPage() {
                     або за номером телефону — ми завжди раді допомогти.
                 </p>
                 <div className="flex justify-center gap-4 mt-4 text-base md:text-lg">
-                    <a href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                    <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-pink-600 hover:text-pink-700 transition">
                         <FaInstagram className="size-6"/>
                         Instagram
-                    </a>
-                    <a href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                    </Link>
+                    <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-2 text-sky-600 hover:text-sky-700 transition">
                         <FaTelegram className="size-6"/>
                         Telegram
-                    </a>
+                    </Link>
                 </div>
             </div>
 

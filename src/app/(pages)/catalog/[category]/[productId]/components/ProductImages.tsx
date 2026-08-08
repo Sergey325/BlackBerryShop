@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { IProductColor } from "@/app/actions/getProducts";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 type Props = {
     productColor: IProductColor;
@@ -51,13 +52,15 @@ const ProductImages = ({ productColor }: Props) => {
                     containerClass="carousel-container"
                     itemClass="carousel-item-padding-40-px">
                     {productColor.images.map((slide) => (
-                        <PhotoView key={slide.url} src={slide.url}>
+                        <PhotoView key={slide.url} src={optimizeCloudinaryUrl(slide.url, 2000)}>
                             <Image
-                                src={slide.url}
+                                src={optimizeCloudinaryUrl(slide.url, 500)}
                                 width={250}
                                 height={250}
+                                unoptimized
+                                draggable={false}
                                 priority
-                                className="object-contain h-full mx-auto select-none cursor-zoom-in"
+                                className="object-contain h-full mx-auto select-none cursor-zoom-in rounded-lg"
                                 alt={slide.url}
                             />
                         </PhotoView>
@@ -78,11 +81,12 @@ const ProductImages = ({ productColor }: Props) => {
                             itemClass="carousel-item-padding-20-px">
                             {productColor.images.map((slide) => (
                                 <Image
-                                    src={slide.url}
+                                    src={optimizeCloudinaryUrl(slide.url, 200)}
                                     key={slide.url}
                                     width={100} height={100}
-                                    priority
-                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-[#823D9A] border-2"
+                                    unoptimized
+                                    draggable={false}
+                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-primary border-2"
                                     alt="productImageOption"
                                     onClick={() => setSelectedImage(slide.url)}
                                 />
@@ -90,15 +94,15 @@ const ProductImages = ({ productColor }: Props) => {
                         </Carousel>
                     </div>
                     :
-                    <div className="hidden lg:flex flex-row gap-4">
+                    <div className="hidden lg:flex min-w-0 flex-row gap-4">
                         <div className="flex flex-col gap-3 shrink-0">
                             {productColor.images.map(image => (
-                                <div key={image.url} className="overflow-hidden rounded-sm border-[#823D9A] border-[1.5px]">
+                                <div key={image.url} className="overflow-hidden rounded-lg border-primary border-[1.5px]">
                                     <Image
-                                        src={image.url}
-                                        priority
+                                        src={optimizeCloudinaryUrl(image.url, 120)}
+                                        unoptimized priority
+                                        draggable={false}
                                         width={60} height={60}
-                                        quality={50}
                                         alt="productImageOption"
                                         className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition"
                                         onClick={() => setSelectedImage(image.url)}
@@ -107,14 +111,16 @@ const ProductImages = ({ productColor }: Props) => {
                             ))}
                         </div>
 
-                        <Image
-                            src={selectedImage}
-                            width={600} height={600}
-                            className="object-contain aspect-square mx-auto select-none pointer-events-none py-10 px-3"
-                            alt="ProductImage"
-                            quality={100}
-                            priority
-                        />
+                        <div className="flex-1 items-center justify-center min-w-0 py-2">
+                            <Image
+                                src={optimizeCloudinaryUrl(selectedImage, 1000)}
+                                width={550} height={550}
+                                draggable={false}
+                                className="object-contain aspect-square w-full select-none pointer-events-none mx-auto max-w-[500px] rounded-lg"
+                                alt="ProductImage"
+                                priority unoptimized
+                            />
+                        </div>
                     </div>
             }
         </PhotoProvider>

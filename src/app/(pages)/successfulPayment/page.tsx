@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
-import Link from "next/link";
 import { FaTimesCircle } from "react-icons/fa";
 import SuccessfulClient from "./SuccessfulClient";
+import Link from "next/link";
 
 type Props = {
     searchParams: Promise<{ id?: string }>;

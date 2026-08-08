@@ -1,25 +1,55 @@
 import {useRouter, useSearchParams} from "next/navigation";
 import {useCallback, useEffect} from "react";
-import qs from "query-string";
 
 type Props = {
-    key: string;
-    value: string
+    multiplyParameter?: boolean
+    urlParameter: string,
+    urlValue: string,
+    baseUrl: string,
+    setIsChecked?: (value: boolean) => void
 }
 
-const useUrlParam = ({ key, value }: Props ) => {
-    const router = useRouter();
-    const params = useSearchParams();
+const useUrlParams = ({urlValue, urlParameter, multiplyParameter, setIsChecked, baseUrl}: Props) => {
+    const router = useRouter()
+    const params = useSearchParams()
 
-    const setParam = useCallback(() => {
-        const qs = new URLSearchParams(params);
+    useEffect(() => {
+        const paramValues = params?.getAll(urlParameter) || [];
+        setIsChecked?.(paramValues.includes(urlValue));
+    }, [params, setIsChecked, urlParameter, urlValue]);
 
-        qs.set(key, value);
+    const changeUrl = useCallback(() => {
+        const query = new URLSearchParams(params?.toString());
+        const existingValues = query.getAll(urlParameter);
+        const shouldRemoveValue = existingValues.includes(urlValue);
 
-        router.push(`?${qs.toString()}`);
-    }, [params, key, value, router]);
+        query.delete(urlParameter);
 
-    return { setParam };
-};
+        if (multiplyParameter) {
+            const updatedValues = shouldRemoveValue
+                ? existingValues.filter(value => value !== urlValue)
+                : [...existingValues, urlValue];
 
-export default useUrlParam;
+            updatedValues.forEach(value => {
+                if (value) query.append(urlParameter, value);
+            });
+        } else if (!shouldRemoveValue && urlValue) {
+            query.set(urlParameter, urlValue);
+        }
+
+        const queryString = query.toString();
+
+        router.replace(
+            queryString ? `${baseUrl}?${queryString}` : baseUrl,
+            {
+                scroll: false,
+            }
+        );
+    }, [params, urlParameter, urlValue, baseUrl, router, multiplyParameter]);
+
+    return {
+        changeUrl,
+    }
+}
+
+export default useUrlParams;

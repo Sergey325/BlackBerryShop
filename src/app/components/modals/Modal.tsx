@@ -4,6 +4,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {IoMdClose} from "react-icons/io";
 import Button from "@/app/components/reusable/Button";
 import useClickOutside from "@/app/hooks/useClickOutside";
+import {useModalHistory} from "@/app/hooks/useModalHistory";
 
 type Props = {
     isOpen?: boolean
@@ -62,6 +63,8 @@ const Modal = ({
             onClose()
         }, 300)
     }, [disabled, onClose])
+
+    useModalHistory(showModal, handleClose);
 
     const handleSubmit = useCallback(() => {
         if(disabled)return

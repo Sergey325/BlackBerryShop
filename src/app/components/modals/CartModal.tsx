@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from "react";
+import React from "react";
 import Modal from "@/app/components/modals/Modal";
 import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
@@ -9,22 +9,21 @@ import Image from "next/image";
 import Counter from "@/app/components/reusable/Counter";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
 import {useRouter} from "next/navigation";
+import {getCartItemMaximum} from "@/app/utils/inventory";
+import toast from "react-hot-toast";
 
 
 const CartModal = () => {
     const router = useRouter()
     const cartModal = useCartModal();
     const cart = useCartStore()
-    const [isLoading, setIsLoading] = useState(false)
-
-
     const bodyContent =
         (<div className="flex flex-col gap-4 ">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 divide-y divide-gray-300">
                 {cart.items.map((item) => (
                     <div key={item.productId +item.color+item.size+item.colorName}>
                         <div
-                            className="flex gap-4 py-4 border-b border-gray-200"
+                            className="flex gap-4 py-4"
                         >
 
                             {/* Картинка */}
@@ -37,10 +36,10 @@ const CartModal = () => {
                                 <div className="flex justify-between items-start gap-2">
                                     <div>
                                         <p
-                                            className="font-medium text-sm md:text-lg hover:text-[#823D9A] transition-colors duration-300 cursor-pointer on"
+                                            className="font-medium text-sm md:text-lg hover:text-primary transition-colors duration-300 cursor-pointer on"
                                             onClick={() => {
                                                 cartModal.onClose()
-                                                router.push(`/?product=${item.slug}&productId=${item.productId}&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)
+                                                router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)
                                             }}
                                         >{item.productName}</p>
                                         <div className="flex items-center gap-2 mt-1">
@@ -71,7 +70,13 @@ const CartModal = () => {
                                     {/* Счётчик */}
                                     <div className="flex flex-col">
                                         <span className="text-sm md:text-sm text-gray-800">Кількість</span>
-                                        <Counter initialNumber={item.quantity} onChange={(count) => cart.changeQuantity(item, count)}/>
+                                        <Counter
+                                            initialNumber={item.quantity}
+                                            max={getCartItemMaximum(item)}
+                                            disabled={getCartItemMaximum(item) === 0}
+                                            onChange={(count) => cart.changeQuantity(item, count)}
+                                            onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
+                                        />
                                     </div>
 
                                     {/* Сумма */}
@@ -91,7 +96,7 @@ const CartModal = () => {
 
     return (
         <Modal
-            disabled={isLoading}
+            disabled={false}
             isOpen={cartModal.isOpen}
             title="Кошик"
             actionLabel="Оформити замовлення"

@@ -22,16 +22,16 @@ async function getSenderInfo(apiKey: string) {
         return;
     }
 
-    console.log("=== КОНТРАГЕНТИ-ВІДПРАВНИКИ ===");
-    counterpartyData.data.forEach((c: any) => {
-        console.log({
-            Ref: c.Ref,
-            Description: c.Description,
-            FirstName: c.FirstName,
-            LastName: c.LastName,
-            Phones: c.Phones,
-        });
-    });
+    // console.log("=== КОНТРАГЕНТИ-ВІДПРАВНИКИ ===");
+    // counterpartyData.data.forEach((c: any) => {
+    //     console.log({
+    //         Ref: c.Ref,
+    //         Description: c.Description,
+    //         FirstName: c.FirstName,
+    //         LastName: c.LastName,
+    //         Phones: c.Phones,
+    //     });
+    // });
 
     // Берём первого контрагента (обычно единственный — сам владелец)
     const senderRef = counterpartyData.data[0]?.Ref;
@@ -57,15 +57,15 @@ async function getSenderInfo(apiKey: string) {
 
     const contactData = await contactRes.json();
 
-    console.log("\n=== КОНТАКТНІ ОСОБИ ===");
-    contactData.data.forEach((person: any) => {
-        console.log({
-            Ref: person.Ref,
-            FirstName: person.FirstName,
-            LastName: person.LastName,
-            Phones: person.Phones,
-        });
-    });
+    // console.log("\n=== КОНТАКТНІ ОСОБИ ===");
+    // contactData.data.forEach((person: any) => {
+    //     console.log({
+    //         Ref: person.Ref,
+    //         FirstName: person.FirstName,
+    //         LastName: person.LastName,
+    //         Phones: person.Phones,
+    //     });
+    // });
 
     // 3. Получаем адреса отправителя (склады/отделения откуда отправляет)
     const addressRes = await fetch(API_URL, {
@@ -83,13 +83,13 @@ async function getSenderInfo(apiKey: string) {
 
     const addressData = await addressRes.json();
 
-    console.log("\n=== АДРЕСИ ВІДПРАВНИКА ===");
-    addressData.data.forEach((addr: any) => {
-        console.log({
-            Ref: addr.Ref,
-            Description: addr.Description,
-        });
-    });
+    // console.log("\n=== АДРЕСИ ВІДПРАВНИКА ===");
+    // addressData.data.forEach((addr: any) => {
+    //     console.log({
+    //         Ref: addr.Ref,
+    //         Description: addr.Description,
+    //     });
+    // });
 }
 
 // Запуск

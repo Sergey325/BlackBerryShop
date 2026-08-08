@@ -12,9 +12,8 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/app/hooks/useCartStore";
 import Loader from "@/app/components/reusable/Loader";
 import {OrderStatus, Prisma} from "@prisma/client";
-import Link from "next/link";
-import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import * as Sentry from "@sentry/nextjs";
+import Link from "next/link";
 
 
 type Props = {
@@ -31,8 +30,6 @@ type Props = {
 const SuccessfulClient = ({ id, status, order }: Props) => {
     const router = useRouter();
     const clearCart = useCartStore(state => state.clearCart);
-    console.log("")
-
 
     useEffect(() => {
         if (status === "PAID") {
@@ -79,7 +76,7 @@ const SuccessfulClient = ({ id, status, order }: Props) => {
 
         return () => clearInterval(interval);
 
-    }, [status, clearCart, router]);
+    }, [status, clearCart, id, order.paymentMethod, order.totalAmount, router]);
 
 
 
@@ -176,7 +173,7 @@ function SocialLinks() {
 
             <div className="flex justify-center gap-4 mt-4">
 
-                <a
+                <Link
                     href="https://www.instagram.com/blackberry.shop.ua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -184,10 +181,10 @@ function SocialLinks() {
                 >
                     <FaInstagram className="size-6"/>
                     Instagram
-                </a>
+                </Link>
 
 
-                <a
+                <Link
                     href="https://t.me/blackberryshopua"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -195,7 +192,7 @@ function SocialLinks() {
                 >
                     <FaTelegram className="size-6"/>
                     Telegram
-                </a>
+                </Link>
 
             </div>
 

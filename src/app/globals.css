@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+    --color-primary: #823D9A;
+    --color-winter: #ede9fe;
+    --color-summer: #fdf2f8;
+    --breakpoint-laptop: 1175px;
+    --breakpoint-tablet: 872px;
+}
+
 @layer base {
     * {
         font-family: "Montserrat", Arial, sans-serif;
@@ -8,11 +16,29 @@
 
 @layer components {
     input {
-        @apply border border-gray-200 rounded-md outline-none transition focus:border-gray-400;
+        @apply border border-primary/30 rounded-md outline-none transition focus:border-primary/80;
     }
 }
 html, body, #root {
-    height: 100%;
+    min-height: 100vh;
+}
+html {
+    background: #f9fafb;
+    scrollbar-gutter: stable;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+a {
+    -webkit-user-drag: none;
 }
 
 ::selection {
@@ -65,6 +91,56 @@ button.react-multiple-carousel__arrow {
 
 /*Handle*/
 ::-webkit-scrollbar-thumb {
-    @apply ml-1 bg-[#823D9A] h-[40%];
+    @apply ml-1 bg-primary h-[40%];
 }
 
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #823D9A transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+    @apply w-0.5
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary
+}
+
+.thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #823D9A transparent;
+}
+
+.search-scrollbar::-webkit-scrollbar {
+    @apply w-1;
+}
+
+.search-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 2px;
+}
+
+.search-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full;
+}
+
+.search-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #823D9A transparent;
+}
+
+
+.heading-with-heart::after {
+    content: "❤";
+    color: var(--color-primary);
+    margin-left: 5px;
+}

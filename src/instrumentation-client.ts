@@ -5,7 +5,27 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://a516dac973db83bae8b42d8fe0510ddf@o4505884618391552.ingest.us.sentry.io/4511695115386880",
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+
+  enabled: ["production", "preview"].includes(
+      process.env.VERCEL_ENV ?? ""
+  ),
+
+  beforeSend(event, hint) {
+    const error = hint.originalException;
+
+    if (
+        error instanceof Error &&
+        (
+            error.message.includes("window.webkit.messageHandlers") ||
+            error.message.includes("Java object is gone")
+        )
+    ) {
+      return null;
+    }
+
+    return event;
+  },
 
   dataCollection: {
     // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
