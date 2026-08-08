@@ -48,8 +48,9 @@ const ProductImages = ({ productColor }: Props) => {
     };
 
     return (
-        <PhotoProvider>
-            <div className="block lg:hidden w-full">
+        <>
+            <PhotoProvider>
+                <div className="block w-full lg:hidden">
                 <Carousel
                     responsive={responsive}
                     swipeable
@@ -76,9 +77,12 @@ const ProductImages = ({ productColor }: Props) => {
                         </PhotoView>
                     ))}
                 </Carousel>
-            </div>
-            <div className="hidden lg:flex min-w-0 flex-row gap-4">
-                <div className="flex w-[64px] shrink-0 flex-col items-center gap-1">
+                </div>
+            </PhotoProvider>
+
+            <PhotoProvider>
+                <div className="hidden min-w-0 flex-row gap-4 lg:flex">
+                    <div className="flex w-[64px] shrink-0 flex-col items-center gap-1">
                     {productColor.images.length > DESKTOP_THUMBNAILS_COUNT && (
                         <button
                             type="button"
@@ -129,26 +133,27 @@ const ProductImages = ({ productColor }: Props) => {
                             <FiChevronDown className="h-5 w-5" />
                         </button>
                     )}
-                </div>
-
-                {selectedImage && (
-                    <div className="flex min-w-0 flex-1 items-center justify-center py-2">
-                        <PhotoView src={optimizeCloudinaryUrl(selectedImage, 2000)}>
-                            <Image
-                                src={optimizeCloudinaryUrl(selectedImage, 1000)}
-                                width={550}
-                                height={550}
-                                draggable={false}
-                                className="mx-auto aspect-square w-full max-w-[500px] cursor-zoom-in select-none rounded-lg object-contain"
-                                alt="ProductImage"
-                                priority
-                                unoptimized
-                            />
-                        </PhotoView>
                     </div>
-                )}
-            </div>
-        </PhotoProvider>
+
+                    {selectedImage && (
+                        <div className="flex min-w-0 flex-1 items-center justify-center py-2">
+                            <PhotoView src={optimizeCloudinaryUrl(selectedImage, 2000)}>
+                                <Image
+                                    src={optimizeCloudinaryUrl(selectedImage, 1000)}
+                                    width={550}
+                                    height={550}
+                                    draggable={false}
+                                    className="mx-auto aspect-square w-full max-w-[500px] cursor-zoom-in select-none rounded-lg object-contain"
+                                    alt="ProductImage"
+                                    priority
+                                    unoptimized
+                                />
+                            </PhotoView>
+                        </div>
+                    )}
+                </div>
+            </PhotoProvider>
+        </>
     );
 };
 

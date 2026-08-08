@@ -72,8 +72,29 @@ button.react-multiple-carousel__arrow {
     right: 0px !important;
 }
 
-/* rid of selection with tap on mobile*/
-* { -webkit-tap-highlight-color: transparent;  }
+/* Reduce accidental text selection/highlight on touch devices. */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    button,
+    a,
+    label,
+    summary,
+    [role="button"] {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    input,
+    textarea,
+    [contenteditable="true"] {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+}
 
 .no-scroll {
     overflow: hidden;
