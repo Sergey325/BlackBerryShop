@@ -8,6 +8,7 @@ export interface IRelatedProductCategory {
     name: string;
     slug: string;
     season: Season;
+    sizeGuideImage: string | null;
     isDecoration: boolean | null;
 }
 
@@ -18,6 +19,7 @@ export interface ICategory {
     description: string
     productsDescription: string
     coverImage: string
+    sizeGuideImage: string | null
     season: Season
     isOnMainPage: boolean | null
     hasLining: boolean | null

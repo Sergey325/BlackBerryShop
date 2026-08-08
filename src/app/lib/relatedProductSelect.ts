@@ -13,6 +13,7 @@ export const relatedProductSelect = {
             name: true,
             slug: true,
             season: true,
+            sizeGuideImage: true,
             isDecoration: true,
         },
     },

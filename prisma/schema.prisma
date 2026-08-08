@@ -106,6 +106,7 @@ model Category {
   productsDescription String
   description         String
   coverImage          String // заглавное фото
+  sizeGuideImage      String?
   season              Season
   isOnMainPage        Boolean? @default(false)
   hasLining           Boolean? @default(false)

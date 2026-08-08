@@ -166,12 +166,16 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                 <div className="mt-auto">
                     <div className="flex justify-between text-sm font-medium text-zinc-600 mt-6">
                         <p>Виберіть розмір:</p>
-                        <p
-                            className="text-sm text-primary font-medium underline decoration-[1.5px] cursor-pointer"
-                            onClick={() => sizesModal.onOpen()}
-                        >
-                            Розмірна сітка
-                        </p>
+                        {
+                            product.category?.sizeGuideImage &&
+                            <button
+                                title={"Розмірна сітка"}
+                                className="text-sm text-primary font-medium underline decoration-[1.5px] cursor-pointer"
+                                onClick={() => sizesModal.onOpen(product.category?.sizeGuideImage || "")}
+                            >
+                                Розмірна сітка
+                            </button>
+                        }
                     </div>
 
                     <div className="flex gap-2 mt-2">
