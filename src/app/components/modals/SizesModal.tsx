@@ -11,8 +11,6 @@ const SizesModal = () => {
     const sizesModal = useSizesModal();
     const [isLoading, setIsLoading] = useState(false)
 
-    console.log(sizesModal.imageUrl, "   modal")
-
     const bodyContent =
         (<div className="relative mx-auto w-full max-w-[500px] aspect-square overflow-hidden bg-white">
             <Image
