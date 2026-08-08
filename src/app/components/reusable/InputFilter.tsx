@@ -1,8 +1,9 @@
 "use client"
 
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState, useTransition} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import qs from "query-string";
+import {AiOutlineLoading} from "react-icons/ai";
 
 type Props = {
     price?: boolean
@@ -17,6 +18,7 @@ type Props = {
 const InputFilter = ({price = false, placeholder = "", id, styles, type, debounced = false, baseUrl}: Props) => {
     const params = useSearchParams()
     const router = useRouter()
+    const [isPending, startTransition] = useTransition();
 
     const initialValue = useMemo(() => {
         return params.get(id) ?? "";
@@ -45,7 +47,9 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
             query: updatedQuery
         }, {skipNull: true})
 
-        router.push(url)
+        startTransition(() => {
+            router.push(url)
+        });
     }
 
     useEffect(() => {
@@ -86,6 +90,7 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
                 value={value}
                 className={`
                         ${price ? "pl-5" : "pl-2"}
+                        ${isPending ? "pr-24" : ""}
                         appearance-none
                         outline-none
                         ${styles ? styles : "h-[40px] text-base border border-primary/30 bg-white placeholder:text-gray-500 w-full"}
@@ -95,6 +100,11 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
             {
                 price && <label className="absolute top-[7px] left-1">$</label>
             }
+            {isPending && (
+                <div className="pointer-events-none flex items-center absolute inset-y-0 right-2 bg-white pl-2">
+                    <AiOutlineLoading className="size-4 animate-spin text-primary"/>
+                </div>
+            )}
         </div>
     );
 };

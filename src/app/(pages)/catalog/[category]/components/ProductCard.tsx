@@ -109,7 +109,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                 </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
                     <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
-                        <p className="font-semibold text-gray-900 text-sm hover:text-primary transition-colors">{product.name}</p>
+                        <p className="text-sm font-medium leading-[18px] text-slate-700  sm:text-base sm:leading-5 hover:text-primary transition-colors">{product.name}</p>
                     </Link>
                     {
                         visibleColors.length > 1 && colors &&
@@ -121,7 +121,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                         onMouseEnter={() => setActiveIdx(i)}
                                         onClick={() => setActiveIdx(i)}
                                         className={`size-4 cursor-pointer rounded-full border transition-transform hover:scale-110 ${
-                                            activeIdx === i ? 'border-2 border-primary scale-110' : 'border-gray-800'
+                                            activeIdx === i ? 'border-2 border-primary scale-110' : 'border-slate-500'
                                         } shadow-sm`}
                                         style={{ backgroundColor: c.color }}
                                     />
@@ -137,7 +137,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     }
 
                     <div className="flex items-center justify-between">
-                        <p className="font-bold text-gray-900 self-end">{product.price} грн</p>
+                        <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base self-end">{product.price} грн</p>
                         <button
                             type="button"
                             onClick={handleAddToCart}
@@ -225,7 +225,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                 }}
                                 className={`size-4 cursor-pointer rounded-full  transition-all hover:scale-110 ${
                                     activeIdx === i
-                                        ? ' border border-primary'
+                                        ? ' border-2 border-primary'
                                         : ' border border-slate-500'
                                 }`}
                                 style={{ backgroundColor: c.color }}
