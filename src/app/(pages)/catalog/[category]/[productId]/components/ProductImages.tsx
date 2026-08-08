@@ -7,7 +7,8 @@ import { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import { IProductColor } from "@/app/actions/getProducts";
-import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import { optimizeCloudinaryUrl } from "@/app/utils/optimizeCloudinaryImage";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 type Props = {
     productColor: IProductColor;
@@ -24,22 +25,31 @@ const responsive = {
     }
 };
 
-const responsiveOption = {
-    desktop: {
-        breakpoint: {
-            max: 2560,
-            min: 1024,
-        },
-        items: 5,
-    },
-}
+const DESKTOP_THUMBNAILS_COUNT = 7;
 
 const ProductImages = ({ productColor }: Props) => {
     const [selectedImage, setSelectedImage] = useState(productColor.images[0]?.url);
+    const [firstVisibleImage, setFirstVisibleImage] = useState(0);
+    const lastFirstVisibleImage = Math.max(
+        productColor.images.length - DESKTOP_THUMBNAILS_COUNT,
+        0
+    );
+    const visibleImages = productColor.images.slice(
+        firstVisibleImage,
+        firstVisibleImage + DESKTOP_THUMBNAILS_COUNT
+    );
+
+    const showPreviousImages = (): void => {
+        setFirstVisibleImage(current => Math.max(current - 1, 0));
+    };
+
+    const showNextImages = (): void => {
+        setFirstVisibleImage(current => Math.min(current + 1, lastFirstVisibleImage));
+    };
 
     return (
         <PhotoProvider>
-            <div className="block lg:hidden pb-10 w-full">
+            <div className="block lg:hidden w-full">
                 <Carousel
                     responsive={responsive}
                     swipeable
@@ -67,62 +77,77 @@ const ProductImages = ({ productColor }: Props) => {
                     ))}
                 </Carousel>
             </div>
-            {
-                productColor.images.length > 5
-                    ?
-                    <div className={`hidden lg:block w-[560px]`}>
-                        <Carousel
-                            responsive={responsiveOption}
-                            swipeable
-                            keyBoardControl
-                            customTransition="all 0.5s"
-                            transitionDuration={500}
-                            containerClass="carousel-container"
-                            itemClass="carousel-item-padding-20-px">
-                            {productColor.images.map((slide) => (
-                                <Image
-                                    src={optimizeCloudinaryUrl(slide.url, 200)}
-                                    key={slide.url}
-                                    width={100} height={100}
-                                    unoptimized
-                                    draggable={false}
-                                    className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition rounded-xl border-primary border-2"
-                                    alt="productImageOption"
-                                    onClick={() => setSelectedImage(slide.url)}
-                                />
-                            ))}
-                        </Carousel>
-                    </div>
-                    :
-                    <div className="hidden lg:flex min-w-0 flex-row gap-4">
-                        <div className="flex flex-col gap-3 shrink-0">
-                            {productColor.images.map(image => (
-                                <div key={image.url} className="overflow-hidden rounded-lg border-primary border-[1.5px]">
-                                    <Image
-                                        src={optimizeCloudinaryUrl(image.url, 120)}
-                                        unoptimized priority
-                                        draggable={false}
-                                        width={60} height={60}
-                                        alt="productImageOption"
-                                        className="object-cover aspect-square cursor-pointer hover:shadow-xl hover:opacity-70 hover:scale-105 transition"
-                                        onClick={() => setSelectedImage(image.url)}
-                                    />
-                                </div>
-                            ))}
-                        </div>
+            <div className="hidden lg:flex min-w-0 flex-row gap-4">
+                <div className="flex w-[64px] shrink-0 flex-col items-center gap-1">
+                    {productColor.images.length > DESKTOP_THUMBNAILS_COUNT && (
+                        <button
+                            type="button"
+                            onClick={showPreviousImages}
+                            disabled={firstVisibleImage === 0}
+                            aria-label="Показати попередні фото"
+                            className="flex h-7 w-full cursor-pointer items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-primary disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-500"
+                        >
+                            <FiChevronUp className="h-5 w-5" />
+                        </button>
+                    )}
 
-                        <div className="flex-1 items-center justify-center min-w-0 py-2">
+                    <div className="flex flex-col gap-2">
+                        {visibleImages.map(image => (
+                            <button
+                                type="button"
+                                key={image.url}
+                                aria-label="Обрати фото товару"
+                                onClick={() => setSelectedImage(image.url)}
+                                className={`overflow-hidden rounded-lg border-[1.5px] transition ${
+                                    selectedImage === image.url
+                                        ? "border-primary shadow-sm"
+                                        : "border-gray-200 hover:border-primary"
+                                }`}
+                            >
+                                <Image
+                                    src={optimizeCloudinaryUrl(image.url, 120)}
+                                    width={60}
+                                    height={60}
+                                    unoptimized
+                                    priority
+                                    draggable={false}
+                                    className="aspect-square object-cover transition hover:scale-105 hover:opacity-80"
+                                    alt="productImageOption"
+                                />
+                            </button>
+                        ))}
+                    </div>
+
+                    {productColor.images.length > DESKTOP_THUMBNAILS_COUNT && (
+                        <button
+                            type="button"
+                            onClick={showNextImages}
+                            disabled={firstVisibleImage === lastFirstVisibleImage}
+                            aria-label="Показати наступні фото"
+                            className="flex h-7 w-full cursor-pointer items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-primary disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-gray-500"
+                        >
+                            <FiChevronDown className="h-5 w-5" />
+                        </button>
+                    )}
+                </div>
+
+                {selectedImage && (
+                    <div className="flex min-w-0 flex-1 items-center justify-center py-2">
+                        <PhotoView src={optimizeCloudinaryUrl(selectedImage, 2000)}>
                             <Image
                                 src={optimizeCloudinaryUrl(selectedImage, 1000)}
-                                width={550} height={550}
+                                width={550}
+                                height={550}
                                 draggable={false}
-                                className="object-contain aspect-square w-full select-none pointer-events-none mx-auto max-w-[500px] rounded-lg"
+                                className="mx-auto aspect-square w-full max-w-[500px] cursor-zoom-in select-none rounded-lg object-contain"
                                 alt="ProductImage"
-                                priority unoptimized
+                                priority
+                                unoptimized
                             />
-                        </div>
+                        </PhotoView>
                     </div>
-            }
+                )}
+            </div>
         </PhotoProvider>
     );
 };
