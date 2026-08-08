@@ -1,14 +1,23 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
-interface SizesModalStore{
-    isOpen: boolean
-    onOpen: () => void
-    onClose: () => void
+interface SizesModalStore {
+    isOpen: boolean;
+    imageUrl: string | null;
+    onOpen: (imageUrl?: string) => void;
+    onClose: () => void;
 }
+
 const useSizesModal = create<SizesModalStore>((set) => ({
     isOpen: false,
-    onOpen: () => set({isOpen: true}),
-    onClose: () => set({isOpen: false}),
-}))
+    imageUrl: null,
+    onOpen: (imageUrl) => set({
+        isOpen: true,
+        imageUrl: imageUrl ?? null,
+    }),
+    onClose: () => set({
+        isOpen: false,
+        imageUrl: null,
+    }),
+}));
 
 export default useSizesModal;

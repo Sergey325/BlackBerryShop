@@ -208,8 +208,8 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         }`}
                     />
                     {!isAvailable && (
-                        <div className="absolute inset-0 flex items-end justify-center bg-white/10 p-2 sm:items-center">
-                            <span className="rounded-full bg-slate-900/80 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm sm:text-xs">
+                        <div className="absolute inset-0 flex items-end justify-center bg-white/10 p-1 sm:p-2 sm:items-center">
+                            <span className="rounded-lg sm:rounded-full bg-slate-900/80 px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm sm:text-xs">
                                 Немає в наявності
                             </span>
                         </div>
