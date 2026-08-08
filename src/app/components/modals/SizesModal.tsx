@@ -14,14 +14,17 @@ const SizesModal = () => {
     console.log(sizesModal.imageUrl, "   modal")
 
     const bodyContent =
-        (<Image
-            src={optimizeCloudinaryUrl(sizesModal.imageUrl || "", 1000)}//photo_2026-06-21_15-22-55.jpg
-            width={500} height={500}
-            className="object-cover aspect-square mx-auto select-none pointer-events-none bg-transparent"
-            alt="ProductImage"
-            quality={100}
-            priority
-        />)
+        (<div className="relative mx-auto w-full max-w-[500px] aspect-square overflow-hidden bg-white">
+            <Image
+                src={optimizeCloudinaryUrl(sizesModal.imageUrl || "", 1000)}
+                fill
+                className="object-contain select-none pointer-events-none"
+                alt="Size guide"
+                quality={100}
+                priority
+                unoptimized
+            />
+        </div>)
 
     return (
         <Modal
