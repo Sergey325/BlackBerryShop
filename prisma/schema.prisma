@@ -16,6 +16,7 @@ model Product {
   updatedAt         DateTime           @updatedAt
   slug              String
   description       String?
+  hasLining         Boolean            @default(false)
   categoryId        Int?
   materialId        Int?
   category          Category?          @relation(fields: [categoryId], references: [id])
@@ -94,7 +95,6 @@ model Category {
   season              Season
   productsDescription String
   isOnMainPage        Boolean?                @default(false)
-  hasLining           Boolean?                @default(false)
   isDecoration        Boolean?                @default(false)
   sizeGuideImage      String?
   defaultSizes        String[]                @default([])
