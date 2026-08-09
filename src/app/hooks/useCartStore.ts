@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {CartItem, ProductSelection} from "@/app/types";
-import {IProduct, IRelatedProduct} from "@/app/actions/getProducts";
+import { CartItem, ProductSelection } from "@/app/types";
+import { IProduct, IRelatedProduct } from "@/app/actions/getProducts";
 
 type CartStore = {
     items: CartItem[];
@@ -13,13 +13,23 @@ type CartStore = {
     replaceItems: (items: CartItem[]) => void;
 };
 
-type LegacyCartItem = CartItem & {
+type PersistedCartState = {
+    items: CartItem[];
+};
+
+type LegacyCartItem = Omit<CartItem, "sizes"> & {
+    sizes?: CartItem["sizes"];
     relatedProducts?: unknown;
 };
 
 function migrateCartItem(item: LegacyCartItem): CartItem {
-    const migratedItem: LegacyCartItem = {...item};
+    const migratedItem = {
+        ...item,
+        sizes: Array.isArray(item.sizes) ? item.sizes : [],
+    };
+
     delete migratedItem.relatedProducts;
+
     return migratedItem;
 }
 
@@ -39,17 +49,13 @@ export function createProductSelection(
         photoUrl: color.images[0]?.url ?? "",
         price: product.price,
         productName: product.name,
-        // product.name.replace(
-        //     /\s+(\S+)$/,
-        //     ` ${color.colorName}, $1`
-        // ),
         slug: product.slug,
         categorySlug: product.category!.slug,
     };
 }
 
 export const useCartStore = create<CartStore>()(
-    persist(
+    persist<CartStore, [], [], PersistedCartState>(
         (set, get) => ({
             items: [],
 
@@ -57,110 +63,130 @@ export const useCartStore = create<CartStore>()(
                 const items = get().items;
 
                 const existing = items.find(
-                    (i) =>
-                        i.productColorId === item.productColorId &&
-                        i.size === item.size
+                    (currentItem) =>
+                        currentItem.productColorId === item.productColorId &&
+                        currentItem.size === item.size
                 );
 
                 if (existing) {
                     set({
-                        items: items.map((i) =>
-                            i === existing
-                                ? { ...i, quantity: i.quantity + item.quantity }
-                                : i
+                        items: items.map((currentItem) =>
+                            currentItem === existing
+                                ? {
+                                    ...currentItem,
+                                    quantity:
+                                        currentItem.quantity + item.quantity,
+                                }
+                                : currentItem
                         ),
                     });
-                } else {
-                    set({
-                        items: [...items, item],
-                    });
-                }
-            },
 
-            removeItem: (productColorId, size) => {
-                const items = get().items;
+                    return;
+                }
 
                 set({
-                    items: items.filter(
-                        (i) =>
-                            !(
-                                i.productColorId === productColorId &&
-                                i.size === size
-                            )
-                    ),
+                    items: [...items, item],
                 });
             },
 
+            removeItem: (productColorId, size) => {
+                set((state) => ({
+                    items: state.items.filter(
+                        (item) =>
+                            !(
+                                item.productColorId === productColorId &&
+                                item.size === size
+                            )
+                    ),
+                }));
+            },
+
             changeQuantity: (item, quantity) => {
-                const items = get().items;
-
-                const updated = items
-                    .map((i) =>
-                        i.productColorId === item.productColorId &&
-                        i.size === item.size
-                            ? { ...i, quantity }
-                            : i
-                    )
-                    .filter((i) => i.quantity > 0);
-
-                set({ items: updated });
+                set((state) => ({
+                    items: state.items
+                        .map((currentItem) =>
+                            currentItem.productColorId ===
+                            item.productColorId &&
+                            currentItem.size === item.size
+                                ? {
+                                    ...currentItem,
+                                    quantity,
+                                }
+                                : currentItem
+                        )
+                        .filter((currentItem) => currentItem.quantity > 0),
+                }));
             },
 
             changeSize: (item, newSize) => {
                 const items = get().items;
 
                 const existing = items.find(
-                    i =>
-                        i.productColorId === item.productColorId &&
-                        i.size === newSize
+                    (currentItem) =>
+                        currentItem.productColorId === item.productColorId &&
+                        currentItem.size === newSize
                 );
 
                 if (existing) {
                     set({
                         items: items
                             .filter(
-                                i =>
+                                (currentItem) =>
                                     !(
-                                        i.productColorId === item.productColorId &&
-                                        i.size === item.size
+                                        currentItem.productColorId ===
+                                        item.productColorId &&
+                                        currentItem.size === item.size
                                     )
                             )
-                            .map(i =>
-                                i === existing
+                            .map((currentItem) =>
+                                currentItem === existing
                                     ? {
-                                        ...i,
-                                        quantity: i.quantity + item.quantity,
+                                        ...currentItem,
+                                        quantity:
+                                            currentItem.quantity +
+                                            item.quantity,
                                     }
-                                    : i
+                                    : currentItem
                             ),
                     });
-                } else {
-                    set({
-                        items: items.map(i =>
-                            i.productColorId === item.productColorId &&
-                            i.size === item.size
-                                ? { ...i, size: newSize }
-                                : i
-                        ),
-                    });
+
+                    return;
                 }
+
+                set({
+                    items: items.map((currentItem) =>
+                        currentItem.productColorId === item.productColorId &&
+                        currentItem.size === item.size
+                            ? {
+                                ...currentItem,
+                                size: newSize,
+                            }
+                            : currentItem
+                    ),
+                });
             },
 
-            replaceItems: (items) => set({items}),
+            replaceItems: (items) => set({ items }),
 
             clearCart: () => set({ items: [] }),
         }),
         {
             name: "cart-storage",
-            version: 1,
-            migrate: (persistedState): CartStore => {
-                const state = persistedState as CartStore & {
+            version: 2,
+
+            partialize: (state): PersistedCartState => ({
+                items: state.items,
+            }),
+
+            migrate: (persistedState): PersistedCartState => {
+                const state = (persistedState ?? {}) as {
                     items?: LegacyCartItem[];
                 };
 
                 return {
-                    ...state,
-                    items: (state.items ?? []).map(migrateCartItem),
+                    items: Array.isArray(state.items)
+                        ? state.items.map(migrateCartItem)
+                        : [],
                 };
             },
         }
