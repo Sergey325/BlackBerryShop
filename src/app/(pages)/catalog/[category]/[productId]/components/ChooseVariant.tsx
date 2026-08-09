@@ -143,14 +143,14 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                         <div
                             key={c.color+index}
                             onClick={() => handleColorChange(c)}
-                            className="border rounded-xl overflow-hidden cursor-pointer"
+                            className="border rounded-xl overflow-hidden cursor-pointer relative size-18"
                             style={{
                                 borderWidth: selectedColorHex === c.color ? "2px" : "1px",
                                 borderColor: selectedColorHex === c.color ? "#823D9A" : "#000000",
                             }}>
                             <Image
                                 src={optimizeCloudinaryUrl(c.images[0].url, 140)}
-                                width={70} height={70}
+                                fill
                                 draggable={false}
                                 className="object-cover aspect-square mx-auto select-none hover:scale-110 transition"
                                 alt="ProductImage"

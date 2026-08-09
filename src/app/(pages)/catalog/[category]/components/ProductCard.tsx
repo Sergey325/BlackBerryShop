@@ -235,7 +235,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                     e.stopPropagation();
                                     setActiveIdx(i);
                                 }}
-                                className={`size-4 cursor-pointer rounded-full  transition-all hover:scale-110 ${
+                                className={`size-4 shrink-0 cursor-pointer rounded-full transition-all hover:scale-110 ${
                                     activeIdx === i
                                         ? ' border-2 border-primary'
                                         : ' border border-slate-500'
@@ -246,13 +246,13 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         ))}
 
                         {hasMoreColors && (
-                            <span className="ml-0.5 text-[12px] font-medium text-slate-700">
+                            <span className="ml-0.5 shrink-0 text-[12px] font-medium text-slate-700">
                                 +{product.colors.length - visibleColors.length}
                             </span>
                         )}
 
                         <span
-                            className="hidden md:inline ml-auto truncate text-[11px] text-slate-500"
+                            className="ml-auto hidden min-w-0 truncate text-[11px] text-slate-500 md:inline"
                             title={product.colors[activeIdx].colorName}
                         >
                             {product.colors[activeIdx].colorName}
