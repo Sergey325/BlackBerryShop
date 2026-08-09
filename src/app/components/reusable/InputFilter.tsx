@@ -100,7 +100,7 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
             {
                 price && <label className="absolute top-[7px] left-1">$</label>
             }
-            {isPending && (
+            {isPending && value.length > 0 && (
                 <div className="pointer-events-none flex items-center absolute inset-y-0 right-2 bg-white pl-2">
                     <AiOutlineLoading className="size-4 animate-spin text-primary"/>
                 </div>
