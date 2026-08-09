@@ -65,7 +65,7 @@ const ProductImages = ({ productColor }: Props) => {
                     {productColor.images.map((slide) => (
                         <PhotoView key={slide.url} src={optimizeCloudinaryUrl(slide.url, 2000)}>
                             <Image
-                                src={optimizeCloudinaryUrl(slide.url, 500)}
+                                src={optimizeCloudinaryUrl(slide.url, 500, 18)}
                                 width={250}
                                 height={250}
                                 unoptimized
@@ -139,7 +139,7 @@ const ProductImages = ({ productColor }: Props) => {
                         <div className="flex min-w-0 flex-1 items-center justify-center py-2">
                             <PhotoView src={optimizeCloudinaryUrl(selectedImage, 2000)}>
                                 <Image
-                                    src={optimizeCloudinaryUrl(selectedImage, 1000)}
+                                    src={optimizeCloudinaryUrl(selectedImage, 1000, 18)}
                                     width={550}
                                     height={550}
                                     draggable={false}

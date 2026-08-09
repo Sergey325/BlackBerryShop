@@ -241,6 +241,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                             ? "Супутні товари"
                                 : "Варіанти кастомізації"}
                     buttonClass="text-sm text-primary hover:text-primary/70 transition-colors duration-300 gap-2! justify-normal cursor-pointer ml-1"
+                    containerClass="pb-3"
                     initialState={defaultExpanded}
                 >
                     <div className="mt-3 flex flex-col gap-4 ml-1">
@@ -297,7 +298,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                     mobile: { breakpoint: { max: 640, min: 0 }, items: 2, partialVisibilityGutter: 16 },
                                 }}
                                 itemClass="px-1.5"
-                                carouselClass="pb-2"
+                                carouselClass=""
                                 containerClass="px-6"
                                 arrowClass="translate-x-0!"
                             >

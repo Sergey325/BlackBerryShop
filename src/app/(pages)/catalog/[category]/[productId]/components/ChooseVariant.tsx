@@ -115,7 +115,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                 )
             ),
             quantity: count,
-            size: selectedSize,
+            size: !selectedSize && selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0].size : selectedSize,
             isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();

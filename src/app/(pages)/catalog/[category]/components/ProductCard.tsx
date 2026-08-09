@@ -198,7 +198,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
             <div className="aspect-square shrink-0 bg-white p-2 sm:p-4">
                 <div className="relative size-full overflow-hidden rounded-lg">
                     <Image
-                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500)}
+                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500, 18)}
                         alt={product.name}
                         fill
                         unoptimized
