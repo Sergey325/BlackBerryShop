@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Category" ADD COLUMN     "defaultSizes" TEXT[] DEFAULT ARRAY[]::TEXT[];
