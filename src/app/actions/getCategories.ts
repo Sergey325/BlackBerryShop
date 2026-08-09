@@ -22,7 +22,6 @@ export interface ICategory {
     sizeGuideImage: string | null
     season: Season
     isOnMainPage: boolean | null
-    hasLining: boolean | null
     isDecoration: boolean | null
     specifications: {
         name: string

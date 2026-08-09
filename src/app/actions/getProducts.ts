@@ -59,6 +59,7 @@ export interface IProduct {
     name: string;
     slug: string;
     description: string | null;
+    hasLining: boolean;
     price: number;
     discount: number;
     material: IProductMaterial | null;
