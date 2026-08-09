@@ -52,6 +52,7 @@ type MonobankResponse = {
 
 type ValidatedCheckoutItem = CheckoutItem & {
     productSizeId: number;
+    colorCode: string | null;
 };
 
 class InventoryConflictError extends Error {
@@ -117,6 +118,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                 select: {
                     id: true,
                     productId: true,
+                    colorCode: true,
                     sizes: {
                         select: {
                             id: true,
@@ -143,7 +145,11 @@ export async function POST(request: Request): Promise<NextResponse> {
                         throw new InventoryConflictError("Оберіть доступний розмір товару");
                     }
 
-                    return {...item, productSizeId: productSize.id};
+                    return {
+                        ...item,
+                        productSizeId: productSize.id,
+                        colorCode: productColor.colorCode,
+                    };
                 }
             );
             const requestedByProductSizeId = new Map<number, number>();
@@ -219,6 +225,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                             quantity: item.quantity,
                             color: item.color,
                             colorName: item.colorName,
+                            colorCode: item.colorCode,
                             size: item.size,
                             imageUrl: item.imageUrl,
                         })),

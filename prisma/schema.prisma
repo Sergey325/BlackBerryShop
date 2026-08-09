@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,40 +6,36 @@ datasource db {
   provider = "postgresql"
 }
 
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Product {
-  id          Int     @id @default(autoincrement())
-  name        String
-  slug        String
-  description String?
-  price       Float
-  discount    Float   @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  colors     ProductColor[]
-  categoryId Int?
-  category   Category?      @relation(fields: [categoryId], references: [id])
-
-  materialId Int?
-  material   Material? @relation(fields: [materialId], references: [id])
-
+  id                Int                @id @default(autoincrement())
+  name              String
+  price             Float
+  discount          Float              @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  slug              String
+  description       String?
+  categoryId        Int?
+  materialId        Int?
+  category          Category?          @relation(fields: [categoryId], references: [id])
+  material          Material?          @relation(fields: [materialId], references: [id])
+  colors            ProductColor[]
   relatedTo         ProductRelation[]  @relation("ProductRelation_From")
   relatedFrom       ProductRelation[]  @relation("ProductRelation_To")
   promoCodeProducts PromoCodeProduct[]
 }
 
 model ProductColor {
-  id           Int     @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   color        String
-  colorName    String
-  colorCode    String?
-  isBestSeller Boolean @default(false)
   productId    Int
-  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  images ProductImage[]
-  sizes  ProductSize[]
+  colorName    String
+  isBestSeller Boolean        @default(false)
+  colorCode    String?
+  product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  images       ProductImage[]
+  sizes        ProductSize[]
 }
 
 model ProductImage {
@@ -59,31 +50,26 @@ model ProductSize {
   id             Int          @id @default(autoincrement())
   size           String
   available      Boolean      @default(true)
-  quantity       Int?
   productColorId Int
-  productColor   ProductColor @relation(fields: [productColorId], references: [id], onDelete: Cascade)
+  quantity       Int?
   orderItems     OrderItem[]
+  productColor   ProductColor @relation(fields: [productColorId], references: [id], onDelete: Cascade)
 }
 
 model Material {
-  id Int @id @default(autoincrement())
-
-  name String @unique
-
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
   products Product[]
 }
 
 model ProductRelation {
-  id Int @id @default(autoincrement())
-
+  id            Int     @id @default(autoincrement())
   fromProductId Int
+  toProductId   Int
+  order         Int     @default(0)
+  reason        String?
   fromProduct   Product @relation("ProductRelation_From", fields: [fromProductId], references: [id], onDelete: Cascade)
-
-  toProductId Int
-  toProduct   Product @relation("ProductRelation_To", fields: [toProductId], references: [id], onDelete: Cascade)
-
-  order  Int     @default(0)
-  reason String?
+  toProduct     Product @relation("ProductRelation_To", fields: [toProductId], references: [id], onDelete: Cascade)
 
   @@unique([fromProductId, toProductId])
 }
@@ -100,38 +86,27 @@ model Banner {
 }
 
 model Category {
-  id                  Int      @id @default(autoincrement())
+  id                  Int                     @id @default(autoincrement())
   name                String
-  slug                String   @unique
-  productsDescription String
+  slug                String                  @unique
   description         String
-  coverImage          String // заглавное фото
-  sizeGuideImage      String?
+  coverImage          String
   season              Season
-  isOnMainPage        Boolean? @default(false)
-  hasLining           Boolean? @default(false)
-  isDecoration        Boolean? @default(false)
-
-  products Product[]
-
+  productsDescription String
+  isOnMainPage        Boolean?                @default(false)
+  hasLining           Boolean?                @default(false)
+  isDecoration        Boolean?                @default(false)
+  sizeGuideImage      String?
   specifications      CategorySpecification[]
+  products            Product[]
   promoCodeCategories PromoCodeCategory[]
 }
 
-enum Season {
-  SUMMER
-  WINTER
-  ALL_SEASON
-}
-
 model CategorySpecification {
-  id Int @id @default(autoincrement())
-
-  name  String
-  value String
-
-  order Int @default(0)
-
+  id         Int      @id @default(autoincrement())
+  name       String
+  value      String
+  order      Int      @default(0)
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -149,67 +124,54 @@ model NovaPoshtaCity {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  invoiceId   String?     @unique // id от Monobank
-  status      OrderStatus @default(PENDING)
-  totalAmount Float
-
-  // Данные заказчика
-  firstName String
-  lastName  String
-  phone     String
-  email     String?
-  comment   String?
-
-  // Доставка
-  city            String
-  area            String
-  cityRef         String
-  warehouse       String
-  warehouseNumber Int
-  warehouseRef    String
-
-  // Оплата
-  paymentMethod PaymentMethod
-
-  // ТТН
-  ttnNumber String?
-  ttnRef    String?
-
-  //FacebookPixel
-  fbp       String?
-  fbc       String?
-  clientIp  String?
-  userAgent String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  paidAt    DateTime?
-
-  items       OrderItem[]
-  promoCodeId Int?
-  promoCode   PromoCode?  @relation(fields: [promoCodeId], references: [id])
-
-  // снэпшот на момент применения — не зависит от последующих правок PromoCode
-  promoCodeSnapshot      String? // сам код, например "SALE20"
+  id                     Int           @id @default(autoincrement())
+  invoiceId              String?       @unique
+  status                 OrderStatus   @default(PENDING)
+  totalAmount            Float
+  firstName              String
+  lastName               String
+  phone                  String
+  email                  String?
+  comment                String?
+  city                   String
+  cityRef                String
+  warehouse              String
+  warehouseRef           String
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  paymentMethod          PaymentMethod
+  area                   String
+  ttnNumber              String?
+  ttnRef                 String?
+  warehouseNumber        Int
+  clientIp               String?
+  fbc                    String?
+  fbp                    String?
+  userAgent              String?
+  paidAt                 DateTime?
+  discountAmount         Float?
   discountPercentApplied Float?
-  discountAmount         Float? // сумма скидки в валюте, посчитанная на момент заказа
+  promoCodeId            Int?
+  promoCodeSnapshot      String?
+  promoCode              PromoCode?    @relation(fields: [promoCodeId], references: [id])
+  items                  OrderItem[]
 }
 
 model OrderItem {
-  id      Int   @id @default(autoincrement())
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
+  id            Int          @id @default(autoincrement())
+  orderId       Int
   productId     Int
-  productSizeId Int?
-  productSize   ProductSize? @relation(fields: [productSizeId], references: [id], onDelete: SetNull)
   name          String
   price         Float
   quantity      Int
   color         String
-  colorName     String?
   size          String?
   imageUrl      String
+  colorName     String?
+  productSizeId Int?
+  colorCode     String?
+  order         Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productSize   ProductSize? @relation(fields: [productSizeId], references: [id])
 
   @@index([productSizeId])
 }
@@ -222,55 +184,39 @@ model TelegramUser {
 }
 
 model PromoCode {
-  id              Int    @id @default(autoincrement())
-  code            String @unique
-  discountPercent Float // 1-100, без ограничения максимальной суммы скидки
-
-  scopeType PromoScopeType @default(ALL)
-
-  startsAt  DateTime?
-  expiresAt DateTime?
-
-  maxUses   Int? // null = без ограничения по количеству
-  usedCount Int  @default(0)
-
-  isActive  Boolean @default(true) // ручное вкл/выкл
-  isDeleted Boolean @default(false) // soft delete, скрыт из админки
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  categories PromoCodeCategory[]
-  products   PromoCodeProduct[]
-  orders     Order[]
-}
-
-enum PromoScopeType {
-  ALL // действует на весь каталог
-  CATEGORY
-  PRODUCT
+  id              Int                 @id @default(autoincrement())
+  code            String              @unique
+  discountPercent Float
+  scopeType       PromoScopeType      @default(ALL)
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  maxUses         Int?
+  usedCount       Int                 @default(0)
+  isActive        Boolean             @default(true)
+  isDeleted       Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  orders          Order[]
+  categories      PromoCodeCategory[]
+  products        PromoCodeProduct[]
 }
 
 model PromoCodeCategory {
-  id Int @id @default(autoincrement())
-
+  id          Int       @id @default(autoincrement())
   promoCodeId Int
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
-
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([promoCodeId, categoryId])
 }
 
 model PromoCodeProduct {
-  id Int @id @default(autoincrement())
-
+  id          Int       @id @default(autoincrement())
   promoCodeId Int
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
-
-  productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([promoCodeId, productId])
 }
@@ -278,7 +224,7 @@ model PromoCodeProduct {
 model MonthlyExpense {
   id          Int       @id @default(autoincrement())
   year        Int
-  month       Int // 1-12
+  month       Int
   amount      Float
   description String?
   createdAt   DateTime  @default(now())
@@ -288,14 +234,26 @@ model MonthlyExpense {
   @@index([year, month])
 }
 
+enum Season {
+  SUMMER
+  WINTER
+  ALL_SEASON
+}
+
+enum PromoScopeType {
+  ALL
+  CATEGORY
+  PRODUCT
+}
+
 enum OrderStatus {
-  PENDING // ожидает оплаты
-  PAID // оплачено
-  PROCESSING // в обработке
-  SHIPPED // отправлено
-  DELIVERED // доставлено
-  CANCELLED // отменено
-  REFUNDED // возврат
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
 }
 
 enum PaymentMethod {

@@ -152,7 +152,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                 src={optimizeCloudinaryUrl(c.images[0].url, 140)}
                                 width={70} height={70}
                                 draggable={false}
-                                className="object-contain aspect-square mx-auto select-none hover:scale-110 transition"
+                                className="object-cover aspect-square mx-auto select-none hover:scale-110 transition"
                                 alt="ProductImage"
                                 quality={100}
                                 unoptimized
