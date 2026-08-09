@@ -179,7 +179,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                         }
                     </div>
 
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-2 flex-wrap">
                         {selectedProductColor.sizes.map((s) => (
                             <div
                                 key={s.id}
@@ -190,7 +190,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                     opacity: s.available && (s.quantity === null || s.quantity > 0) ? 1 : 0.4,
                                     cursor: s.available && (s.quantity === null || s.quantity > 0) ? "pointer" : "not-allowed",
                                 }}
-                                className="rounded-lg py-0.5 px-4 font-medium select-none"
+                                className="rounded-lg py-0.5 px-4 font-medium select-none text-sm sm:text-base"
                                 onClick={() => s.available && (s.quantity === null || s.quantity > 0) && handleSizeChange(s.size)}
                             >
                                 {s.size}
