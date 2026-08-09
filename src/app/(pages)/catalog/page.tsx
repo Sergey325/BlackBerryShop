@@ -5,6 +5,8 @@ import SeasonBlock from "@/app/(pages)/catalog/components/SeasonBlock";
 import {getCategories} from "@/app/actions/getCategories";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 // ─── Data ──────────────────────────────────────────────────────────────────
 const seasonsConfig = [
     {
