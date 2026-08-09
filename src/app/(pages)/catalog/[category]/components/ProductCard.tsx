@@ -224,7 +224,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                 </p>
 
                 {visibleColors.length > 1 && colors && (
-                    <div className="mt-1 mt-auto flex min-h-6 items-center gap-1.5" aria-label="Доступні кольори">
+                    <div className="mt-auto flex min-h-6 items-center gap-1.5" aria-label="Доступні кольори">
                         {visibleColors.map((c, i) => (
                             <button
                                 key={c.id}
@@ -260,7 +260,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     </div>
                 )}
 
-                <div className={`${colors ? "mt-1" : "mt-auto pt-1"} flex w-full items-end justify-between gap-2 `}>
+                <div className={`${product.colors.length > 1 ? "mt-1" : "mt-auto pt-1"} flex w-full items-end justify-between gap-2 `}>
                     <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
                         {product.price} <span className="text-xs font-medium text-slate-500 sm:text-sm">грн</span>
                     </p>
