@@ -195,12 +195,13 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
             className={`group mx-auto flex h-full w-full max-w-[300px] cursor-pointer select-none flex-col overflow-hidden rounded-2xl border border-primary/15 bg-white shadow-md  transition-all duration-300 hover:-translate-y-1 hover:border-primary/35  ${colors ? "sm:shadow-[0_3px_14px_rgba(15,23,42,0.09)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.14)]" : "sm:shadow-sm"}`}
         >
             {/* Product image */}
-            <div className="aspect-square shrink-0 bg-white p-2 sm:p-4">
-                <div className="relative w-full h-full overflow-hidden rounded-lg">
+            <div className="relative aspect-square w-full min-w-0 shrink-0 overflow-hidden bg-white">
+                <div className="absolute inset-2 overflow-hidden rounded-lg sm:inset-4">
                     <Image
                         src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500, 18)}
                         alt={product.name}
                         fill
+                        sizes="(max-width: 640px) 50vw, 300px"
                         unoptimized
                         draggable={false}
                         className={`object-contain transition-all duration-500 ease-out ${
