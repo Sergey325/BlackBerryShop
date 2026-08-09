@@ -6,7 +6,7 @@ import { IProduct, IRelatedProduct } from "@/app/actions/getProducts";
 type CartStore = {
     items: CartItem[];
     addItem: (item: CartItem) => void;
-    removeItem: (productColorId: number, size?: string) => void;
+    removeItem: (productColorId: number, size?: string, lining?: boolean) => void;
     clearCart: () => void;
     changeQuantity: (item: CartItem, quantity: number) => void;
     changeSize: (item: CartItem, size: string) => void;
@@ -17,8 +17,9 @@ type PersistedCartState = {
     items: CartItem[];
 };
 
-type LegacyCartItem = Omit<CartItem, "sizes"> & {
+type LegacyCartItem = Omit<CartItem, "sizes" | "lining"> & {
     sizes?: CartItem["sizes"];
+    lining?: boolean;
     relatedProducts?: unknown;
 };
 
@@ -26,6 +27,7 @@ function migrateCartItem(item: LegacyCartItem): CartItem {
     const migratedItem = {
         ...item,
         sizes: Array.isArray(item.sizes) ? item.sizes : [],
+        lining: item.lining === true,
     };
 
     delete migratedItem.relatedProducts;
@@ -51,6 +53,7 @@ export function createProductSelection(
         productName: product.name,
         slug: product.slug,
         categorySlug: product.category!.slug,
+        lining: false,
     };
 }
 
@@ -65,7 +68,8 @@ export const useCartStore = create<CartStore>()(
                 const existing = items.find(
                     (currentItem) =>
                         currentItem.productColorId === item.productColorId &&
-                        currentItem.size === item.size
+                        currentItem.size === item.size &&
+                        Boolean(currentItem.lining) === Boolean(item.lining)
                 );
 
                 if (existing) {
@@ -89,13 +93,14 @@ export const useCartStore = create<CartStore>()(
                 });
             },
 
-            removeItem: (productColorId, size) => {
+            removeItem: (productColorId, size, lining) => {
                 set((state) => ({
                     items: state.items.filter(
                         (item) =>
                             !(
                                 item.productColorId === productColorId &&
-                                item.size === size
+                                item.size === size &&
+                                Boolean(item.lining) === Boolean(lining)
                             )
                     ),
                 }));
@@ -107,7 +112,8 @@ export const useCartStore = create<CartStore>()(
                         .map((currentItem) =>
                             currentItem.productColorId ===
                             item.productColorId &&
-                            currentItem.size === item.size
+                            currentItem.size === item.size &&
+                            Boolean(currentItem.lining) === Boolean(item.lining)
                                 ? {
                                     ...currentItem,
                                     quantity,
@@ -124,7 +130,8 @@ export const useCartStore = create<CartStore>()(
                 const existing = items.find(
                     (currentItem) =>
                         currentItem.productColorId === item.productColorId &&
-                        currentItem.size === newSize
+                        currentItem.size === newSize &&
+                        Boolean(currentItem.lining) === Boolean(item.lining)
                 );
 
                 if (existing) {
@@ -135,7 +142,8 @@ export const useCartStore = create<CartStore>()(
                                     !(
                                         currentItem.productColorId ===
                                         item.productColorId &&
-                                        currentItem.size === item.size
+                                        currentItem.size === item.size &&
+                                        Boolean(currentItem.lining) === Boolean(item.lining)
                                     )
                             )
                             .map((currentItem) =>
@@ -156,7 +164,8 @@ export const useCartStore = create<CartStore>()(
                 set({
                     items: items.map((currentItem) =>
                         currentItem.productColorId === item.productColorId &&
-                        currentItem.size === item.size
+                        currentItem.size === item.size &&
+                        Boolean(currentItem.lining) === Boolean(item.lining)
                             ? {
                                 ...currentItem,
                                 size: newSize,
@@ -172,7 +181,7 @@ export const useCartStore = create<CartStore>()(
         }),
         {
             name: "cart-storage",
-            version: 2,
+            version: 3,
 
             partialize: (state): PersistedCartState => ({
                 items: state.items,

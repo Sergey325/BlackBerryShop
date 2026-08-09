@@ -43,6 +43,7 @@ export type CartItem = {
     quantity: number;
     categorySlug: string;
     isDecoration: boolean;
+    lining: boolean;
 };
 
 export interface IOrderItem {

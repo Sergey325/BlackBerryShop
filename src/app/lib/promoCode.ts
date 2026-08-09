@@ -3,6 +3,7 @@ import prisma from "@/app/lib/prisma";
 export type PromoCartItemInput = {
     productId: number;
     quantity: number;
+    lining?: boolean;
 };
 
 type PricedPromoCartItem = PromoCartItemInput & {
@@ -62,6 +63,7 @@ export async function calculateCartPricing(
             id: true,
             price: true,
             discount: true,
+            hasLining: true,
             categoryId: true,
         },
     });
@@ -135,7 +137,13 @@ export async function calculateCartPricing(
 
     const pricedItems: PricedPromoCartItem[] = items.map((item: PromoCartItemInput): PricedPromoCartItem => {
         const product = productById.get(item.productId)!;
-        const unitPriceCents: number = calculateDiscountedCents(product.price, product.discount);
+
+        if (item.lining && !product.hasLining) {
+            throw new CartPricingError("Підкладка недоступна для одного з товарів");
+        }
+
+        const priceWithOptions: number = product.price + (item.lining ? 150 : 0);
+        const unitPriceCents: number = calculateDiscountedCents(priceWithOptions, product.discount);
         const isEligible: boolean = Boolean(promoCode) && (
             promoCode!.scopeType === "ALL"
             || (promoCode!.scopeType === "CATEGORY"

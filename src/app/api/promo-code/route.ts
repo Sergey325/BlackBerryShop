@@ -23,6 +23,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             return {
                 productId: Number(value.productId),
                 quantity: Number(value.quantity),
+                lining: value.lining === true,
             };
         });
         const pricing = await calculateCartPricing(items, body.code);

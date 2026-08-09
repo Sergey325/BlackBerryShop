@@ -21,7 +21,7 @@ const CartModal = () => {
         (<div className="flex flex-col gap-4 ">
             <div className="flex flex-col gap-4 divide-y divide-gray-300">
                 {cart.items.map((item) => (
-                    <div key={item.productId +item.color+item.size+item.colorName}>
+                    <div key={`${item.productId}-${item.color}-${item.size}-${item.colorName}-${Boolean(item.lining)}`}>
                         <div
                             className="flex gap-4 py-4"
                         >
@@ -39,7 +39,7 @@ const CartModal = () => {
                                             className="font-medium text-sm md:text-lg hover:text-primary transition-colors duration-300 cursor-pointer on"
                                             onClick={() => {
                                                 cartModal.onClose()
-                                                router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)
+                                                router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`)
                                             }}
                                         >{item.productName}</p>
                                         <div className="flex items-center gap-2 mt-1">
@@ -53,7 +53,7 @@ const CartModal = () => {
                                             if (cart.items.length === 1) {
                                                 cartModal.onClose()
                                             }
-                                            cart.removeItem(item.productColorId, item.size)
+                                            cart.removeItem(item.productColorId, item.size, item.lining)
                                         }}
                                     />
                                 </div>
@@ -72,8 +72,8 @@ const CartModal = () => {
                                         <span className="text-sm md:text-sm text-gray-800">Кількість</span>
                                         <Counter
                                             initialNumber={item.quantity}
-                                            max={getCartItemMaximum(item)}
-                                            disabled={getCartItemMaximum(item) === 0}
+                                            max={getCartItemMaximum(item, cart.items)}
+                                            disabled={getCartItemMaximum(item, cart.items) === 0}
                                             onChange={(count) => cart.changeQuantity(item, count)}
                                             onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
                                         />
