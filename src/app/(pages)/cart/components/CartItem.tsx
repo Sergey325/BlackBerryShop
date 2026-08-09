@@ -71,11 +71,13 @@ function RelatedAndCustomizationSkeleton() {
 const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) => {
     const router = useRouter()
     const cart = useCartStore()
+    const productUrl: string = `/catalog/${item.categorySlug}/${item.productId}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`;
     const cartItem = cart.items.find(
         i =>
         i.productId === item.productId &&
         i.size === item.size &&
-        i.color === item.color
+        i.color === item.color &&
+        Boolean(i.lining) === Boolean(item.lining)
     )
 
     const { relatedProducts, customizationOptions } = related.reduce(
@@ -105,7 +107,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
     const totalAmount = useMemo(() => {
         return calculateTotalPrice(cartItem?.price ?? 1, cartItem?.quantity ?? 1, cartItem?.discount ?? 0)
     }, [cartItem?.price, cartItem?.quantity, cartItem?.discount]);
-    const maximumQuantity: number | null | undefined = getCartItemMaximum(item);
+    const maximumQuantity: number | null | undefined = getCartItemMaximum(item, cart.items);
 
     const handleChangeQuantity = useCallback((quantity: number) => {
         cart.changeQuantity(item, quantity);
@@ -147,13 +149,13 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         draggable={false}
                         className="object-contain select-none rounded-lg"
                         // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
-                        onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)}
+                        onClick={() => router.push(productUrl)}
                     />
 
                     <div className="flex flex-col gap-4 min-w-0">
                         <span
                             // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
-                            onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)}
+                            onClick={() => router.push(productUrl)}
                             className="font-medium text-base lg:text-base hover:text-primary transition-colors duration-300"
                         >
                             {item.productName}
@@ -210,7 +212,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         <div className="lg:hidden block justify-self-center">
                             <FiTrash2
                                 className="text-red-500 hover:text-red-300 transition cursor-pointer size-6"
-                                onClick={() => cart.removeItem(item.productColorId, item.size)}
+                                onClick={() => cart.removeItem(item.productColorId, item.size, item.lining)}
                             />
                         </div>
                     </div>
@@ -225,7 +227,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                     <ToolTip label="Видалити">
                         <FiTrash2
                             className="text-red-500 hover:text-red-300 transition cursor-pointer size-7"
-                            onClick={() => cart.removeItem(item.productColorId, item.size)}
+                            onClick={() => cart.removeItem(item.productColorId, item.size, item.lining)}
                         />
                     </ToolTip>
                 </div>

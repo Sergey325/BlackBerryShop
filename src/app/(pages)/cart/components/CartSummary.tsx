@@ -22,6 +22,7 @@ type PromoCodeResponse = {
 type PromoCartItem = {
     productId: number;
     quantity: number;
+    lining: boolean;
 };
 
 type Props = {
@@ -67,7 +68,7 @@ const CartSummary = ({
     const [promoCodeError, setPromoCodeError] = useState<string>("");
     const [isPromoCodeLoading, setIsPromoCodeLoading] = useState<boolean>(false);
     const itemsKey: string = useMemo((): string => items
-        .map((item: PromoCartItem): string => `${item.productId}:${item.quantity}`)
+        .map((item: PromoCartItem): string => `${item.productId}:${item.quantity}:${item.lining}`)
         .sort()
         .join("|"), [items]);
     const previousItemsKey = useRef<string>(itemsKey);

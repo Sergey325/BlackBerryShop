@@ -18,6 +18,7 @@ type CheckoutItem = {
     size?: string | null;
     imageUrl: string;
     colorId: number;
+    lining?: boolean;
 };
 
 type CheckoutRequest = {
@@ -93,6 +94,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const promoItems: PromoCartItemInput[] = items.map((item: CheckoutItem): PromoCartItemInput => ({
             productId: Number(item.productId),
             quantity: Number(item.quantity),
+            lining: item.lining === true,
         }));
         const pricing = await calculateCartPricing(promoItems, promoCode);
         const pricedItems: CheckoutItem[] = items.map((item: CheckoutItem, index: number): CheckoutItem => ({

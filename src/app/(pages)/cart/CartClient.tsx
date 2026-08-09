@@ -194,6 +194,7 @@ const CartClient = () => {
     const promoCartItems = useMemo(() => cart.items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
+        lining: Boolean(item.lining),
     })), [cart.items]);
 
     const contactRef = useRef<HTMLDivElement | null>(null);
@@ -273,7 +274,8 @@ const CartClient = () => {
                     colorName: item.colorName,
                     size: item.size,
                     imageUrl: item.photoUrl,
-                    colorId: item.productColorId
+                    colorId: item.productColorId,
+                    lining: Boolean(item.lining)
                 })),
                 fbp,
                 fbc,

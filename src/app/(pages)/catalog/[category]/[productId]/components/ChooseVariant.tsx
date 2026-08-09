@@ -29,10 +29,10 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
 
     const sizesModal = useSizesModal()
 
-    const [includeLining, setIncludeLining] = useState(false);
+    const includeLining: boolean = hasLining && params.get("lining") === "true";
 
-    const basePrice = product.price + (includeLining ? 150 : 0);
-    const discountedPrice = calculatePriceWithDiscount(basePrice, product.discount ?? 0);
+    const basePrice: number = product.price + (includeLining ? 150 : 0);
+    const discountedPrice: number = calculatePriceWithDiscount(basePrice, product.discount ?? 0);
 
     // Цвет — главный селектор
     const selectedColorHex = selectedProductColor.color;
@@ -49,16 +49,19 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
     const selectedSizeObj = selectedProductColor.sizes.find(
         (s) => s.size === selectedSize
     ) ?? (selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0] : undefined);
+    const effectiveSelectedSize: string = selectedSizeObj?.size ?? selectedSize;
     const selectedSizeAvailable: boolean = Boolean(
         selectedSizeObj?.available
         && (selectedSizeObj.quantity === null || (selectedSizeObj.quantity ?? 0) > 0)
     );
     const existingCartQuantity: number = useMemo((): number => {
-        return cart.items.find(item =>
-            item.productColorId === selectedProductColor.id
-            && item.size === selectedSize
-        )?.quantity ?? 0;
-    }, [cart.items, selectedProductColor.id, selectedSize]);
+        return cart.items
+            .filter(item =>
+                item.productColorId === selectedProductColor.id
+                && item.size === effectiveSelectedSize
+            )
+            .reduce((total: number, item): number => total + item.quantity, 0);
+    }, [cart.items, effectiveSelectedSize, selectedProductColor.id]);
     const maximumToAdd: number | null | undefined = selectedSizeObj?.quantity === null
         ? null
         : selectedSizeObj?.quantity === undefined
@@ -114,9 +117,12 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                     c => c.id === selectedProductColor.id
                 )
             ),
+            productName: includeLining ? `${product.name} з підкладкою` : product.name,
+            price: basePrice,
             quantity: count,
             size: !selectedSize && selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0].size : selectedSize,
-            isDecoration: product.category?.isDecoration || false
+            isDecoration: product.category?.isDecoration || false,
+            lining: includeLining,
         });
         cartModal.onOpen();
 
@@ -124,7 +130,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
             content_ids: [product.id.toString()],
             content_name: product.name,
             content_type: "product",
-            value: product.price,
+            value: discountedPrice,
             currency: "UAH",
             color: selectedProductColor.colorName,
             size: selectedSize,
@@ -206,8 +212,9 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                         <CheckBox
                             label="Додати підкладку"
                             colorOnChecked={"text-primary"}
-                            // labelStyle="text-sm"
-                            onChange={() => setIncludeLining(value => !value)}
+                            urlParameter="lining"
+                            urlValue="true"
+                            multiplyParameter={false}
                         />
                         {/*<ToolTip label="z vkjrwlkfglwrfwfwf">*/}
                         {/*    <BiSolidInfoCircle className="size-6 text-primary"/>*/}
