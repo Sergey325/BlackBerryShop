@@ -125,25 +125,30 @@ model NovaPoshtaCity {
 }
 
 model Order {
-  id                     Int           @id @default(autoincrement())
-  invoiceId              String?       @unique
-  status                 OrderStatus   @default(PENDING)
-  totalAmount            Float
-  firstName              String
-  lastName               String
-  phone                  String
-  email                  String?
-  comment                String?
-  city                   String
-  cityRef                String
-  warehouse              String
-  warehouseRef           String
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
-  paymentMethod          PaymentMethod
-  area                   String
-  ttnNumber              String?
-  ttnRef                 String?
+  id            Int           @id @default(autoincrement())
+  invoiceId     String?       @unique
+  status        OrderStatus   @default(PENDING)
+  totalAmount   Float
+  firstName     String
+  lastName      String
+  phone         String
+  email         String?
+  comment       String?
+  city          String
+  cityRef       String
+  warehouse     String
+  warehouseRef  String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  paymentMethod PaymentMethod
+  area          String
+
+  ttnNumber          String?
+  ttnRef             String?
+  ttnStatus          String? // текстовый статус от НП, напр. "Прямує до м. Київ"
+  ttnStatusCode      String? // код статуса НП, напр. "9", "41", "44"
+  ttnStatusUpdatedAt DateTime?
+
   warehouseNumber        Int
   clientIp               String?
   fbc                    String?
@@ -154,7 +159,7 @@ model Order {
   discountPercentApplied Float?
   promoCodeId            Int?
   promoCodeSnapshot      String?
-  promoCode              PromoCode?    @relation(fields: [promoCodeId], references: [id])
+  promoCode              PromoCode?  @relation(fields: [promoCodeId], references: [id])
   items                  OrderItem[]
 }
 
