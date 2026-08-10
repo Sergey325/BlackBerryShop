@@ -257,7 +257,8 @@ enum OrderStatus {
   PAID
   PROCESSING
   SHIPPED
-  DELIVERED
+  ARRIVED // прибыло на отделение, ожидает получения
+  DELIVERED // получено клиентом
   CANCELLED
   REFUNDED
 }
