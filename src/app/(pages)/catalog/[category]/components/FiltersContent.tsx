@@ -77,7 +77,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
             {
                 options.colors.length > 0 &&
                 <FilterSection title="Колір">
-                    <div className="flex flex-wrap gap-2.5 p-1">
+                    <div className="flex flex-wrap gap-1.5 p-1">
                         {options.colors.map((c,  index) => (
                             <ColorFilter
                                 key={c.color+index}
