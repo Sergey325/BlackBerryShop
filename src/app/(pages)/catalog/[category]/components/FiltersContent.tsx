@@ -9,6 +9,7 @@ import ColorFilter from "@/app/(pages)/catalog/[category]/components/ColorFilter
 import qs from "query-string";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
 import Link from "next/link";
+import {sortColorsByShade} from "@/app/utils/sortColors";
 
 
 type Props = {
@@ -34,6 +35,8 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
     const searchParams = useSearchParams();
 
     const { clearFilters } = useClearFilters(`/catalog/${selectedCategorySlug}`);
+
+    const sortedColors = sortColorsByShade(options.colors)
 
     const preservedParams = {
         sorting: searchParams.get("sorting") ?? undefined,
@@ -78,7 +81,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                 options.colors.length > 0 &&
                 <FilterSection title="Колір">
                     <div className="flex flex-wrap gap-1.5 p-1">
-                        {options.colors.map((c,  index) => (
+                        {sortedColors.map((c,  index) => (
                             <ColorFilter
                                 key={c.color+index}
                                 urlParameter="color"
