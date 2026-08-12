@@ -9,53 +9,6 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import Link from "next/link";
 import {IBanner} from "@/app/actions/getBanners";
 
-// type BannerSlide = {
-//     image: string;
-//     badge: string;
-//     title: string;
-//     features: string[];
-//     ctaHref: string;
-//     ctaLabel: string;
-// };
-
-// const slides: BannerSlide[] = [
-//     {
-//         image: "https://res.cloudinary.com/dnoxhtgef/image/upload/v1783530220/BlackBerry/Banners/IMG_1557_rd2tw9.png",
-//         badge: "Ручна робота з любов'ю",
-//         title: "Аксесуари, які закохують у себе\nз першого дотику",
-//         features: [
-//             "Створено з турботою",
-//             "Використання якісних матеріалів",
-//             "Індивідуальний підхід до кожного кліента",
-//         ],
-//         ctaHref: "/catalog",
-//         ctaLabel: "Перейти до каталогу",
-//     },
-//     {
-//         image: "https://res.cloudinary.com/dnoxhtgef/image/upload/v1782129738/BlackBerry/cmaj7u3qp6w2qxtvmifz.png",
-//         badge: "Ручна робота з любов'ю",
-//         title: "Аксесуари, які закохують у себе\nз першого дотику",
-//         features: [
-//             "Створено з турботою",
-//             "Використання якісних матеріалів",
-//             "Індивідуальний підхід до кожного кліента",
-//         ],
-//         ctaHref: "/catalog",
-//         ctaLabel: "Перейти до каталогу",
-//     },
-//     {
-//         image: "https://res.cloudinary.com/dnoxhtgef/image/upload/v1782123652/BlackBerry/bckizdsqqp9unqmyxqwa.jpg",
-//         badge: "Ручна робота з любов'ю",
-//         title: "Аксесуари, які закохують у себе\nз першого дотику",
-//         features: [
-//             "Створено з турботою",
-//             "Використання якісних матеріалів",
-//             "Індивідуальний підхід до кожного кліента",
-//         ],
-//         ctaHref: "/catalog",
-//         ctaLabel: "Перейти до каталогу",
-//     },
-// ];
 
 const responsive = {
     all: {breakpoint: {max: 4000, min: 0}, items: 1},
@@ -83,29 +36,29 @@ const Hero = ({banners}: Props) => {
 
     const [isSliding, setIsSliding] = useState(false);
 
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
-        return (
-            <section className="relative overflow-hidden flex items-center rounded-xl lg:rounded-3xl min-h-[450px] lg:min-h-[650px] bg-gray-100 animate-pulse">
-                <div className="flex items-center px-4 lg:px-16 w-full lg:w-1/2 h-full my-auto">
-                    <div className="space-y-4 w-full">
-                        <div className="h-6 w-40 bg-gray-200 rounded-full" />
-                        <div className="h-10 w-3/4 bg-gray-200 rounded" />
-                        <div className="h-10 w-2/3 bg-gray-200 rounded" />
-                        <div className="h-4 w-1/2 bg-gray-200 rounded mt-6" />
-                        <div className="h-4 w-1/3 bg-gray-200 rounded" />
-                        <div className="h-12 w-48 bg-gray-200 rounded-full mt-8" />
-                    </div>
-                </div>
-            </section>
-        );
-    }
+    // const [mounted, setMounted] = useState(false);
+    //
+    // useEffect(() => {
+    //     // eslint-disable-next-line react-hooks/set-state-in-effect
+    //     setMounted(true);
+    // }, []);
+    //
+    // if (!mounted) {
+    //     return (
+    //         <section className="relative overflow-hidden flex items-center rounded-xl lg:rounded-3xl min-h-[450px] lg:min-h-[650px] bg-gray-100 animate-pulse">
+    //             <div className="flex items-center px-4 lg:px-16 w-full lg:w-1/2 h-full my-auto">
+    //                 <div className="space-y-4 w-full">
+    //                     <div className="h-6 w-40 bg-gray-200 rounded-full" />
+    //                     <div className="h-10 w-3/4 bg-gray-200 rounded" />
+    //                     <div className="h-10 w-2/3 bg-gray-200 rounded" />
+    //                     <div className="h-4 w-1/2 bg-gray-200 rounded mt-6" />
+    //                     <div className="h-4 w-1/3 bg-gray-200 rounded" />
+    //                     <div className="h-12 w-48 bg-gray-200 rounded-full mt-8" />
+    //                 </div>
+    //             </div>
+    //         </section>
+    //     );
+    // }
 
     return (
         <section className="relative overflow-hidden rounded-xl lg:rounded-3xl shadow-[0_0_20px_rgba(0,0,0,0.10)] select-none bg-linear-to-t from-black/70 via-black/40 to-black/10  lg:bg-none lg:bg-white">
@@ -161,9 +114,9 @@ const Hero = ({banners}: Props) => {
                                     }
 
 
-                                    <h1 className="text-5xl leading-[1.2] font-bold text-gray-900 mb-5 whitespace-pre-line">
+                                    <h2 className="text-5xl leading-[1.2] font-bold text-gray-900 mb-5 whitespace-pre-line">
                                         {banner.title}
-                                    </h1>
+                                    </h2>
 
                                     {
                                         banner.features.length > 0 &&
@@ -191,7 +144,10 @@ const Hero = ({banners}: Props) => {
                                         src={optimizeCloudinaryUrl(banner.image, 1500)}
                                         alt={""}
                                         fill
-                                        priority
+                                        fetchPriority={i === 0 ? "high" : "auto"}
+                                        loading={i === 0 ? "eager" : "lazy"}
+                                        sizes="(min-width: 1024px) 75vw, 1px"
+                                        unoptimized
                                         draggable={false}
                                         className="object-cover object-center select-none"
                                     />
@@ -215,7 +171,9 @@ const Hero = ({banners}: Props) => {
                                     src={optimizeCloudinaryUrl(banner.image, 1500)}
                                     alt={""}
                                     fill
-                                    priority={i === 0}
+                                    fetchPriority={i === 0 ? "high" : "auto"}
+                                    loading={i === 0 ? "eager" : "lazy"}
+                                    sizes="(max-width: 1023px) 100vw, 1px"
                                     unoptimized
                                     draggable={false}
                                     className="object-cover object-center select-none"
@@ -240,9 +198,9 @@ const Hero = ({banners}: Props) => {
                                                 <FaHeart className="size-4 text-primary" />
                                         </span>
                                     }
-                                    <h1 className="text-3xl leading-tight font-bold text-white whitespace-pre-line">
+                                    <h2 className="text-3xl leading-tight font-bold text-white whitespace-pre-line">
                                         {banner.title}
-                                    </h1>
+                                    </h2>
 
                                     {
                                         banner.features.length > 0 &&

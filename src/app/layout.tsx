@@ -11,6 +11,13 @@ import SizesModal from "@/app/components/modals/SizesModal";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
+import {
+    DEFAULT_DESCRIPTION,
+    DEFAULT_OG_IMAGE,
+    DEFAULT_TITLE,
+    SITE_NAME,
+    SITE_URL,
+} from "@/app/lib/seo";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -18,27 +25,33 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://black-berry.shop"),
-
-    title: "BlackBerry — авторські головні убори та аксесуари",
-    description: "BlackBerry — український бренд авторських головних уборів та аксесуарів. Панами, кепки та унікальні моделі для дітей і дорослих. Якість, комфорт і оригінальний дизайн.",
-
-    icons: {
-        icon: "/favicon.ico",
+    metadataBase: new URL(SITE_URL),
+    title: {
+        default: DEFAULT_TITLE,
+        template: `%s | ${SITE_NAME}`,
     },
+    description: DEFAULT_DESCRIPTION,
 
     openGraph: {
-        title: "BlackBerry — авторські головні убори та аксесуари",
-        description:
-            "BlackBerry — український бренд авторських головних уборів та аксесуарів. Панами, кепки та унікальні моделі для дітей і дорослих. Якість, комфорт і оригінальний дизайн.",
+        type: "website",
+        locale: "uk_UA",
+        siteName: SITE_NAME,
+        title: DEFAULT_TITLE,
+        description: DEFAULT_DESCRIPTION,
         images: [
             {
-                url: "/logo.png",
+                url: DEFAULT_OG_IMAGE,
                 width: 1200,
                 height: 630,
-                alt: "BlackBerry магазин",
+                alt: "Головні убори та аксесуари BlackBerry",
             },
         ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: DEFAULT_TITLE,
+        description: DEFAULT_DESCRIPTION,
+        images: [DEFAULT_OG_IMAGE],
     },
 };
 

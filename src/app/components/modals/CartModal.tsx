@@ -11,6 +11,7 @@ import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTo
 import {useRouter} from "next/navigation";
 import {getCartItemMaximum} from "@/app/utils/inventory";
 import toast from "react-hot-toast";
+import {getProductPath} from "@/app/lib/productUrl";
 
 
 const CartModal = () => {
@@ -27,7 +28,7 @@ const CartModal = () => {
                         >
 
                             {/* Картинка */}
-                            <Image src={item.photoUrl} alt="productImage" width={80} height={80} className="object-contain shrink-0"/>
+                            <Image src={item.photoUrl} alt={`${item.productName}, колір ${item.colorName ?? item.color}`} width={80} height={80} className="object-contain shrink-0"/>
 
                             {/* Контент */}
                             <div className="flex flex-1 flex-col gap-2">
@@ -39,7 +40,7 @@ const CartModal = () => {
                                             className="font-medium text-sm md:text-lg hover:text-primary transition-colors duration-300 cursor-pointer on"
                                             onClick={() => {
                                                 cartModal.onClose()
-                                                router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`)
+                                                router.push(`${getProductPath(item.categorySlug, item.productId, item.slug)}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`)
                                             }}
                                         >{item.productName}</p>
                                         <div className="flex items-center gap-2 mt-1">

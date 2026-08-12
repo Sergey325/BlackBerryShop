@@ -1,5 +1,13 @@
 import {FaInstagram, FaTelegram} from "react-icons/fa";
 import Link from "next/link";
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+
+export const metadata: Metadata = createMetadata({
+    title: "Обмін та повернення",
+    description: "Умови обміну та повернення товарів BlackBerry протягом 14 днів: вимоги до стану виробу, порядок звернення та оплата доставки.",
+    path: "/exchange",
+});
 
 export default function ExchangePage() {
     return (

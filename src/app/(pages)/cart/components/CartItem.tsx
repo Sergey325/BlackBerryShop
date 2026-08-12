@@ -17,6 +17,7 @@ import {FiTrash2} from "react-icons/fi";
 import type {IRelatedProduct} from "@/app/actions/getProducts";
 import {getCartItemMaximum} from "@/app/utils/inventory";
 import toast from "react-hot-toast";
+import {getProductPath} from "@/app/lib/productUrl";
 
 type Props = {
     item: CartItemType,
@@ -71,7 +72,7 @@ function RelatedAndCustomizationSkeleton() {
 const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) => {
     const router = useRouter()
     const cart = useCartStore()
-    const productUrl: string = `/catalog/${item.categorySlug}/${item.productId}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`;
+    const productUrl: string = `${getProductPath(item.categorySlug, item.productId, item.slug)}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`;
     const cartItem = cart.items.find(
         i =>
         i.productId === item.productId &&
@@ -143,7 +144,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                 >
                     <Image
                         src={item.photoUrl}
-                        alt="productImage"
+                        alt={`${item.productName}, колір ${item.colorName ?? item.color}`}
                         width={80}
                         height={80}
                         draggable={false}
@@ -266,7 +267,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                         />
                                         <div className="flex flex-col flex-1 min-w-0 gap-1">
                                                 <span
-                                                    onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&colorId=${item.productColorId}`)}
+                                                    onClick={() => router.push(`${getProductPath(related.category?.slug ?? "", related.id, related.slug)}?colorId=${item.productColorId}`)}
 
                                                     // onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                                                     className="text-sm font-medium truncate transition-colors hover:text-primary cursor-pointer">{related.name}
@@ -320,7 +321,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                         />
                                         <span
                                             //router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)
-                                            onClick={() => router.push(`/catalog/${variant.category?.slug}/${variant.id}?&colorId=%23${variant.colors[0].id}`)}
+                                            onClick={() => router.push(`${getProductPath(variant.category?.slug ?? "", variant.id, variant.slug)}?colorId=${variant.colors[0].id}`)}
                                             className="text-xs font-medium text-center line-clamp-2 hover:text-primary cursor-pointer transition-colors"
                                         >
                                             {variant.name}

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useProductSearch } from "@/app/hooks/useProductSearch";
 import {AiOutlineLoading} from "react-icons/ai";
 import Link from "next/link";
+import {getProductPath} from "@/app/lib/productUrl";
 
 export default function SearchBar() {
     const [open, setOpen] = useState(false);
@@ -78,7 +79,7 @@ export default function SearchBar() {
                         results.map((product) => (
                             <Link
                                 key={product.id}
-                                href={`/catalog/${product.category?.slug}/${product.id}`}
+                                href={getProductPath(product.category?.slug ?? "", product.id, product.slug)}
                                 onClick={handleClose}
                                 className="flex items-center gap-3 p-3 hover:bg-gray-50 transition border-b border-primary/30 last:border-0"
                             >

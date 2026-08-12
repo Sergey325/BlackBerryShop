@@ -8,6 +8,7 @@ import {useProductSearch} from "@/app/hooks/useProductSearch";
 import Loader from "@/app/components/reusable/Loader";
 import {useModalHistory} from "@/app/hooks/useModalHistory";
 import Link from "next/link";
+import {getProductPath} from "@/app/lib/productUrl";
 
 export default function MobileSearchOverlay() {
     const { isOpen, onClose } = useMobileSearchModal();
@@ -82,7 +83,7 @@ export default function MobileSearchOverlay() {
                     results.map((product) => (
                         <Link
                             key={product.id}
-                            href={`catalog/${product.category?.slug}/${product.id}`}
+                            href={getProductPath(product.category?.slug ?? "", product.id, product.slug)}
                             onClick={handleClose}
                             className="flex items-center gap-3 p-4 hover:bg-gray-50 transition border-b border-gray-200"
                         >

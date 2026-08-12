@@ -55,7 +55,7 @@ const ProductClient = ({ product, category }: Props) => {
                 <span className="text-gray-700 truncate">{product.name}</span>
             </nav>
             <div className="border border-gray-200 rounded-xl py-3 px-2 lg:p-4 w-full bg-white shadow-xs">
-                <p className="text-lg lg:text-[28px] font-medium">
+                <h1 className="text-lg lg:text-[28px] font-medium">
                     {product.name}
                     {/*{product.name.includes(" ")*/}
                     {/*    ? product.name.replace(*/}
@@ -64,11 +64,15 @@ const ProductClient = ({ product, category }: Props) => {
                     {/*    )*/}
                     {/*    : `${product.name} ${selectedProductColor.colorName}`*/}
                     {/*}*/}
-                </p>
+                </h1>
             </div>
             <div className="flex flex-col lg:flex-row gap-3 md:gap-10 lg:gap-4 items-stretch w-full bg-transparent">
                 <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-xs basis-1/2">
-                    <ProductImages key={selectedProductColor.id} productColor={selectedProductColor} />
+                    <ProductImages
+                        key={selectedProductColor.id}
+                        productName={product.name}
+                        productColor={selectedProductColor}
+                    />
                 </div>
                 <div className="flex flex-col basis-1/2 self-stretch rounded-xl shadow-xs">
                     <div className="bg-white border border-b-2 border-gray-200 rounded-t-xl flex flex-col p-4 gap-2 w-full">

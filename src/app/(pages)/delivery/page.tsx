@@ -1,5 +1,13 @@
 import {FaTruck, FaCreditCard, FaMobileAlt, FaInstagram, FaTelegram} from "react-icons/fa";
 import Link from "next/link";
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+
+export const metadata: Metadata = createMetadata({
+    title: "Доставка та оплата",
+    description: "Умови доставки та оплати замовлень BlackBerry. Доставка Новою Поштою по Україні, онлайн-оплата карткою та накладений платіж.",
+    path: "/delivery",
+});
 
 export default function DeliveryPage() {
     return (

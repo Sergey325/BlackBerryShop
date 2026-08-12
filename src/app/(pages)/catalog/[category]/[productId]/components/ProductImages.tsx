@@ -11,6 +11,7 @@ import { optimizeCloudinaryUrl } from "@/app/utils/optimizeCloudinaryImage";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 type Props = {
+    productName: string;
     productColor: IProductColor;
 };
 
@@ -27,7 +28,7 @@ const responsive = {
 
 const DESKTOP_THUMBNAILS_COUNT = 7;
 
-const ProductImages = ({ productColor }: Props) => {
+const ProductImages = ({ productName, productColor }: Props) => {
     const [selectedImage, setSelectedImage] = useState(productColor.images[0]?.url);
     const [firstVisibleImage, setFirstVisibleImage] = useState(0);
     const lastFirstVisibleImage = Math.max(
@@ -62,7 +63,7 @@ const ProductImages = ({ productColor }: Props) => {
                     transitionDuration={500}
                     containerClass="carousel-container"
                     itemClass="carousel-item-padding-40-px">
-                    {productColor.images.map((slide) => (
+                    {productColor.images.map((slide, index) => (
                         <PhotoView key={slide.url} src={optimizeCloudinaryUrl(slide.url, 2000)}>
                             <Image
                                 src={optimizeCloudinaryUrl(slide.url, 500, 18)}
@@ -70,9 +71,11 @@ const ProductImages = ({ productColor }: Props) => {
                                 height={250}
                                 unoptimized
                                 draggable={false}
-                                priority
+                                fetchPriority={index === 0 ? "high" : "auto"}
+                                loading={index === 0 ? "eager" : "lazy"}
+                                sizes="(max-width: 1023px) 500px, 1px"
                                 className="object-contain h-full mx-auto select-none cursor-zoom-in rounded-lg"
-                                alt={slide.url}
+                                alt={`${productName}, колір ${productColor.colorName} — фото ${index + 1}`}
                             />
                         </PhotoView>
                     ))}
@@ -96,11 +99,14 @@ const ProductImages = ({ productColor }: Props) => {
                     )}
 
                     <div className="flex flex-col gap-2">
-                        {visibleImages.map(image => (
+                        {visibleImages.map((image) => {
+                            const imageIndex: number = productColor.images.findIndex((item) => item.id === image.id);
+
+                            return (
                             <button
                                 type="button"
                                 key={image.url}
-                                aria-label="Обрати фото товару"
+                                aria-label={`Обрати фото ${imageIndex + 1} товару ${productName}`}
                                 onClick={() => setSelectedImage(image.url)}
                                 className={`overflow-hidden rounded-lg border-[1.5px] transition ${
                                     selectedImage === image.url
@@ -113,13 +119,14 @@ const ProductImages = ({ productColor }: Props) => {
                                     width={60}
                                     height={60}
                                     unoptimized
-                                    priority
+                                    loading="lazy"
                                     draggable={false}
                                     className="aspect-square object-cover transition hover:scale-105 hover:opacity-80"
-                                    alt="productImageOption"
+                                    alt=""
                                 />
                             </button>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {productColor.images.length > DESKTOP_THUMBNAILS_COUNT && (
@@ -143,9 +150,11 @@ const ProductImages = ({ productColor }: Props) => {
                                     width={550}
                                     height={550}
                                     draggable={false}
+                                    fetchPriority={selectedImage === productColor.images[0]?.url ? "high" : "auto"}
+                                    loading={selectedImage === productColor.images[0]?.url ? "eager" : "lazy"}
+                                    sizes="(min-width: 1024px) 500px, 1px"
                                     className="mx-auto aspect-square w-full max-w-[500px] cursor-zoom-in select-none rounded-lg object-contain"
-                                    alt="ProductImage"
-                                    priority
+                                    alt={`${productName}, колір ${productColor.colorName} — фото ${productColor.images.findIndex((image) => image.url === selectedImage) + 1}`}
                                     unoptimized
                                 />
                             </PhotoView>

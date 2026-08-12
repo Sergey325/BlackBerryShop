@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { MdDownload } from "react-icons/md";
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+
+export const metadata: Metadata = createMetadata({
+    title: "Договір публічної оферти",
+    description: "Договір публічної оферти інтернет-магазину BlackBerry: оформлення замовлення, оплата, доставка, повернення товару та обробка персональних даних.",
+    path: "/offer",
+});
 
 export default function OfferPage() {
     return (

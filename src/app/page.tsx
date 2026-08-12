@@ -6,8 +6,20 @@ import WhyUs from "@/app/components/homePage/WhyUs";
 import {Reviews} from "@/app/components/homePage/Reviews";
 import EmptyState from "@/app/components/reusable/EmptyState";
 import {getBanners} from "@/app/actions/getBanners";
+import type {Metadata} from "next";
+import {createMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE} from "@/app/lib/seo";
+import JsonLd from "@/app/components/seo/JsonLd";
+import {ONLINE_STORE_JSON_LD} from "@/app/lib/structuredData";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = createMetadata({
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    path: "/",
+    imageAlt: "Авторські головні убори та аксесуари BlackBerry",
+    absoluteTitle: true,
+});
 
 export default async function HomePage() {
     const [products, banners] = await Promise.all([
@@ -15,21 +27,25 @@ export default async function HomePage() {
         getBanners(),
     ])
 
-    if (!products || products.length === 0) {
-        return <EmptyState title={"Сталася помилка"} subtitle={"Товарів не знайдено, спробуйте оновити сторінку"} btnTitle="На головну" showReset/>
-    }
-
     return (
-        <main className="min-h-screen bg-gray-50 font-sans flex flex-col gap-14 lg:gap-20 w-full mt-10">
-            <Hero banners={banners}/>
+        <>
+            <JsonLd data={ONLINE_STORE_JSON_LD}/>
+            {!products || products.length === 0 ? (
+                <EmptyState title={"Сталася помилка"} subtitle={"Товарів не знайдено, спробуйте оновити сторінку"} btnTitle="На головну" showReset/>
+            ) : (
+                <main className="min-h-screen bg-gray-50 font-sans flex flex-col gap-14 lg:gap-20 w-full mt-10">
+                    <h1 className="sr-only">Авторські головні убори та аксесуари BlackBerry</h1>
+                    <Hero banners={banners}/>
 
-            <BestSellers products={products} />
+                    <BestSellers products={products} />
 
-            <Categories />
+                    <Categories />
 
-            <WhyUs/>
+                    <WhyUs/>
 
-            <Reviews/>
-        </main>
+                    <Reviews/>
+                </main>
+            )}
+        </>
     )
 }

@@ -1,4 +1,13 @@
 
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+
+export const metadata: Metadata = createMetadata({
+    title: "Про нас",
+    description: "Дізнайтеся більше про BlackBerry — український бренд авторських головних уборів та аксесуарів ручної роботи для дітей і дорослих.",
+    path: "/about",
+});
+
 export default function AboutPage() {
     return (
         <div className="max-w-[800px] mx-auto py-16 px-6 flex flex-col gap-10">

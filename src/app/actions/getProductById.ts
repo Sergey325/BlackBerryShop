@@ -9,58 +9,53 @@ export interface IProductWithRelated extends IProduct {
 }
 
 export async function getProductById(productId: string): Promise<IProductWithRelated | null> {
-    try {
-        const id = Number(productId);
+    const id = Number(productId);
 
-        if (Number.isNaN(id)) {
-            return null;
-        }
+    if (Number.isNaN(id)) {
+        return null;
+    }
 
-        const product = await prisma.product.findUnique({
-            where: { id },
-            include: {
-                colors: {
-                    include: {
-                        images: true,
-                        sizes: true,
-                    },
+    const product = await prisma.product.findUnique({
+        where: { id },
+        include: {
+            colors: {
+                include: {
+                    images: true,
+                    sizes: true,
                 },
-                material: true,
-                category: {
-                    include: {
-                        specifications: true,
-                        _count: {
-                            select: {
-                                products: true,
-                            },
-                        },
-                    },
-                },
-                relatedTo: {
-                    orderBy: { order: "asc" },
-                    include: {
-                        toProduct: {
-                            select: relatedProductSelect,
+            },
+            material: true,
+            category: {
+                include: {
+                    specifications: true,
+                    _count: {
+                        select: {
+                            products: true,
                         },
                     },
                 },
             },
-        });
+            relatedTo: {
+                orderBy: { order: "asc" },
+                include: {
+                    toProduct: {
+                        select: relatedProductSelect,
+                    },
+                },
+            },
+        },
+    });
 
-        if (!product) {
-            return null;
-        }
-
-        const { relatedTo, ...rest } = product;
-
-        const response: IProductWithRelated = {
-            ...rest,
-            relatedTo: relatedTo.map((r) => r.toProduct),
-        };
-
-        return response;
-    } catch (e) {
-        console.error(e);
+    if (!product) {
         return null;
     }
+
+    const { relatedTo, ...rest } = product;
+
+    const response: IProductWithRelated = {
+        ...rest,
+        relatedTo: relatedTo.map((r) => r.toProduct),
+    };
+
+    return response;
 }

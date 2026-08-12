@@ -5,9 +5,10 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 type Props = {
     season: Season;
+    eager?: boolean;
 }
 
-export default function SeasonBlock({ season }: Props) {
+export default function SeasonBlock({ season, eager = false }: Props) {
     return (
         <div className="mb-6 lg:mb-12 select-none">
 
@@ -33,9 +34,13 @@ export default function SeasonBlock({ season }: Props) {
                     {/* Right — hero image, flush to the right edge */}
                     <div className="relative w-[45%] shrink-0">
                         <Image
-                            src={season.heroImage}
+                            src={optimizeCloudinaryUrl(season.heroImage, 1500)}
                             alt={season.label}
                             fill
+                            fetchPriority={eager ? "high" : "auto"}
+                            loading={eager ? "eager" : "lazy"}
+                            sizes="(max-width: 639px) 45vw, 1px"
+                            unoptimized
                             className="object-scale-down object-top-right"
                         />
                         {/*/!* Fade right edge *!/*/}
@@ -87,8 +92,10 @@ export default function SeasonBlock({ season }: Props) {
                         alt={season.label}
                         fill
                         unoptimized
+                        fetchPriority={eager ? "high" : "auto"}
+                        loading={eager ? "eager" : "lazy"}
+                        sizes="(min-width: 640px) 60vw, 1px"
                         className="object-scale-down object-top-right"
-                        priority
                     />
                     {/* ← fade into season bg */}
                     <div

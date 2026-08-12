@@ -159,7 +159,9 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                 fill
                                 draggable={false}
                                 className="object-cover aspect-square mx-auto select-none hover:scale-110 transition"
-                                alt="ProductImage"
+                                alt={`${product.name}, колір ${c.colorName}`}
+                                sizes="72px"
+                                loading="lazy"
                                 quality={100}
                                 unoptimized
                             />

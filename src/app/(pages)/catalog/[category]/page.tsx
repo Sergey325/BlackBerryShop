@@ -6,16 +6,45 @@ import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersC
 import ProductsGrid from "@/app/(pages)/catalog/[category]/components/ProductsGrid";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
-import EmptyState from "@/app/components/reusable/EmptyState";
 import {getCategoryBySlug} from "@/app/actions/getCategoryBySlug";
 import {FaHeart} from "react-icons/fa";
 import {getFilterOptions} from "@/app/utils/getFilterOptions";
 import Link from "next/link";
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+import {cache} from "react";
+import JsonLd from "@/app/components/seo/JsonLd";
+import {BreadcrumbListJsonLd, createBreadcrumbJsonLd} from "@/app/lib/structuredData";
+import {notFound} from "next/navigation";
 
 type Props = {
     params: Promise<{ category: string }>;
     searchParams: Promise<IProductsParams>;
 };
+
+const getCachedCategoryBySlug = cache(getCategoryBySlug);
+
+export async function generateMetadata({params}: Props): Promise<Metadata> {
+    const {category: categorySlug} = await params;
+    const category = await getCachedCategoryBySlug(categorySlug);
+
+    if (!category) {
+        notFound();
+    }
+
+    const description: string = [category.description, category.productsDescription]
+        .map((value: string) => value.trim())
+        .filter(Boolean)
+        .join(" ");
+
+    return createMetadata({
+        title: category.name,
+        description,
+        path: `/catalog/${encodeURIComponent(category.slug)}`,
+        image: category.coverImage,
+        imageAlt: category.name,
+    });
+}
 
 function normalizeArray(value?: string | string[]): string[] | undefined {
     if (!value) return undefined;
@@ -30,8 +59,13 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
     const { category } = await params;
     const filters = await searchParams;
 
-    const [selectedCategory, products, categories] = await Promise.all([
-        getCategoryBySlug(category),
+    const selectedCategory = await getCachedCategoryBySlug(category);
+
+    if (!selectedCategory) {
+        notFound();
+    }
+
+    const [products, categories] = await Promise.all([
         getProducts({
             ...filters,
             category,
@@ -42,13 +76,18 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
         getCategories(),
     ]);
 
-    if (!selectedCategory) {
-        return <EmptyState title={"Сталася помилка"} subtitle={"Такої категорії на існує, спробуйте обрати іншу"} btnTitle="До каталогу" showReset redirectUrl={"/catalog"}/>
-    }
+    const breadcrumbJsonLd: BreadcrumbListJsonLd = createBreadcrumbJsonLd([
+        {name: "Головна", path: "/"},
+        {name: "Каталог", path: "/catalog"},
+        {name: selectedCategory.name, path: `/catalog/${encodeURIComponent(selectedCategory.slug)}`},
+    ]);
 
     return (
-        <main className="relative min-h-screen">
-            <div className="mx-auto py-6">
+        <>
+            <JsonLd data={breadcrumbJsonLd}/>
+            <main className="relative min-h-screen">
+                <h1 className="sr-only">{selectedCategory.name}</h1>
+                <div className="mx-auto py-6">
 
                 {/* Breadcrumb — desktop */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
@@ -64,12 +103,12 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                 {/* Desktop */}
                 <div className={`hidden sm:flex items-stretch rounded-3xl overflow-hidden mb-8 min-h-[220px] shadow-sm select-none ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
                     <div className="flex-1 px-10 py-8 flex flex-col justify-center">
-                        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2">
+                        <div className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2" aria-hidden="true">
                             {selectedCategory?.name}
                             <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full text-nowrap">
                             {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                         </span>
-                        </h1>
+                        </div>
                         <p className="text-gray-700 text-sm max-w-md leading-relaxed mb-6">
                             {selectedCategory?.description}
                         </p>
@@ -94,7 +133,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     </div>
                     {/* Hero image — right side */}
                     <div className="relative w-[42%] shrink-0">
-                        <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized
+                        <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 1200)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(min-width: 640px) 42vw, 1px" unoptimized
                                className="object-scale-down object-top-right" />{/* object-cover lg:object-scale-down object-top-right */}
                         {/* fade into banner bg */}
                         {/*<div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r bg-amber-50 to-transparent pointer-events-none" />*/}
@@ -103,11 +142,11 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* Mobile */}
                 <div className={`sm:hidden relative h-56 rounded-2xl overflow-hidden mb-4 ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
-                    <Image src={optimizeCloudinaryUrl(selectedCategory?.coverImage, 1200)} alt={selectedCategory?.name} fill priority unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
+                    <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 1200)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(max-width: 639px) 100vw, 1px" unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10" />
                     <div className="absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
                         <div className="flex flex-col items-start gap-2 mb-1.5">
-                            <h1 className="text-xl font-bold text-white">{selectedCategory?.name}</h1>
+                            <div className="text-xl font-bold text-white" aria-hidden="true">{selectedCategory?.name}</div>
                             <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-nowrap">
                             {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                         </span>
@@ -141,8 +180,9 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     //     redirectUrl={`/catalog/${selectedCategory.slug}`}
                     // />
                 }
-            </div>
-        </main>
+                </div>
+            </main>
+        </>
     );
 };
 

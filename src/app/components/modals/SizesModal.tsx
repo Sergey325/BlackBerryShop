@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState} from "react";
+import React from "react";
 import Modal from "@/app/components/modals/Modal";
 import useSizesModal from "@/app/hooks/useSizesModal";
 import Image from "next/image";
@@ -9,7 +9,6 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 const SizesModal = () => {
     const sizesModal = useSizesModal();
-    const [isLoading, setIsLoading] = useState(false)
 
     const bodyContent =
         (<div className="relative mx-auto w-full max-w-[500px] aspect-square overflow-hidden bg-white">
@@ -17,16 +16,16 @@ const SizesModal = () => {
                 src={optimizeCloudinaryUrl(sizesModal.imageUrl || "", 1000)}
                 fill
                 className="object-contain select-none pointer-events-none"
-                alt="Size guide"
+                alt="Розмірна сітка товару"
                 quality={100}
-                priority
+                fetchPriority="high"
                 unoptimized
             />
         </div>)
 
     return (
         <Modal
-            disabled={isLoading}
+            disabled={false}
             isOpen={sizesModal.isOpen}
             title="Розмірна сітка"
             actionLabel="Закрити"

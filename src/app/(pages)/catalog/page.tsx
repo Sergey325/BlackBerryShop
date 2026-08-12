@@ -4,8 +4,24 @@ import {PetalParticles, SnowParticles} from "@/app/(pages)/catalog/components/Se
 import SeasonBlock from "@/app/(pages)/catalog/components/SeasonBlock";
 import {getCategories} from "@/app/actions/getCategories";
 import Link from "next/link";
+import type {Metadata} from "next";
+import {createMetadata} from "@/app/lib/seo";
+import JsonLd from "@/app/components/seo/JsonLd";
+import {BreadcrumbListJsonLd, createBreadcrumbJsonLd} from "@/app/lib/structuredData";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = createMetadata({
+    title: "Каталог авторських головних уборів та аксесуарів",
+    description: "Каталог BlackBerry: авторські панами, кепки та аксесуари ручної роботи для дітей і дорослих. Обирайте сезон, модель, колір і розмір.",
+    path: "/catalog",
+    imageAlt: "Каталог головних уборів та аксесуарів BlackBerry",
+});
+
+const breadcrumbJsonLd: BreadcrumbListJsonLd = createBreadcrumbJsonLd([
+    {name: "Головна", path: "/"},
+    {name: "Каталог", path: "/catalog"},
+]);
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const seasonsConfig = [
@@ -43,8 +59,10 @@ export default async function CatalogPage() {
     const sortedSeasons = sortSeasonsByCurrent(seasons);
 
     return (
-        <main className="min-h-screen bg-gray-50">
-            <div className="py-6">
+        <>
+            <JsonLd data={breadcrumbJsonLd}/>
+            <main className="min-h-screen bg-gray-50">
+                <div className="py-6">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
                     <Link href="/" className="hover:text-gray-600 transition-colors">
@@ -68,11 +86,12 @@ export default async function CatalogPage() {
                 </p>
 
                 {/* Seasons */}
-                {sortedSeasons.map((season) => (
-                    <SeasonBlock key={season.id} season={season} />
+                {sortedSeasons.map((season, index) => (
+                    <SeasonBlock key={season.id} season={season} eager={index === 0} />
                 ))}
 
-            </div>
-        </main>
+                </div>
+            </main>
+        </>
     );
 }

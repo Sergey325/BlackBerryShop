@@ -12,6 +12,7 @@ import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import {getProductPath} from "@/app/lib/productUrl";
 
 type Props = {
     product: IProductWithRelated | IRelatedProduct;
@@ -21,6 +22,7 @@ type Props = {
 
 const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const searchParams = useSearchParams();
+    const productPath: string = getProductPath(product.category?.slug ?? "", product.id, product.slug);
 
     const isAvailable: boolean = product.colors.some(color =>
         color.sizes.some(size =>
@@ -102,7 +104,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     if (list) {
         return (
             <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
-                <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+                <Link href={productPath} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
                     <Image
                         src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)}
                         alt={product.name}
@@ -118,7 +120,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     )}
                 </Link>
                 <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <Link href={`/catalog/${product.category?.slug || ""}/${product.id}`}>
+                    <Link href={productPath}>
                         <p className="text-sm font-medium leading-[18px] text-slate-700  sm:text-base sm:leading-5 hover:text-primary transition-colors">{product.name}</p>
                     </Link>
                     {
@@ -191,7 +193,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                 }
                 handleViewContent();
             }}
-            href={`/catalog/${product.category?.slug || ""}/${product.id}`}
+            href={productPath}
             className={`group mx-auto flex h-full w-full max-w-[300px] cursor-pointer select-none flex-col overflow-hidden rounded-2xl border border-primary/15 bg-white shadow-md  transition-all duration-300 hover:-translate-y-1 hover:border-primary/35  ${colors ? "sm:shadow-[0_3px_14px_rgba(15,23,42,0.09)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.14)]" : "sm:shadow-sm"}`}
         >
             {/* Product image */}

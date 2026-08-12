@@ -2,6 +2,10 @@ import prisma from "@/app/lib/prisma";
 import { FaTimesCircle } from "react-icons/fa";
 import SuccessfulClient from "./SuccessfulClient";
 import Link from "next/link";
+import type {Metadata} from "next";
+import {createNoIndexMetadata} from "@/app/lib/seo";
+
+export const metadata: Metadata = createNoIndexMetadata("Статус замовлення", "/successfulPayment");
 
 type Props = {
     searchParams: Promise<{ id?: string }>;
