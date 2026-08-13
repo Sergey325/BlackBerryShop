@@ -65,7 +65,6 @@ export default function CarouselWrapper({
                 infinite
                 swipeable
                 draggable
-                deviceType="desktop"
                 ssr
                 itemClass={itemClass}
                 containerClass={carouselClass}

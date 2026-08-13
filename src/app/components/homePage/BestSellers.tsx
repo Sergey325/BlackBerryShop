@@ -13,8 +13,6 @@ type Props = {
 const carouselResponsive = {
     desktop:  { breakpoint: { max: 3000, min: 1280 }, items: 5, slidesToSlide: 1 },
     laptop:   { breakpoint: { max: 1280, min: 768  }, items: 4, slidesToSlide: 1 },
-    tablet:   { breakpoint: { max: 768,  min: 480  }, items: 3, slidesToSlide: 1 },
-    tablett:   { breakpoint: { max: 568,  min: 480  }, items: 3, slidesToSlide: 1 },
     mobile:   { breakpoint: { max: 480,  min: 0    }, items: 3, slidesToSlide: 1 },
 };
 
