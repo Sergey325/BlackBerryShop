@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import {FaHeart} from "react-icons/fa";
@@ -35,6 +35,7 @@ const Hero = ({banners}: Props) => {
     const carouselRef = useRef<Carousel>(null);
 
     const [isSliding, setIsSliding] = useState(false);
+    const [isTouching, setIsTouching] = useState(false);
 
     // const [mounted, setMounted] = useState(false);
     //
@@ -62,7 +63,12 @@ const Hero = ({banners}: Props) => {
 
     return (
         <section className="relative overflow-hidden rounded-xl lg:rounded-3xl shadow-[0_0_20px_rgba(0,0,0,0.10)] select-none bg-linear-to-t from-black/70 via-black/40 to-black/10  lg:bg-none lg:bg-white">
-            <div className={`relative z-10 w-[calc(100%+4px)] -ml-0.5`}>
+            <div
+                className={`relative z-10 w-[calc(100%+4px)] -ml-0.5`}
+                onTouchStartCapture={() => setIsTouching(true)}
+                onTouchEndCapture={() => setIsTouching(false)}
+                onTouchCancelCapture={() => setIsTouching(false)}
+            >
                 <Carousel
                     ref={carouselRef}
                     responsive={responsive}
@@ -72,7 +78,7 @@ const Hero = ({banners}: Props) => {
                     swipeable
                     draggable
                     infinite
-                    autoPlay
+                    autoPlay={!isTouching}
                     autoPlaySpeed={5000}
                     pauseOnHover
                     transitionDuration={400}
