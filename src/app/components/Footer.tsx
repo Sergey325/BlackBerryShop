@@ -25,12 +25,12 @@ export default function Footer() {
                 blackberry.shop.kh@gmail.com
             </Link>
             <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm hover:text-primary transition" aria-label="Instagram Black Berry">
+               className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <FaInstagram className="size-5"/>
                 @blackberry.shop.ua
             </Link>
             <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm hover:text-primary transition" aria-label="Telegram Black Berry">
+               className="flex items-center gap-2 text-sm hover:text-primary transition">
                 <FaTelegram className="size-5"/>
                 @blackberryshopua
             </Link>
@@ -59,11 +59,11 @@ export default function Footer() {
                             Магазин якісних товарів ручної роботи. Працюємо з любов&apos;ю до кожного замовлення.
                         </p>
                         <div className="flex gap-5 mt-2">
-                            <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
+                            <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"  aria-label="Instagram Black Berry"
                                className="hover:text-pink-500 transition">
                                 <FaInstagram className="size-10" />
                             </Link>
-                            <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
+                            <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer" aria-label="Telegram Black Berry"
                                className="hover:text-sky-500 transition">
                                 <FaTelegram className="size-[38.5px]" />
                             </Link>
