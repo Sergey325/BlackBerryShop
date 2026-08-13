@@ -66,6 +66,7 @@ export default function CarouselWrapper({
                 swipeable
                 draggable
                 ssr
+                deviceType="desktop"
                 itemClass={itemClass}
                 containerClass={carouselClass}
             >

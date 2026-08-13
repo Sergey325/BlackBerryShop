@@ -265,7 +265,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
 
                 <div className={`${product.colors.length > 1 ? "mt-1" : "mt-auto pt-1"} flex w-full items-end justify-between gap-2 `}>
                     <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
-                        {product.price} <span className="text-xs font-medium text-slate-500 sm:text-sm">грн</span>
+                        {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
                     </p>
                     <button
                         type="button"

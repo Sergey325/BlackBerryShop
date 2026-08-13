@@ -25,12 +25,12 @@ export default function Footer() {
                 blackberry.shop.kh@gmail.com
             </Link>
             <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm hover:text-primary transition">
+               className="flex items-center gap-2 text-sm hover:text-primary transition" aria-label="Instagram Black Berry">
                 <FaInstagram className="size-5"/>
                 @blackberry.shop.ua
             </Link>
             <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer"
-               className="flex items-center gap-2 text-sm hover:text-primary transition">
+               className="flex items-center gap-2 text-sm hover:text-primary transition" aria-label="Telegram Black Berry">
                 <FaTelegram className="size-5"/>
                 @blackberryshopua
             </Link>

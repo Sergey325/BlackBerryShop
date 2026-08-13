@@ -16,14 +16,20 @@ const responsive = {
 
 const CustomDot = ({ onClick, index, active }: any) => {
     return (
-        <button
-            onClick={() => onClick(index)}
-            className={`block rounded-full transition-all cursor-pointer ${
-                active
-                    ? 'w-5 h-2 bg-primary'
-                    : 'w-2 h-2 bg-gray-300'
-            }`}
-        />
+        <li>
+            <button
+                type="button"
+                onClick={() => onClick(index)}
+                aria-label={`Перейти до слайда ${index + 1}`}
+                aria-current={active ? "true" : undefined}
+                className={`block rounded-full transition-all cursor-pointer ${
+                    active
+                        ? 'w-5 h-2 bg-primary'
+                        : 'w-2 h-2 bg-gray-300'
+                }`}
+            />
+        </li>
+
     );
 };
 
