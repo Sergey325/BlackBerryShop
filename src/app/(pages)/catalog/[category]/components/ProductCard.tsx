@@ -206,7 +206,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         sizes="(max-width: 640px) 50vw, 300px"
                         //unoptimized
                         draggable={false}
-                        className={`object-contain transition-all duration-500 ease-out ${
+                        className={`object-cover transition-all duration-500 ease-out ${
                             isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-55"
                         }`}
                     />
