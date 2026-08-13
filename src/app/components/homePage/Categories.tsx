@@ -1,6 +1,6 @@
 import {GoHeartFill} from "react-icons/go";
 import {FaArrowRightLong} from "react-icons/fa6";
-import {getCategories, ICategory} from "@/app/actions/getCategories";
+import {ICategory} from "@/app/actions/getCategories";
 import Accordion from "@/app/components/reusable/Accordion";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import Link from "next/link";
@@ -32,9 +32,11 @@ import Link from "next/link";
 //         </div>
 //     </Link>
 
-const Categories = async () => {
-    const categories = await getCategories()
+type Props = {
+    categories: ICategory[];
+}
 
+const Categories = ({ categories }: Props) => {
     return (
         <section className="">
             <div className="mx-auto px-2">

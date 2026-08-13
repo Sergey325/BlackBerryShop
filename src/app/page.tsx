@@ -10,6 +10,7 @@ import type {Metadata} from "next";
 import {createMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE} from "@/app/lib/seo";
 import JsonLd from "@/app/components/seo/JsonLd";
 import {ONLINE_STORE_JSON_LD} from "@/app/lib/structuredData";
+import {getCategories} from "@/app/actions/getCategories";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +23,10 @@ export const metadata: Metadata = createMetadata({
 });
 
 export default async function HomePage() {
-    const [products, banners] = await Promise.all([
+    const [products, banners, categories] = await Promise.all([
         getProducts(),
         getBanners(),
+        getCategories(),
     ])
 
     return (
@@ -33,13 +35,13 @@ export default async function HomePage() {
             {!products || products.length === 0 ? (
                 <EmptyState title={"Сталася помилка"} subtitle={"Товарів не знайдено, спробуйте оновити сторінку"} btnTitle="На головну" showReset/>
             ) : (
-                <main className="min-h-screen bg-gray-50 font-sans flex flex-col gap-14 lg:gap-20 w-full mt-10">
+                <main className="min-h-screen bg-gray-50 font-sans flex flex-col gap-14 lg:gap-20 w-full pt-10">
                     <h1 className="sr-only">Авторські головні убори та аксесуари BlackBerry</h1>
                     <Hero banners={banners}/>
 
                     <BestSellers products={products} />
 
-                    <Categories />
+                    <Categories categories={categories}/>
 
                     <WhyUs/>
 

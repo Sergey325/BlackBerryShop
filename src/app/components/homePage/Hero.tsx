@@ -74,7 +74,7 @@ const Hero = ({banners}: Props) => {
                     responsive={responsive}
                     arrows={false}
                     ssr={true}
-                    deviceType="desktop"
+                    deviceType="all"
                     swipeable
                     draggable
                     infinite
