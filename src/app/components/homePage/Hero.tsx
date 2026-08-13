@@ -79,7 +79,7 @@ const Hero = ({banners}: Props) => {
                     draggable
                     infinite
                     autoPlay={!isTouching}
-                    autoPlaySpeed={5000}
+                    autoPlaySpeed={7500}
                     pauseOnHover
                     transitionDuration={400}
                     beforeChange={() => setIsSliding(true)}
