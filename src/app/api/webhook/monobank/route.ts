@@ -43,6 +43,8 @@ export async function POST(request: Request) {
                             productSizeId: true,
                             productId: true,
                             color: true,
+                            colorCode: true,
+                            colorName:true,
                             size: true,
                             quantity: true,
                         },

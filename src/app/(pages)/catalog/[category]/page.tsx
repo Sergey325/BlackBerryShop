@@ -151,7 +151,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                             {selectedCategory?._count.products.toString()} {pluralizeUk(selectedCategory?._count.products, ["модель", "моделі", "моделей"])}
                         </span>
                         </div>
-                        <p className="text-white/75 text-xs leading-relaxed">{selectedCategory?.description}</p>
+                        <p className="text-white/85 text-xs leading-relaxed">{selectedCategory?.description}</p>
                     </div>
                 </div>
 
