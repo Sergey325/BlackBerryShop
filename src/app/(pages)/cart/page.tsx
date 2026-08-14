@@ -1,23 +1,40 @@
 "use client"
 
-import ClientOnly from "@/app/components/reusable/ClientOnly";
 import EmptyState from "@/app/components/reusable/EmptyState";
 import CartClient from "@/app/(pages)/cart/CartClient";
 import {useCartStore} from "@/app/hooks/useCartStore";
+import {useSyncExternalStore} from "react";
+
+function subscribeToCartHydration(onStoreChange: () => void): () => void {
+    return useCartStore.persist.onFinishHydration(onStoreChange);
+}
+
+function getCartHydrationSnapshot(): boolean {
+    return useCartStore.persist.hasHydrated();
+}
+
+function getServerCartHydrationSnapshot(): boolean {
+    return false;
+}
 
 const CartPage = () => {
     const items = useCartStore(state => state.items);
-
-    if(items.length < 1){
-        return (
-            <ClientOnly>
-                <EmptyState title={"Ваш кошик порожній"} subtitle={"Ви ще не додали жодних товарів до кошика"} btnTitle="На головну" showReset/>
-            </ClientOnly>
-        )
-    }
+    const isCartHydrated: boolean = useSyncExternalStore(
+        subscribeToCartHydration,
+        getCartHydrationSnapshot,
+        getServerCartHydrationSnapshot
+    );
 
     return (
-        <CartClient/>
+        <div className="min-h-screen">
+            {isCartHydrated && (
+                items.length < 1 ? (
+                    <EmptyState title={"Ваш кошик порожній"} subtitle={"Ви ще не додали жодних товарів до кошика"} btnTitle="На головну" showReset/>
+                ) : (
+                    <CartClient/>
+                )
+            )}
+        </div>
     );
 };
 

@@ -37,14 +37,14 @@ function RelatedAndCustomizationSkeleton(): React.JSX.Element {
                 {Array.from({ length: 2 }).map((_, i) => (
                     <div
                         key={`related-skeleton-${i}`}
-                        className="flex h-20 shrink-0 items-center gap-3 rounded-lg border border-gray-200 pr-2"
+                        className="flex h-20 shrink-0 items-center gap-3 rounded-lg border border-primary/25 pr-2"
                     >
-                        <div className="size-20 shrink-0 rounded-l-lg bg-gray-200" />
+                        <div className="size-20 shrink-0 rounded-l-lg bg-primary/25" />
                         <div className="flex min-w-0 flex-1 flex-col gap-2">
-                            <div className="h-3.5 w-3/4 rounded bg-gray-200" />
-                            <div className="h-3 w-1/3 rounded bg-gray-200" />
+                            <div className="h-3.5 w-3/4 rounded bg-primary/25" />
+                            <div className="h-3 w-1/3 rounded bg-primary/25" />
                         </div>
-                        <div className="h-7 w-16 shrink-0 rounded-md bg-gray-200" />
+                        <div className="h-7 w-16 shrink-0 rounded-md bg-primary/25" />
                     </div>
                 ))}
             </div>
@@ -54,12 +54,12 @@ function RelatedAndCustomizationSkeleton(): React.JSX.Element {
                 {Array.from({ length: 4 }).map((_, i) => (
                     <div
                         key={`custom-skeleton-${i}`}
-                        className="flex w-[110px] shrink-0 flex-col items-center gap-2 rounded-lg border border-gray-200 p-3"
+                        className="flex w-[110px] shrink-0 flex-col items-center gap-2 rounded-lg border border-primary/25 p-3"
                     >
-                        <div className="size-[100px] rounded-md bg-gray-200" />
-                        <div className="h-3 w-full rounded bg-gray-200" />
-                        <div className="h-3 w-2/3 rounded bg-gray-200" />
-                        <div className="mt-1 h-7 w-full rounded-md bg-gray-200" />
+                        <div className="size-[100px] rounded-md bg-primary/25" />
+                        <div className="h-3 w-full rounded bg-primary/25" />
+                        <div className="h-3 w-2/3 rounded bg-primary/25" />
+                        <div className="mt-1 h-7 w-full rounded-md bg-primary/25" />
                     </div>
                 ))}
             </div>
@@ -247,7 +247,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                     containerClass="pb-3"
                     initialState={defaultExpanded}
                 >
-                    {isLoading ? (
+                    {!isLoading ? (
                         <RelatedAndCustomizationSkeleton />
                     ) : (
                     <div className="mt-3 flex flex-col gap-4 ml-1">
