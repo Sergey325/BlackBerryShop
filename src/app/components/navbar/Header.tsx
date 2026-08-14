@@ -1,8 +1,26 @@
 "use client"
 
-import Image from "next/image";import {useEffect, useState} from "react";import { FaInstagram, FaTelegram } from "react-icons/fa";import Cart from "@/app/components/Cart";import {MdEmail, MdPhone} from "react-icons/md";import SearchBar from "@/app/components/navbar/SearchBar";import {BiSearch} from "react-icons/bi";import MobileSearchOverlay from "@/app/components/navbar/MobileSearchOverlay";import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";import { vladimir } from "@/app/fonts";import Link from "next/link";import {usePathname} from "next/navigation";import {FiGrid, FiInfo, FiRefreshCw, FiTruck} from "react-icons/fi";
+import Image from "next/image";
+import {useEffect, useState} from "react";
+import { FaInstagram, FaTelegram } from "react-icons/fa";
+import Cart from "@/app/components/Cart";
+import {MdEmail, MdPhone} from "react-icons/md";
+import SearchBar from "@/app/components/navbar/SearchBar";
+import {BiSearch} from "react-icons/bi";
+import MobileSearchOverlay from "@/app/components/navbar/MobileSearchOverlay";
+import useMobileSearchModal from "@/app/hooks/useMobileSearchModal";
+import { vladimir } from "@/app/fonts";
+import Link from "next/link";
+import {usePathname} from "next/navigation";
+import {FiGrid, FiInfo, FiRefreshCw, FiTruck, FiHome} from "react-icons/fi";
 
-const mobileNavigationOptions = [{href: "/catalog", label: "Каталог", icon: FiGrid},{href: "/about", label: "Про нас", icon: FiInfo},{href: "/delivery", label: "Доставка та оплата", icon: FiTruck},{href: "/exchange", label: "Обмін та повернення", icon: FiRefreshCw},];
+const mobileNavigationOptions = [
+    {href: "/", label: "Головна", icon: FiHome},
+    {href: "/catalog", label: "Каталог", icon: FiGrid},
+    {href: "/about", label: "Про нас", icon: FiInfo},
+    {href: "/delivery", label: "Доставка та оплата", icon: FiTruck},
+    {href: "/exchange", label: "Обмін та повернення", icon: FiRefreshCw},
+];
 
 const ContactDropdown = () => {return (<div className="relative group"><button className="hover:opacity-60 hover:-translate-y-0.5 transition">Контакти</button>
 

@@ -221,7 +221,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
             </div>
 
             {/* Product details */}
-            <div className={`flex flex-1 flex-col px-2 pb-3 pt-2.5 sm:py-4 sm:px-3 ${product.category?.season === "WINTER" ? "bg-winter" : "bg-summer"}`}>
+            <div className={`flex flex-1 flex-col px-1.5 pb-2 pt-1.5 sm:py-4 sm:px-3 ${product.category?.season === "WINTER" ? "bg-winter" : "bg-summer"}`}>
                 <p className="line-clamp-2 mb-1 text-xs font-medium leading-[18px] text-slate-700 transition-colors group-hover:text-slate-950 sm:text-sm sm:leading-5">
                     {product.name}
                 </p>
@@ -263,7 +263,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                     </div>
                 )}
 
-                <div className={`${product.colors.length > 1 ? "mt-1" : "mt-auto pt-1"} flex w-full items-end justify-between gap-2 `}>
+                <div className={`${product.colors.length > 1 ? "mt-1" : "mt-auto"} flex w-full items-end justify-between gap-2 `}>
                     <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
                         {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
                     </p>

@@ -29,17 +29,17 @@ const Cart = () => {
             <LuShoppingCart className="text-gray-900 group-hover:text-primary text-2xl md:text-3xl" />
             <span
                 style={{
-                    display: amountCart ? "block" : "none",
+                    display: amountCart ? "flex" : "none",
                 }}
                 className="
                 text-zinc-700 text-sm
                 absolute top-[-6px] right-[-16px]
-                aspect-square
+                min-w-5 h-5
                 rounded-full
                 group-hover:text-primary
                 border
-                size-5
-                text-center
+                items-center justify-center
+                tabular-nums leading-none
                 bg-gray-50
                 px-1
             ">

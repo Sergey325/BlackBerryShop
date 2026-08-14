@@ -186,7 +186,6 @@ const Hero = ({banners}: Props) => {
                                     fetchPriority={i === 0 ? "high" : "auto"}
                                     loading={i === 0 ? "eager" : "lazy"}
                                     sizes="(max-width: 1023px) 100vw, 1px"
-                                    unoptimized
                                     draggable={false}
                                     className="object-cover object-center select-none"
                                 />
