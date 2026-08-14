@@ -247,7 +247,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                     containerClass="pb-3"
                     initialState={defaultExpanded}
                 >
-                    {!isLoading ? (
+                    {isLoading ? (
                         <RelatedAndCustomizationSkeleton />
                     ) : (
                     <div className="mt-3 flex flex-col gap-4 ml-1">
