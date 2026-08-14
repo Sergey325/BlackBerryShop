@@ -106,12 +106,15 @@ const Hero = ({banners}: Props) => {
                     "
                     // additionalTransfrom={-1}
                     containerClass="overflow-hidden"
-                    itemClass="overflow-hidden relative!"
+                    itemClass="overflow-hidden relative! flex!"
                 >
                     {banners.map((banner, i) => (
-                        <div key={i} className={`transition-filter duration-300 ${isSliding ? 'blur-[0px]' : ''}`}>
+                        <div
+                            key={i}
+                            className={`flex w-full transition-filter duration-300 ${isSliding ? 'blur-[0px]' : ''}`}
+                        >
                             {/* ── Desktop ── */}
-                            <div className="hidden lg:flex items-center min-h-[650px]">
+                            <div className="hidden min-h-[650px] w-full items-center lg:flex">
 
                                 {/* Текстовая колонка — сплошной белый фон */}
                                 <div className="relative z-10 w-1/2 px-10 xl:px-16">
@@ -178,7 +181,7 @@ const Hero = ({banners}: Props) => {
                             </div>
 
                             {/* ── Mobile ──────────────────────────────────────────────── */}
-                            <div className="relative lg:hidden min-h-[450px]">
+                            <div className="relative flex min-h-[450px] w-full lg:hidden">
                                 <Image
                                     src={optimizeCloudinaryUrl(banner.image, 1500)}
                                     alt={""}
@@ -199,7 +202,7 @@ const Hero = ({banners}: Props) => {
                                             "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)",
                                     }}
                                 />
-                                <div className="relative z-10 flex flex-col gap-4 justify-between min-h-[450px] px-6 pt-10 pb-12">
+                                <div className="relative z-10 flex min-h-[450px] w-full flex-1 flex-col gap-4 px-6 pt-10 pb-12 sm:justify-around">
                                     {
                                         banner.badge &&
                                         <span className="self-start inline-flex items-center gap-1.5
@@ -224,7 +227,7 @@ const Hero = ({banners}: Props) => {
                                         banner.ctaHref && banner.ctaLabel &&
                                         <Link
                                             href={banner.ctaHref || ""}
-                                            className="w-full sm:max-w-[400px] bg-primary hover:bg-[#6e3382] text-white px-6 py-3 rounded-full transition-colors cursor-pointer text-center"
+                                            className="mt-auto sm:mt-0 w-full bg-primary px-6 py-3 text-center text-white transition-colors hover:bg-[#6e3382] sm:max-w-[400px] rounded-full cursor-pointer"
                                         >
                                             {banner.ctaLabel}
                                         </Link>

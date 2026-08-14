@@ -184,14 +184,39 @@ export default function Dropdown<T = string>({
                 aria-expanded={isOpen}
                 aria-controls={listboxId}
                 className={`flex w-full items-center justify-between gap-2 rounded-xl border bg-white pl-4 pr-3 py-2.5 text-sm transition-colors
-                    ${textCenter ? "text-center" : "text-left"}
+                    ${textCenter ? "text-left" : "text-left"}
                     ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-primary/50'}
                     ${error ? 'border-red-400' : 'border-primary/30'}
                     ${isOpen ? 'border-primary/30 ring-1 ring-primary/80' : ''}
                     ${buttonClassName}`}
                 >
-                <span className={`truncate ${selectedOption ? 'text-neutral-900' : 'text-neutral-400'}`}>
-                  {selectedOption ? selectedOption.label : placeholder}
+                <span className="grid min-w-0">
+                    <span
+                        className={`col-start-1 row-start-1 truncate ${selectedOption ? 'text-neutral-900' : 'text-neutral-400'}`}
+                    >
+                        {selectedOption ? selectedOption.label : placeholder}
+                    </span>
+
+                    {/*
+                        Невидимые подписи участвуют в расчёте intrinsic-width кнопки.
+                        Все элементы лежат в одной grid-ячейке, поэтому ширину задаёт
+                        самый длинный вариант, но высота кнопки не меняется.
+                    */}
+                    {!selectedOption && <span
+                        aria-hidden="true"
+                        className="invisible col-start-1 row-start-1 whitespace-nowrap"
+                    >
+                        {placeholder}
+                    </span>}
+                    {options.map((option, index) => (
+                        <span
+                            key={index}
+                            aria-hidden="true"
+                            className="invisible col-start-1 row-start-1 whitespace-nowrap"
+                        >
+                            {option.label}
+                        </span>
+                    ))}
                 </span>
                 <FiChevronDown
                     size={18}
@@ -240,7 +265,9 @@ export default function Dropdown<T = string>({
                             ${isSelected ? 'bg-primary/10 text-primary font-semibold' : 'text-neutral-700'}
                         `}
                     >
-                        <span className="truncate">{option.label}</span>
+                        <span className={'whitespace-nowrap'}>
+                            {option.label}
+                        </span>
                         {/*{isSelected && <FiCheck size={16} className="ml-2 shrink-0 text-primary" />}*/}
                     </li>
                     );
