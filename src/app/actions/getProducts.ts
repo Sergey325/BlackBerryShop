@@ -7,6 +7,7 @@ export interface IRelatedProduct {
     id: number;
     name: string;
     slug: string;
+    hasRelatedProducts: boolean;
     price: number;
     discount: number;
     material: IProductMaterial | null;
@@ -58,6 +59,7 @@ export interface IProduct {
     id: number;
     name: string;
     slug: string;
+    hasRelatedProducts: boolean;
     description: string | null;
     hasLining: boolean;
     price: number;
@@ -80,7 +82,7 @@ export interface IProductsParams {
     priceMax?: string;
 }
 
-export async function getProducts(params: IProductsParams = {}) {
+export async function getProducts(params: IProductsParams = {}): Promise<IProduct[] | undefined> {
     try {
         const { title, category, sorting, priceMin, priceMax, size, material, color } = params;
 
@@ -195,7 +197,21 @@ export async function getProducts(params: IProductsParams = {}) {
                         },
                     }
                 },
+                _count: {
+                    select: {
+                        relatedTo: true,
+                    },
+                },
             },
+        });
+
+        const productsWithRelationFlags: IProduct[] = products.map((product): IProduct => {
+            const {_count, ...productData} = product;
+
+            return {
+                ...productData,
+                hasRelatedProducts: _count.relatedTo > 0,
+            };
         });
 
         if (title && !sorting) {
@@ -206,14 +222,14 @@ export async function getProducts(params: IProductsParams = {}) {
                 ])
             );
 
-            return products.sort(
+            return productsWithRelationFlags.sort(
                 (a, b) =>
                     (orderMap.get(a.id) ?? 999) -
                     (orderMap.get(b.id) ?? 999)
             );
         }
 
-        return products;
+        return productsWithRelationFlags;
 
     } catch (e) {
         console.error(e);

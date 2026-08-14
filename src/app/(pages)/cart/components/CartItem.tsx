@@ -26,44 +26,42 @@ type Props = {
     isLoading: boolean,
 };
 
-function RelatedAndCustomizationSkeleton() {
+function RelatedAndCustomizationSkeleton(): React.JSX.Element {
     return (
-        <div className="h-[444px] flex flex-col gap-4 ml-1 animate-pulse">
-            {/* Заголовок аккордеона */}
-            <div className="h-5 w-48 bg-gray-200 rounded-md" />
-
-            <div className="flex flex-col gap-4">
-                {/* Скелетон списка связанных товаров */}
-                <div className="flex flex-col gap-2 max-h-72 overflow-hidden pr-1">
-                    {Array.from({ length: 2 }).map((_, i) => (
-                        <div
-                            key={`related-skeleton-${i}`}
-                            className="flex items-center gap-3 pr-2 rounded-lg border border-gray-200 h-[80px]"
-                        >
-                            <div className="w-20 h-20 bg-gray-200 rounded-l-lg shrink-0" />
-                            <div className="flex flex-col flex-1 min-w-0 gap-2">
-                                <div className="h-3.5 w-3/4 bg-gray-200 rounded" />
-                                <div className="h-3 w-1/3 bg-gray-200 rounded" />
-                            </div>
-                            <div className="w-16 h-7 bg-gray-200 rounded-md shrink-0" />
+        <div
+            className="mt-3 flex min-h-[396px] flex-col gap-4 ml-1 animate-pulse"
+            aria-hidden="true"
+        >
+            {/* Скелетон списка связанных товаров */}
+            <div className="flex h-[168px] flex-col gap-2 overflow-hidden pr-1">
+                {Array.from({ length: 2 }).map((_, i) => (
+                    <div
+                        key={`related-skeleton-${i}`}
+                        className="flex h-20 shrink-0 items-center gap-3 rounded-lg border border-gray-200 pr-2"
+                    >
+                        <div className="size-20 shrink-0 rounded-l-lg bg-gray-200" />
+                        <div className="flex min-w-0 flex-1 flex-col gap-2">
+                            <div className="h-3.5 w-3/4 rounded bg-gray-200" />
+                            <div className="h-3 w-1/3 rounded bg-gray-200" />
                         </div>
-                    ))}
-                </div>
+                        <div className="h-7 w-16 shrink-0 rounded-md bg-gray-200" />
+                    </div>
+                ))}
+            </div>
 
-                {/* Скелетон карусели кастомизации */}
-                <div className="flex gap-3 px-6 overflow-hidden">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <div
-                            key={`custom-skeleton-${i}`}
-                            className="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 w-[110px] shrink-0"
-                        >
-                            <div className="w-[100px] h-[100px] bg-gray-200 rounded-md" />
-                            <div className="h-3 w-full bg-gray-200 rounded" />
-                            <div className="h-3 w-2/3 bg-gray-200 rounded" />
-                            <div className="w-full h-7 bg-gray-200 rounded-md mt-1" />
-                        </div>
-                    ))}
-                </div>
+            {/* Скелетон карусели кастомизации */}
+            <div className="flex h-[184px] gap-3 overflow-hidden px-6">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                        key={`custom-skeleton-${i}`}
+                        className="flex w-[110px] shrink-0 flex-col items-center gap-2 rounded-lg border border-gray-200 p-3"
+                    >
+                        <div className="size-[100px] rounded-md bg-gray-200" />
+                        <div className="h-3 w-full rounded bg-gray-200" />
+                        <div className="h-3 w-2/3 rounded bg-gray-200" />
+                        <div className="mt-1 h-7 w-full rounded-md bg-gray-200" />
+                    </div>
+                ))}
             </div>
         </div>
     );
@@ -128,9 +126,14 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
             }))
     }, [cart, item]);
 
-    if (isLoading) {
-        return <RelatedAndCustomizationSkeleton />;
-    }
+    const hasRelatedContent: boolean = relatedProducts.length > 0 || customizationOptions.length > 0;
+    const accordionTitle: string = isLoading
+        ? "Супутні товари та кастомізація"
+        : relatedProducts.length > 0 && customizationOptions.length > 0
+            ? "Супутні товари та кастомізація"
+            : relatedProducts.length > 0
+                ? "Супутні товари"
+                : "Варіанти кастомізації";
 
     return (
         <div className="mb-0">
@@ -236,17 +239,17 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                 <span className="hidden lg:inline text-right font-medium text-nowrap w-fit justify-self-end">{totalAmount} грн</span>
 
             </div>
-            {(relatedProducts.length > 0 || customizationOptions.length > 0) && (
+            {(isLoading || hasRelatedContent) && (
                 <Accordion
-                    title={relatedProducts.length > 0 && customizationOptions.length
-                        ? "Супутні товари та кастомізація"
-                        : relatedProducts.length > 0
-                            ? "Супутні товари"
-                                : "Варіанти кастомізації"}
+                    key={defaultExpanded ? "expanded" : "collapsed"}
+                    title={accordionTitle}
                     buttonClass="text-sm text-primary hover:text-primary/70 transition-colors duration-300 gap-2! justify-normal cursor-pointer ml-1"
                     containerClass="pb-3"
                     initialState={defaultExpanded}
                 >
+                    {isLoading ? (
+                        <RelatedAndCustomizationSkeleton />
+                    ) : (
                     <div className="mt-3 flex flex-col gap-4 ml-1">
                         {/* Связанные товары — список */}
                         {relatedProducts.length > 0 && (
@@ -347,6 +350,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                             </CarouselWrapper>
                         )}
                     </div>
+                    )}
                 </Accordion>
             )}
         </div>

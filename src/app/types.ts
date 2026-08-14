@@ -33,6 +33,7 @@ export type CartItem = {
     productColorId: number;
     productName: string;
     slug: string;
+    hasRelatedProducts: boolean;
     price: number;
     discount: number;
     size?: string;

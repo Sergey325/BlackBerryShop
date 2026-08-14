@@ -17,17 +17,21 @@ type PersistedCartState = {
     items: CartItem[];
 };
 
-type LegacyCartItem = Omit<CartItem, "sizes" | "lining"> & {
+type LegacyCartItem = Omit<CartItem, "sizes" | "lining" | "hasRelatedProducts"> & {
     sizes?: CartItem["sizes"];
     lining?: boolean;
+    hasRelatedProducts?: boolean;
     relatedProducts?: unknown;
 };
 
 function migrateCartItem(item: LegacyCartItem): CartItem {
+    const hasLegacyRelatedProducts: boolean =
+        Array.isArray(item.relatedProducts) && item.relatedProducts.length > 0;
     const migratedItem = {
         ...item,
         sizes: Array.isArray(item.sizes) ? item.sizes : [],
         lining: item.lining === true,
+        hasRelatedProducts: item.hasRelatedProducts === true || hasLegacyRelatedProducts,
     };
 
     delete migratedItem.relatedProducts;
@@ -52,6 +56,7 @@ export function createProductSelection(
         price: product.price,
         productName: product.name,
         slug: product.slug,
+        hasRelatedProducts: product.hasRelatedProducts,
         categorySlug: product.category!.slug,
         lining: false,
     };
@@ -181,7 +186,7 @@ export const useCartStore = create<CartStore>()(
         }),
         {
             name: "cart-storage",
-            version: 3,
+            version: 4,
 
             partialize: (state): PersistedCartState => ({
                 items: state.items,

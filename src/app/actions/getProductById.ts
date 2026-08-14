@@ -50,11 +50,20 @@ export async function getProductById(productId: string): Promise<IProductWithRel
         return null;
     }
 
-    const { relatedTo, ...rest } = product;
+    const {relatedTo, ...rest} = product;
+    const relatedProducts: IRelatedProduct[] = relatedTo.map((relation): IRelatedProduct => {
+        const {_count, ...relatedProduct} = relation.toProduct;
+
+        return {
+            ...relatedProduct,
+            hasRelatedProducts: _count.relatedTo > 0,
+        };
+    });
 
     const response: IProductWithRelated = {
         ...rest,
-        relatedTo: relatedTo.map((r) => r.toProduct),
+        hasRelatedProducts: relatedTo.length > 0,
+        relatedTo: relatedProducts,
     };
 
     return response;

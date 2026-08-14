@@ -26,4 +26,9 @@ export const relatedProductSelect = {
             sizes: true,
         },
     },
+    _count: {
+        select: {
+            relatedTo: true,
+        },
+    },
 } satisfies Prisma.ProductSelect;

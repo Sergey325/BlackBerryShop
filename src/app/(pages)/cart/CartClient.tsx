@@ -147,6 +147,9 @@ const CartClient = () => {
     }, [syncCartInventory]);
 
     const isRelatedLoading = !!productIdsKey && loadedKey !== productIdsKey && !hasLoadedOnce;
+    const firstItemWithRelatedIndex: number = cart.items.findIndex(
+        (item: CartItemType): boolean => item.hasRelatedProducts
+    );
 
     useEffect(() => {
         if (!productIdsKey) return;
@@ -160,6 +163,27 @@ const CartClient = () => {
         ).then(response => {
             if (isCurrent) {
                 setRelatedByProductId(response.data);
+
+                const currentItems: CartItemType[] = cartItemsRef.current;
+                let relationMetadataChanged = false;
+                const updatedItems: CartItemType[] = currentItems.map(
+                    (item: CartItemType): CartItemType => {
+                        const hasRelatedProducts: boolean =
+                            (response.data[item.productId]?.length ?? 0) > 0;
+
+                        if (item.hasRelatedProducts === hasRelatedProducts) {
+                            return item;
+                        }
+
+                        relationMetadataChanged = true;
+                        return {...item, hasRelatedProducts};
+                    }
+                );
+
+                if (relationMetadataChanged) {
+                    cartItemsRef.current = updatedItems;
+                    replaceCartItems(updatedItems);
+                }
             }
         }).catch(error => {
             if (isCurrent) {
@@ -175,7 +199,7 @@ const CartClient = () => {
         return () => {
             isCurrent = false;
         };
-    }, [productIdsKey]);
+    }, [productIdsKey, replaceCartItems]);
 
     const [selectedCity, setSelectedCity] = useState<City | null>(null);
     const [selectedWarehouse, setSelectedWarehouse] = useState<Warehouse | null>(null);
@@ -373,8 +397,8 @@ const CartClient = () => {
                                 <CartItem
                                     item={item}
                                     related={relatedByProductId[item.productId] ?? []}
-                                    defaultExpanded={i === 0}
-                                    isLoading={isRelatedLoading}
+                                    defaultExpanded={i === firstItemWithRelatedIndex}
+                                    isLoading={isRelatedLoading && i === firstItemWithRelatedIndex}
                                 />
                                 {/*<div className="w-full border-t border-gray-300" style={{visibility: i === cart.items.length-1 ? "hidden" : "visible"}}/>*/}
                             </div>

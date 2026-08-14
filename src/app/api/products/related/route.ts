@@ -97,7 +97,14 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         for (const product of products) {
             relatedByProductId[product.id] = product.relatedTo.map(
-                relation => relation.toProduct
+                (relation): IRelatedProduct => {
+                    const {_count, ...relatedProduct} = relation.toProduct;
+
+                    return {
+                        ...relatedProduct,
+                        hasRelatedProducts: _count.relatedTo > 0,
+                    };
+                }
             );
         }
 

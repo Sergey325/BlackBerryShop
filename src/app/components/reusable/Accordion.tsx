@@ -15,15 +15,15 @@ type Props = {
 };
 
 const Accordion = ({
-                       title,
-                       openTitle,
-                       content,
-                       children,
-                       initialState = false,
-                       containerClass,
-                       buttonClass,
-                       openUp = false,
-                   }: Props) => {
+   title,
+   openTitle,
+   content,
+   children,
+   initialState = false,
+   containerClass,
+   buttonClass,
+   openUp = false,
+}: Props) => {
     const [open, setOpen] = useState(initialState);
 
     const label = open && openTitle ? openTitle : title;
