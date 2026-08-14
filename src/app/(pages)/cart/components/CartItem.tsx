@@ -151,12 +151,12 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         width={80}
                         height={80}
                         draggable={false}
-                        className="object-contain select-none rounded-lg"
+                        className="object-cover self-stretch sm:self-auto sm:aspect-square select-none rounded-lg"
                         // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                         onClick={() => router.push(productUrl)}
                     />
 
-                    <div className="flex flex-col gap-4 min-w-0">
+                    <div className="flex flex-col justify-between self-stretch min-w-0">
                         <span
                             // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
                             onClick={() => router.push(productUrl)}

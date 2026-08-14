@@ -76,6 +76,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
 
         cart.addItem({
             ...createProductSelection(product, activeIdx),
+            size: product.colors[activeIdx].sizes.length === 1 ? product.colors[activeIdx].sizes[0].size : undefined,
             quantity: 1,
             isDecoration: product.category?.isDecoration || false
         });
