@@ -5,7 +5,13 @@ import {absoluteUrl, createMetadata, SITE_NAME, SITE_URL} from "@/app/lib/seo";
 import {cache} from "react";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import JsonLd from "@/app/components/seo/JsonLd";
-import {BreadcrumbListJsonLd, createBreadcrumbJsonLd, ORGANIZATION_ID} from "@/app/lib/structuredData";
+import {
+    BreadcrumbListJsonLd,
+    createBreadcrumbJsonLd,
+    ORGANIZATION_ID,
+    RETURN_POLICY_ID,
+    SHIPPING_SERVICE_ID,
+} from "@/app/lib/structuredData";
 import {notFound, permanentRedirect} from "next/navigation";
 import {extractProductId, getProductPath, getProductRouteSegment} from "@/app/lib/productUrl";
 
@@ -29,6 +35,21 @@ interface ProductOfferJsonLd {
         name: string;
         url: string;
     };
+    hasMerchantReturnPolicy: {
+        "@id": string;
+    };
+    shippingDetails: {
+        "@type": "OfferShippingDetails";
+        hasShippingService: {
+            "@id": string;
+        };
+    };
+}
+
+interface ProductCategoryCodeJsonLd {
+    "@type": "CategoryCode";
+    inCodeSet: "https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt";
+    codeValue: string;
 }
 
 interface ProductJsonLd {
@@ -44,9 +65,38 @@ interface ProductJsonLd {
         "@type": "Brand";
         name: string;
     };
-    category: string;
+    category?: ProductCategoryCodeJsonLd;
     material?: string;
     offers: ProductOfferJsonLd;
+}
+
+const GOOGLE_PRODUCT_CATEGORY_BY_SLUG: Record<string, string> = {
+    "balaklavy": "173",
+    "shapky": "173",
+    "balaklavy-na-sholom": "173",
+    "sharfy-snudy": "177",
+    "rukavychky-mitenky": "170",
+    "pov-iazky": "1662",
+    "pledy": "1985",
+    "panamy": "173",
+    "kepky": "173",
+    "prykrasy-dlia-shapok-i-balaklav": "167",
+    "prykrasy-dlia-panamok-i-kepok": "167",
+    "pliushevi-panamky": "173",
+};
+
+function getProductCategoryJsonLd(categorySlug: string): ProductCategoryCodeJsonLd | null {
+    const googleProductCategoryId: string | undefined = GOOGLE_PRODUCT_CATEGORY_BY_SLUG[categorySlug];
+
+    if (!googleProductCategoryId) {
+        return null;
+    }
+
+    return {
+        "@type": "CategoryCode",
+        inCodeSet: "https://www.google.com/basepages/producttype/taxonomy-with-ids.en-US.txt",
+        codeValue: googleProductCategoryId,
+    };
 }
 
 function getProductDescription(product: IProductWithRelated): string {
@@ -131,6 +181,7 @@ const ProductPage = async ({ params, searchParams }: Props) => {
 
     const productUrl: string = absoluteUrl(productPath);
     const productImages: string[] = getProductImages(product);
+    const productCategoryJsonLd: ProductCategoryCodeJsonLd | null = getProductCategoryJsonLd(product.category.slug);
     const productJsonLd: ProductJsonLd = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -144,7 +195,7 @@ const ProductPage = async ({ params, searchParams }: Props) => {
             "@type": "Brand",
             name: SITE_NAME,
         },
-        category: product.category.name,
+        ...(productCategoryJsonLd ? {category: productCategoryJsonLd} : {}),
         ...(product.material ? {material: product.material.name} : {}),
         offers: {
             "@type": "Offer",
@@ -160,6 +211,15 @@ const ProductPage = async ({ params, searchParams }: Props) => {
                 "@id": ORGANIZATION_ID,
                 name: SITE_NAME,
                 url: SITE_URL,
+            },
+            hasMerchantReturnPolicy: {
+                "@id": RETURN_POLICY_ID,
+            },
+            shippingDetails: {
+                "@type": "OfferShippingDetails",
+                hasShippingService: {
+                    "@id": SHIPPING_SERVICE_ID,
+                },
             },
         },
     };

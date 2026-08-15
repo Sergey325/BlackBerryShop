@@ -1,6 +1,8 @@
 import {absoluteUrl, DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL} from "@/app/lib/seo";
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+export const RETURN_POLICY_ID = `${SITE_URL}/#return-policy`;
+export const SHIPPING_SERVICE_ID = `${SITE_URL}/#nova-poshta-shipping`;
 
 export interface OnlineStoreJsonLd {
     "@context": "https://schema.org";
@@ -24,6 +26,7 @@ export interface OnlineStoreJsonLd {
     };
     hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy";
+        "@id": string;
         applicableCountry: "UA";
         returnPolicyCountry: "UA";
         merchantReturnLink: string;
@@ -85,6 +88,7 @@ export const ONLINE_STORE_JSON_LD: OnlineStoreJsonLd = {
     },
     hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
+        "@id": RETURN_POLICY_ID,
         applicableCountry: "UA",
         returnPolicyCountry: "UA",
         merchantReturnLink: absoluteUrl("/exchange"),
@@ -101,7 +105,7 @@ export const ONLINE_STORE_JSON_LD: OnlineStoreJsonLd = {
     },
     hasShippingService: {
         "@type": "ShippingService",
-        "@id": `${SITE_URL}/#nova-poshta-shipping`,
+        "@id": SHIPPING_SERVICE_ID,
         name: "Доставка Новою Поштою",
         description: "Доставка у відділення та поштомати Нової Пошти по всій Україні. Відправлення протягом 1–4 робочих днів; вартість визначається за тарифами перевізника.",
         fulfillmentType: "https://schema.org/FulfillmentTypeCollectionPoint",
