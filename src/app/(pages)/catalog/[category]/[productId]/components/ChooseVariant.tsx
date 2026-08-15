@@ -72,16 +72,16 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
         if (colorIdFromUrl) return;
 
         const qs = new URLSearchParams(searchParamsString);
-        qs.set("colorId", selectedProductColor.id.toString());
+        qs.set("color", selectedProductColor.color);
         router.replace(`?${qs.toString()}`, {scroll: false});
-    }, [colorIdFromUrl, router, searchParamsString, selectedProductColor.id]);
+    }, [colorIdFromUrl, router, searchParamsString, selectedProductColor.color]);
 
     const handleColorChange = (colorItem: IProductColor) => {
         setCount(1);
         const qs = new URLSearchParams(params);
         // qs.set("color", colorItem.color);
         // qs.set("colorName", colorItem.colorName);
-        qs.set("colorId", colorItem.id.toString());
+        qs.set("color", colorItem.color);
         qs.delete("size");
         router.push(`?${qs.toString()}`, {scroll: false});
     };

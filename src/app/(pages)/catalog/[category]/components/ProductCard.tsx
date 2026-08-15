@@ -23,7 +23,6 @@ type Props = {
 
 const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const searchParams = useSearchParams();
-    const productPath: string = getProductPath(product.category?.slug ?? "", product.id, product.slug);
 
     const isAvailable: boolean = product.colors.some(color =>
         color.sizes.some(size =>
@@ -54,6 +53,10 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     }, [searchParams, product.colors]);
 
     const [activeIdx, setActiveIdx] = useState(initialIdx);
+
+    const productPath: string = useMemo(()=> {
+        return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?color=%23${product.colors[activeIdx].color?.slice(1)}`
+    }, [activeIdx, product.category?.slug, product.colors, product.id, product.slug])
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect

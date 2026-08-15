@@ -26,13 +26,13 @@ const ProductClient = ({ product, category }: Props) => {
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
     // Выбранный цвет — на уровне родителя, чтобы шарить между ProductImages и ChooseVariant
-    // const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
+    const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
     // const selectedColorName = params.get("colorName") ?? product.colors[0]?.colorName;
-    const selectedColorId: number = Number(params.get("colorId") ?? product.colors[0]?.id);
+    // const selectedColorId: number = Number(params.get("colorId") ?? product.colors[0]?.id);
     const selectedSize: string | null = params.get("size");
     const [selectedProductColor, isAvailable, lowStockQuantity] = useMemo(() => {
         const color =
-            product.colors.find(color => color.id === selectedColorId) ?? product.colors[0];
+            product.colors.find(color => color.color === selectedColorHex) ?? product.colors[0];
         const size = color.sizes.find(item => item.size === selectedSize)
             ?? (color.sizes.length === 1 ? color.sizes[0] : undefined);
 
@@ -45,7 +45,7 @@ const ProductClient = ({ product, category }: Props) => {
                 ? size.quantity
                 : null,
         ] as const;
-    }, [product.colors, selectedColorId, selectedSize]);
+    }, [product.colors, selectedColorHex, selectedSize]);
 
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
