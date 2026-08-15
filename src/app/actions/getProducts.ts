@@ -149,7 +149,7 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             };
         }
 
-        let orderBy: any = { createdAt: "asc" };
+        let orderBy: any = [{ position: "asc" }, { id: "asc" }];
 
         if (searchedProducts) {
             where.id = {
@@ -173,7 +173,7 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             default:
                 orderBy = searchedProducts
                     ? undefined
-                    : { createdAt: "asc" };
+                    : [{ position: "asc" }, { id: "asc" }];
         }
 
         const products = await prisma.product.findMany({
@@ -181,8 +181,11 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             orderBy,
             include: {
                 colors: {
+                    orderBy: [{position: "asc"}, {id: "asc"}],
                     include: {
-                        images: true,
+                        images: {
+                            orderBy: {order: "asc"},
+                        },
                         sizes: true,
                     },
                 },
