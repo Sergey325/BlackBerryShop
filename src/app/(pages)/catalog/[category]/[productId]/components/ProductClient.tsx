@@ -18,6 +18,10 @@ type Props = {
 
 const ProductClient = ({ product, category }: Props) => {
     const params = useSearchParams();
+    const displayedDescription: string = product.description || category.productsDescription;
+    const firstSentenceMatch: RegExpMatchArray | null = displayedDescription.match(/^[\s\S]*?[.!?](?=\s|$)/);
+    const snippetDescription: string = firstSentenceMatch?.[0] ?? displayedDescription;
+    const remainingDescription: string = displayedDescription.slice(snippetDescription.length);
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
@@ -154,7 +158,8 @@ const ProductClient = ({ product, category }: Props) => {
                 <div className="p-6 w-full">
                     {tab === 'description' && (
                         <p className="text-sm lg:text-base whitespace-pre-line">
-                            {product.description ? product.description : category.productsDescription}
+                            {snippetDescription}
+                            {remainingDescription && <span data-nosnippet>{remainingDescription}</span>}
                         </p>
                     )}
                     {tab === 'specifications' && (() => {

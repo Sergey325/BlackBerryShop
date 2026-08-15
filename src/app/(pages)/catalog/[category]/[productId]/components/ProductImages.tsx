@@ -114,15 +114,10 @@ const ProductImages = ({ productName, productColor }: Props) => {
                                         : "border-gray-200 hover:border-primary"
                                 }`}
                             >
-                                <Image
-                                    src={optimizeCloudinaryUrl(image.url, 120)}
-                                    width={60}
-                                    height={60}
-                                    unoptimized
-                                    loading="lazy"
-                                    draggable={false}
-                                    className="aspect-square object-cover transition hover:scale-105 hover:opacity-80"
-                                    alt=""
+                                <span
+                                    aria-hidden="true"
+                                    className="block size-[60px] bg-cover bg-center transition hover:scale-105 hover:opacity-80"
+                                    style={{backgroundImage: `url("${optimizeCloudinaryUrl(image.url, 120)}")`}}
                                 />
                             </button>
                             );

@@ -105,6 +105,17 @@ function getProductDescription(product: IProductWithRelated): string {
         || `Купити ${product.name} від українського бренду BlackBerry. Авторський дизайн, ручна робота та доставка по Україні.`;
 }
 
+function getFirstSentence(value: string): string {
+    const normalizedValue: string = value.replace(/\s+/g, " ").trim();
+    const firstSentence: RegExpMatchArray | null = normalizedValue.match(/^.*?[.!?](?=\s|$)/);
+
+    return firstSentence?.[0] ?? normalizedValue;
+}
+
+function getProductSeoDescription(product: IProductWithRelated): string {
+    return `${product.name}. ${getFirstSentence(getProductDescription(product))}`;
+}
+
 function getProductImages(product: IProductWithRelated): string[] {
     const imageUrls: string[] = product.colors
         .flatMap((color) => color.images)
@@ -148,7 +159,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     }
 
     const productImages: string[] = getProductImages(product);
-    const description: string = getProductDescription(product);
+    const description: string = getProductSeoDescription(product);
     const productPath: string = getProductPath(product.category.slug, product.id, product.slug);
 
     return createMetadata({

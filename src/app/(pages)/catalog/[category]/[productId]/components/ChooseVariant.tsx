@@ -10,7 +10,6 @@ import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import useSizesModal from "@/app/hooks/useSizesModal";
 import toast from "react-hot-toast";
-import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CheckBox from "@/app/components/reusable/CheckBox";
 import {IProductWithRelated} from "@/app/actions/getProductById";
@@ -176,16 +175,10 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                     <FaFire className="size-4 text-orange-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)] motion-safe:animate-pulse" />
                                 </span>
                             )}
-                            <Image
-                                src={optimizeCloudinaryUrl(c.images[0].url, 140)}
-                                fill
-                                draggable={false}
-                                className="object-cover aspect-square mx-auto select-none hover:scale-110 transition"
-                                alt={`${product.name}, колір ${c.colorName}`}
-                                sizes="72px"
-                                loading="lazy"
-                                quality={100}
-                                unoptimized
+                            <span
+                                aria-hidden="true"
+                                className="absolute inset-0 bg-cover bg-center transition hover:scale-110"
+                                style={{backgroundImage: `url("${optimizeCloudinaryUrl(c.images[0].url, 140)}")`}}
                             />
                         </div>
                     ))}
