@@ -105,15 +105,19 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
 
     if (list) {
         return (
-            <div className="flex gap-4 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow px-3 pt-2 pb-1 sm:p-3 group">
-                <Link href={productPath} className="relative size-24 sm:size-28 shrink-0 rounded-xl overflow-hidden bg-gray-100 cursor-pointer">
+            <article className="group flex min-h-28 gap-3 overflow-hidden rounded-2xl border border-primary/15 bg-white p-2 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-md sm:min-h-40 sm:gap-4 sm:p-3">
+                <Link
+                    href={productPath}
+                    onClick={handleViewContent}
+                    className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100 sm:w-36"
+                >
                     <Image
-                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 200)}
+                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 320)}
                         alt={product.name}
                         fill
-                        unoptimized
+                        sizes="(max-width: 640px) 112px, 144px"
                         draggable={false}
-                        className={`object-cover select-none transition-all ${isAvailable ? "group-hover:scale-105" : "grayscale opacity-60"}`}
+                        className={`select-none object-cover transition-transform duration-500 ${isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-60"}`}
                     />
                     {colors && product.colors[activeIdx].isBestSeller && (
                         <span
@@ -130,54 +134,77 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         </div>
                     )}
                 </Link>
-                <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
-                    <Link href={productPath}>
-                        <p className="text-sm font-medium leading-[18px] text-slate-700  sm:text-base sm:leading-5 hover:text-primary transition-colors">{product.name}</p>
-                    </Link>
-                    {
-                        visibleColors.length > 1 && colors &&
-                        <div className="-mb-4">
-                            <div className="flex gap-1.5 mt-2 items-center">
-                                {visibleColors.map((c, i) => (
-                                    <button
-                                        key={c.id}
-                                        onMouseEnter={() => setActiveIdx(i)}
-                                        onClick={() => setActiveIdx(i)}
-                                        className={`size-4 cursor-pointer rounded-full border transition-transform hover:scale-110 ${
-                                            activeIdx === i ? 'border-2 border-primary scale-110' : 'border-gray-600'
-                                        } shadow-sm`}
-                                        style={{ backgroundColor: c.color }}
-                                    />
-                                ))}
-                                {hasMoreColors && (
-                                    <span className="text-gray-500 text-xl leading-none">...</span>
-                                )}
-                            </div>
-                            <p className="text-[12px] text-gray-500 mt-1">
-                                Доступно {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
-                            </p>
-                        </div>
-                    }
 
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base self-end">{product.price} грн</p>
+                <div className="flex min-w-0 flex-1 flex-col py-0.5 sm:py-1">
+                    <div className="min-w-0">
+                        <Link href={productPath} onClick={handleViewContent}>
+                            <h3 className="line-clamp-2 text-sm font-medium leading-[18px] text-slate-700 transition-colors group-hover:text-primary sm:text-base sm:leading-5">
+                                {product.name}
+                            </h3>
+                        </Link>
+                        {product.material?.name && (
+                            <p className="hidden sm:block mt-1 text-wrap text-xs text-slate-500">
+                                Матеріал: <span className="text-slate-700">{product.material.name}</span>
+                            </p>
+                        )}
+                    </div>
+
+                    {visibleColors.length > 1 && colors && (
+                        <div className="mt-2 flex min-w-0 items-center gap-1.5 sm:flex-wrap" aria-label="Доступні кольори">
+                            {visibleColors.map((c, i) => (
+                                <button
+                                    key={c.id}
+                                    type="button"
+                                    onMouseEnter={() => setActiveIdx(i)}
+                                    onClick={() => setActiveIdx(i)}
+                                    className={`size-4 shrink-0 cursor-pointer rounded-full transition-transform hover:scale-110 ${
+                                        activeIdx === i
+                                            ? "border-2 border-primary scale-110"
+                                            : "border border-slate-500"
+                                    }`}
+                                    style={{ backgroundColor: c.color }}
+                                    aria-label={`Колір ${c.colorName}`}
+                                />
+                            ))}
+                            {hasMoreColors && (
+                                <span className="shrink-0 text-xs font-medium text-slate-500">
+                                    +{product.colors.length - visibleColors.length}
+                                </span>
+                            )}
+                            <span className="ml-1 hidden min-w-0 truncate text-xs text-slate-500 sm:inline">
+                                {product.colors[activeIdx].colorName}
+                            </span>
+                        </div>
+                    )}
+
+                    <div className="mt-auto flex items-end justify-between gap-2 sm:pt-2">
+                        <div>
+                            <p className="text-base font-semibold leading-none text-slate-950 sm:text-lg">
+                                {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
+                            </p>
+                            {colors && product.colors.length > 1 && (
+                                <p className="mt-1 hidden text-[11px] text-slate-500 md:block">
+                                    {product.colors.length} {pluralizeUk(product.colors.length, ["колір", "кольори", "кольорів"])}
+                                </p>
+                            )}
+                        </div>
                         <button
                             type="button"
                             onClick={handleAddToCart}
                             disabled={!isAvailable}
-                            className={`shrink-0 flex items-center justify-center size-8 sm:size-auto sm:gap-1.5 text-white text-xs font-semibold sm:px-3 sm:py-2 rounded-full sm:rounded-xl transition-colors ${
+                            className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white transition-colors sm:h-10 sm:w-auto sm:gap-1.5 sm:rounded-xl sm:px-4 ${
                                 isAvailable
                                     ? "bg-primary hover:bg-primary/90 cursor-pointer"
                                     : "bg-slate-300 cursor-not-allowed"
                             }`}
                             aria-label={isAvailable ? `Додати ${product.name} до кошика` : `${product.name} немає в наявності`}
                         >
-                            <MdOutlineShoppingCart className="size-4"/>
+                            <MdOutlineShoppingCart className="size-[18px]"/>
                             <span className="hidden sm:block">До кошика</span>
                         </button>
                     </div>
                 </div>
-            </div>
+            </article>
         );
     }
 

@@ -134,6 +134,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                                     multiplyParameter
                                     urlValue={m.name}
                                     label={m.name}
+                                    labelStyle="text-sm"
                                     colorOnChecked={"text-primary"}
                                     baseUrl={`/catalog/${selectedCategorySlug}`}
                                 />
