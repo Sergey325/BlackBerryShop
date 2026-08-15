@@ -10,6 +10,7 @@ import qs from "query-string";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
 import Link from "next/link";
 import {sortColorsByShade} from "@/app/utils/sortColors";
+import ToolTip from "@/app/components/reusable/ToolTip";
 
 
 type Props = {
@@ -82,15 +83,18 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                 <FilterSection title="Колір">
                     <div className="flex flex-wrap gap-1.5 p-1">
                         {sortedColors.map((c,  index) => (
-                            <ColorFilter
-                                key={c.color+index}
-                                urlParameter="color"
-                                urlValue={c.color}
-                                color={c.color}
-                                title={c.colorName}
-                                multiplyParameter
-                                baseUrl={`/catalog/${selectedCategorySlug}`}
-                            />
+                            <ToolTip label={c.colorName} key={c.color+index}>
+                                <ColorFilter
+
+                                    urlParameter="color"
+                                    urlValue={c.color}
+                                    color={c.color}
+                                    title={c.colorName}
+                                    multiplyParameter
+                                    baseUrl={`/catalog/${selectedCategorySlug}`}
+                                />
+                            </ToolTip>
+
                         ))}
                     </div>
                 </FilterSection>

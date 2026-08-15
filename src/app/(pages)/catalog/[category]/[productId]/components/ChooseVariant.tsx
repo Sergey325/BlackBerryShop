@@ -15,6 +15,7 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CheckBox from "@/app/components/reusable/CheckBox";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import {FaFire} from "react-icons/fa";
 
 type Props = {
     product: IProductWithRelated;
@@ -139,8 +140,20 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
 
     return (
         <>
-            <div className="text-sm font-medium text-zinc-600 ">
-                <p>Виберіть колір:</p>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                <span className="text-zinc-600">Виберіть колір:</span>
+                <span className="font-semibold text-zinc-900">
+                    {selectedProductColor.colorName}
+                </span>
+                {selectedProductColor.isBestSeller && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-200">
+                        <FaFire
+                            aria-hidden="true"
+                            className="size-3 text-orange-500 motion-safe:animate-pulse"
+                        />
+                        Хіт продажу
+                    </span>
+                )}
             </div>
 
             <div className="flex mt-2 gap-4">
@@ -154,6 +167,15 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                 borderWidth: selectedColorHex === c.color ? "2px" : "1px",
                                 borderColor: selectedColorHex === c.color ? "#823D9A" : "#000000",
                             }}>
+                            {c.isBestSeller && (
+                                <span
+                                    title="Бестселер"
+                                    aria-label="Бестселер"
+                                    className="pointer-events-none absolute right-0.5 top-0.5 z-10 flex size-6 items-center justify-center rounded-full bg-white/90 shadow-md border border-orange-200"
+                                >
+                                    <FaFire className="size-4 text-orange-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)] motion-safe:animate-pulse" />
+                                </span>
+                            )}
                             <Image
                                 src={optimizeCloudinaryUrl(c.images[0].url, 140)}
                                 fill

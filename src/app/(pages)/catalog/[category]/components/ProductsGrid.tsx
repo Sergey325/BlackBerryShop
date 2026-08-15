@@ -3,7 +3,7 @@
 import {FiGrid, FiList, FiSliders, FiX} from "react-icons/fi";
 import Dropdown from "@/app/components/reusable/DropDown";
 import {BiSearch} from "react-icons/bi";
-import InputFilter from "@/app/components/reusable/InputFilter";
+import InputFilter from "@/app/(pages)/catalog/[category]/components/InputFilter";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useState} from "react";

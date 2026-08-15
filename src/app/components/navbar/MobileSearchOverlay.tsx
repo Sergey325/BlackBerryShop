@@ -9,6 +9,7 @@ import Loader from "@/app/components/reusable/Loader";
 import {useModalHistory} from "@/app/hooks/useModalHistory";
 import Link from "next/link";
 import {getProductPath} from "@/app/lib/productUrl";
+import {pluralizeUk} from "@/app/utils/pluralizeUk";
 
 export default function MobileSearchOverlay() {
     const { isOpen, onClose } = useMobileSearchModal();
@@ -90,8 +91,11 @@ export default function MobileSearchOverlay() {
                             <div className="relative w-14 h-14 shrink-0 rounded overflow-hidden bg-gray-100">
                                 <Image src={product.colors[0].images[0].url} alt={product.name} fill className="object-cover" />
                             </div>
-                            <div className="flex flex-col min-w-0">
+                            <div className="flex flex-col min-w-0 self-stretch">
                                 <span className="text-sm truncate">{product.name}</span>
+                                <span className="text-xs font-light truncate">
+                                    В наявності {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
+                                </span>
                                 <span className="text-sm font-medium">{product.price} ₴</span>
                             </div>
                         </Link>

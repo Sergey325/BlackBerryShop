@@ -7,6 +7,7 @@ import { useProductSearch } from "@/app/hooks/useProductSearch";
 import {AiOutlineLoading} from "react-icons/ai";
 import Link from "next/link";
 import {getProductPath} from "@/app/lib/productUrl";
+import {pluralizeUk} from "@/app/utils/pluralizeUk";
 
 export default function SearchBar() {
     const [open, setOpen] = useState(false);
@@ -83,11 +84,14 @@ export default function SearchBar() {
                                 onClick={handleClose}
                                 className="flex items-center gap-3 p-3 hover:bg-gray-50 transition border-b border-primary/30 last:border-0"
                             >
-                                <div className="relative w-12 h-12 shrink-0 rounded overflow-hidden bg-gray-100">
+                                <div className="relative w-13 h-13 shrink-0 rounded overflow-hidden bg-gray-100">
                                     <Image src={product.colors[0].images[0].url} alt={product.name} fill className="object-cover" />
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-sm truncate">{product.name}</span>
+                                    <span className="text-xs font-light truncate">
+                                        В наявності {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
+                                    </span>
                                     <span className="text-sm font-medium">{product.price} ₴</span>
                                 </div>
                             </Link>

@@ -13,6 +13,7 @@ import {IProductWithRelated} from "@/app/actions/getProductById";
 import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {getProductPath} from "@/app/lib/productUrl";
+import {FaFire} from "react-icons/fa";
 
 type Props = {
     product: IProductWithRelated | IRelatedProduct;
@@ -114,6 +115,15 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                         draggable={false}
                         className={`object-cover select-none transition-all ${isAvailable ? "group-hover:scale-105" : "grayscale opacity-60"}`}
                     />
+                    {colors && product.colors[activeIdx].isBestSeller && (
+                        <span
+                            title="Хіт продажу"
+                            aria-label="Хіт продажу"
+                            className="absolute left-1.5 top-1.5 z-10 flex size-6 items-center justify-center rounded-full border border-orange-200 bg-white/90 text-orange-500 shadow-sm"
+                        >
+                            <FaFire aria-hidden="true" className="size-3.5 motion-safe:animate-pulse" />
+                        </span>
+                    )}
                     {!isAvailable && (
                         <div className="absolute inset-x-1.5 bottom-1.5 rounded-md bg-slate-900/80 px-1.5 py-1 text-center text-[10px] font-semibold leading-tight text-white backdrop-blur-sm">
                             Немає в наявності
@@ -134,7 +144,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                         onMouseEnter={() => setActiveIdx(i)}
                                         onClick={() => setActiveIdx(i)}
                                         className={`size-4 cursor-pointer rounded-full border transition-transform hover:scale-110 ${
-                                            activeIdx === i ? 'border-2 border-primary scale-110' : 'border-gray-800'
+                                            activeIdx === i ? 'border-2 border-primary scale-110' : 'border-gray-600'
                                         } shadow-sm`}
                                         style={{ backgroundColor: c.color }}
                                     />
@@ -211,6 +221,15 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                             isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-55"
                         }`}
                     />
+                    {colors && product.colors[activeIdx].isBestSeller && (
+                        <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-orange-700 shadow-sm backdrop-blur-sm sm:left-2 sm:top-2 sm:px-2.5 sm:text-xs">
+                            <FaFire
+                                aria-hidden="true"
+                                className="size-3 text-orange-500 motion-safe:animate-pulse sm:size-3.5"
+                            />
+                            Хіт продажу
+                        </span>
+                    )}
                     {!isAvailable && (
                         <div className="absolute inset-0 flex items-end justify-center bg-white/10 p-1 sm:p-2 sm:items-center">
                             <span className="rounded-lg sm:rounded-full bg-slate-900/80 px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm sm:text-xs">
