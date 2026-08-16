@@ -92,18 +92,19 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                         <Link
                             href="/"
                             onClick={() => setMenuOpen(false)}
-                            className="flex items-center tablet:gap-2 cursor-pointer bg-white"
+                            className="flex items-center tablet:gap-1 cursor-pointer bg-white"
                         >
                             <Image
-                                src="/imgLogo.png"
+                                src="/icon.png"
                                 alt="BlackBerry"
-                                width={60}
-                                height={80}
+                                width={36}
+                                height={36}
+                                quality={100}
                                 draggable={false}
-                                className="h-8 w-auto object-contain bg-white"
+                                className="h-9 w-auto object-contain bg-white"
                             />
 
-                            <span className={`mt-0.5 text-3xl tablet:text-4xl font-bold ${vladimir.className}`}>
+                            <span className={`mt-1 text-3xl tablet:text-4xl font-bold ${vladimir.className}`}>
                                 Black Berry
                             </span>
                         </Link>
