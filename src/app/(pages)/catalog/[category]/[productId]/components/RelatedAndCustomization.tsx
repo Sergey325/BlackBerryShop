@@ -5,9 +5,10 @@ import {IRelatedProduct} from "@/app/actions/getProducts";
 
 type Props = {
     related: IRelatedProduct[];
+    selectedCatalogColorCodes: string[];
 };
 
-const RelatedAndCustomization = ({related}: Props) => {
+const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) => {
     const { relatedProducts, customizationOptions } = related.reduce(
         (acc, product) => {
             if (product.category?.isDecoration) {
@@ -45,7 +46,10 @@ const RelatedAndCustomization = ({related}: Props) => {
                     >
                         {relatedProducts.map((p, i) => (
                             <div key={p.id+i} className="py-1 h-full">
-                                <ProductCard product={p}/>
+                                <ProductCard
+                                    product={p}
+                                    preferredCatalogColorCodes={selectedCatalogColorCodes}
+                                />
                             </div>
                         ))}
                     </CarouselWrapper>
@@ -68,7 +72,10 @@ const RelatedAndCustomization = ({related}: Props) => {
                     >
                         {customizationOptions.map((p, i) => (
                             <div key={p.id+i} className="py-1 h-full">
-                                <ProductCard product={p}/>
+                                <ProductCard
+                                    product={p}
+                                    preferredCatalogColorCodes={selectedCatalogColorCodes}
+                                />
                             </div>
                         ))}
                     </CarouselWrapper>

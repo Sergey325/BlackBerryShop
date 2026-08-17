@@ -46,7 +46,9 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
         if (selectedColors.size === 0) return true;
 
         return product.colors.some((productColor) =>
-            selectedColors.has(productColor.color.toLowerCase())
+            productColor.filterColors.some((filterColor) =>
+                selectedColors.has(filterColor.catalogColor.code.toLowerCase())
+            )
         );
     });
     const productsRenderKey: string = `${params.toString()}::${visibleProducts

@@ -20,6 +20,11 @@ export async function getProductById(productId: string): Promise<IProductWithRel
         include: {
             colors: {
                 include: {
+                    filterColors: {
+                        include: {
+                            catalogColor: true,
+                        },
+                    },
                     images: true,
                     sizes: true,
                 },

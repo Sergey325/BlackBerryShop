@@ -14,14 +14,21 @@ import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {getProductPath} from "@/app/lib/productUrl";
 import {FaFire} from "react-icons/fa";
+import {getProductColorBackground} from "@/app/utils/getProductColorBackground";
 
 type Props = {
     product: IProductWithRelated | IRelatedProduct;
     list?: boolean;
     colors?: boolean;
+    preferredCatalogColorCodes?: string[];
 };
 
-const ProductCard = ({ product, list = false, colors = false }: Props) => {
+const ProductCard = ({
+    product,
+    list = false,
+    colors = false,
+    preferredCatalogColorCodes = [],
+}: Props) => {
     const searchParams = useSearchParams();
 
     const isAvailable: boolean = product.colors.some(color =>
@@ -39,23 +46,57 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
     const THRESHOLD = 8;
 
     const initialIdx = useMemo(() => {
+        if (preferredCatalogColorCodes.length > 0) {
+            const preferredCodes: Set<string> = new Set(
+                preferredCatalogColorCodes.map((code: string): string => code.toLowerCase())
+            );
+            let bestIndex: number = -1;
+            let bestScore: number = -1;
+
+            product.colors.forEach((productColor, index: number): void => {
+                const colorCodes: Set<string> = new Set(
+                    productColor.filterColors.map((filterColor): string =>
+                        filterColor.catalogColor.code.toLowerCase()
+                    )
+                );
+                const matchingCodes: number = Array.from(colorCodes)
+                    .filter((code: string): boolean => preferredCodes.has(code))
+                    .length;
+
+                if (matchingCodes === 0) return;
+
+                // Prefer the variant with the greatest overlap. For equal
+                // overlap, prefer fewer unrelated colors (red over red/black).
+                const score: number = matchingCodes * 100 - Math.abs(colorCodes.size - preferredCodes.size);
+
+                if (score > bestScore) {
+                    bestIndex = index;
+                    bestScore = score;
+                }
+            });
+
+            if (bestIndex !== -1) return bestIndex;
+        }
+
         const colors = searchParams.getAll('color');          // все color-параметры
         if (!colors.length) return 0;
 
         for (let i = colors.length - 1; i >= 0; i--) {
             const idx = product.colors.findIndex(
-                c => c.color.toLowerCase() === colors[i].toLowerCase()
+                c => c.filterColors.some(
+                    filterColor => filterColor.catalogColor.code.toLowerCase() === colors[i].toLowerCase()
+                )
             );
             if (idx !== -1) return idx;
         }
 
         return 0;
-    }, [searchParams, product.colors]);
+    }, [preferredCatalogColorCodes, searchParams, product.colors]);
 
     const [activeIdx, setActiveIdx] = useState(initialIdx);
 
     const productPath: string = useMemo(()=> {
-        return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?color=%23${product.colors[activeIdx].color?.slice(1)}`
+        return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?colorId=${product.colors[activeIdx].id}`
     }, [activeIdx, product.category?.slug, product.colors, product.id, product.slug])
 
     useEffect(() => {
@@ -165,7 +206,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                             ? "border-2 border-primary scale-110"
                                             : "border border-slate-500"
                                     }`}
-                                    style={{ backgroundColor: c.color }}
+                                    style={{background: getProductColorBackground(c)}}
                                     aria-label={`Колір ${c.colorName}`}
                                 />
                             ))}
@@ -293,7 +334,7 @@ const ProductCard = ({ product, list = false, colors = false }: Props) => {
                                         ? ' border-2 border-primary'
                                         : ' border border-slate-500'
                                 }`}
-                                style={{ backgroundColor: c.color }}
+                                style={{background: getProductColorBackground(c)}}
                                 aria-label={`Колір ${i + 1}`}
                             />
                         ))}

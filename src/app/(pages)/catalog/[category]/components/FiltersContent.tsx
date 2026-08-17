@@ -25,6 +25,7 @@ type Props = {
             count: number
         }[],
         colors: {
+            code: string,
             color: string,
             colorName: string,
             count: number}[]
@@ -82,12 +83,12 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                 options.colors.length > 0 &&
                 <FilterSection title="Колір">
                     <div className="flex flex-wrap gap-1.5 p-1">
-                        {sortedColors.map((c,  index) => (
-                            <ToolTip label={c.colorName} key={c.color+index}>
+                        {sortedColors.map((c) => (
+                            <ToolTip label={c.colorName} key={c.code}>
                                 <ColorFilter
 
                                     urlParameter="color"
-                                    urlValue={c.color}
+                                    urlValue={c.code}
                                     color={c.color}
                                     title={c.colorName}
                                     multiplyParameter

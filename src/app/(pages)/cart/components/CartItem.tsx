@@ -270,9 +270,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                         />
                                         <div className="flex flex-col flex-1 min-w-0 gap-1">
                                                 <span
-                                                    onClick={() => router.push(`${getProductPath(related.category?.slug ?? "", related.id, related.slug)}?colorId=${item.productColorId}`)}
-
-                                                    // onClick={() => router.push(`/catalog/${related.category?.slug}/${related.id}?&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
+                                                    onClick={() => router.push(`${getProductPath(related.category?.slug ?? "", related.id, related.slug)}?colorId=${related.colors[0].id}`)}
                                                     className="text-sm font-medium truncate transition-colors hover:text-primary cursor-pointer">{related.name}
                                                 </span>
                                             <span className="text-xs text-gray-500">{related.price.toFixed(2)} грн</span>

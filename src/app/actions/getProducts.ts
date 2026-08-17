@@ -17,6 +17,7 @@ export interface IRelatedProduct {
         color: string;
         colorName: string;
         colorCode: string | null;
+        filterColors: IProductColorFilter[];
         productId: number;
         isBestSeller: boolean;
         images: IProductImage[];
@@ -44,10 +45,24 @@ export interface IProductColor {
     color: string;
     colorName: string;
     colorCode: string | null;
+    filterColors: IProductColorFilter[];
     isBestSeller: boolean;
     productId: number;
     images: IProductImage[];
     sizes: IProductSize[];
+}
+
+export interface ICatalogColor {
+    id: number;
+    code: string;
+    name: string;
+    hex: string;
+}
+
+export interface IProductColorFilter {
+    productColorId: number;
+    catalogColorId: number;
+    catalogColor: ICatalogColor;
 }
 
 export interface IProductMaterial {
@@ -118,8 +133,14 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             where.colors = {
                 some: {
                     ...(color?.length && {
-                        color: {
-                            in: color,
+                        filterColors: {
+                            some: {
+                                catalogColor: {
+                                    code: {
+                                        in: color,
+                                    },
+                                },
+                            },
                         },
                     }),
                     ...(size?.length && {
@@ -183,6 +204,11 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
                 colors: {
                     orderBy: [{position: "asc"}, {id: "asc"}],
                     include: {
+                        filterColors: {
+                            include: {
+                                catalogColor: true,
+                            },
+                        },
                         images: {
                             orderBy: {order: "asc"},
                         },

@@ -25,14 +25,19 @@ const ProductClient = ({ product, category }: Props) => {
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
-    // Выбранный цвет — на уровне родителя, чтобы шарить между ProductImages и ChooseVariant
-    const selectedColorHex = params.get("color") ?? product.colors[0]?.color;
-    // const selectedColorName = params.get("colorName") ?? product.colors[0]?.colorName;
-    // const selectedColorId: number = Number(params.get("colorId") ?? product.colors[0]?.id);
+    // ProductColor.id uniquely identifies the variant. Catalog color codes do
+    // not: one multicolor variant can have several of them.
+    const colorIdParam: string | null = params.get("colorId");
+    const selectedColorId: number | null = colorIdParam !== null && /^\d+$/.test(colorIdParam)
+        ? Number(colorIdParam)
+        : null;
+    const legacyColorHex: string | null = params.get("color");
     const selectedSize: string | null = params.get("size");
     const [selectedProductColor, isAvailable, lowStockQuantity] = useMemo(() => {
         const color =
-            product.colors.find(color => color.color === selectedColorHex) ?? product.colors[0];
+            product.colors.find((productColor) => productColor.id === selectedColorId)
+            ?? product.colors.find((productColor) => productColor.color === legacyColorHex)
+            ?? product.colors[0];
         const size = color.sizes.find(item => item.size === selectedSize)
             ?? (color.sizes.length === 1 ? color.sizes[0] : undefined);
 
@@ -45,7 +50,7 @@ const ProductClient = ({ product, category }: Props) => {
                 ? size.quantity
                 : null,
         ] as const;
-    }, [product.colors, selectedColorHex, selectedSize]);
+    }, [legacyColorHex, product.colors, selectedColorId, selectedSize]);
 
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
@@ -126,7 +131,12 @@ const ProductClient = ({ product, category }: Props) => {
                 </div>
             </div>
 
-            <RelatedAndCustomization related={product.relatedTo}/>
+            <RelatedAndCustomization
+                related={product.relatedTo}
+                selectedCatalogColorCodes={selectedProductColor.filterColors.map(
+                    (filterColor): string => filterColor.catalogColor.code
+                )}
+            />
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full mt-5">
                 {/* Tab bar */}

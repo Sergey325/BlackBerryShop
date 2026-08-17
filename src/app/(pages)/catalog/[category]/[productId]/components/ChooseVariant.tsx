@@ -34,9 +34,6 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
     const basePrice: number = product.price + (includeLining ? 150 : 0);
     const discountedPrice: number = calculatePriceWithDiscount(basePrice, product.discount ?? 0);
 
-    // Цвет — главный селектор
-    const selectedColorHex = selectedProductColor.color;
-
     // Размер зависит от выбранного цвета
     const selectedSize = params.get("size") ?? "";
     const colorIdFromUrl = params.get("colorId");
@@ -69,19 +66,19 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
             : Math.max(0, selectedSizeObj.quantity - existingCartQuantity);
 
     useEffect(() => {
-        if (colorIdFromUrl) return;
+        if (colorIdFromUrl === String(selectedProductColor.id) && !params.has("color")) return;
 
         const qs = new URLSearchParams(searchParamsString);
-        qs.set("color", selectedProductColor.color);
+        qs.set("colorId", String(selectedProductColor.id));
+        qs.delete("color");
         router.replace(`?${qs.toString()}`, {scroll: false});
-    }, [colorIdFromUrl, router, searchParamsString, selectedProductColor.color]);
+    }, [colorIdFromUrl, params, router, searchParamsString, selectedProductColor.id]);
 
     const handleColorChange = (colorItem: IProductColor) => {
         setCount(1);
         const qs = new URLSearchParams(params);
-        // qs.set("color", colorItem.color);
-        // qs.set("colorName", colorItem.colorName);
-        qs.set("color", colorItem.color);
+        qs.set("colorId", String(colorItem.id));
+        qs.delete("color");
         qs.delete("size");
         router.push(`?${qs.toString()}`, {scroll: false});
     };
@@ -157,14 +154,14 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
 
             <div className="flex mt-2 gap-4">
                 <div className="flex flex-wrap gap-1.5">
-                    {product.colors.map((c, index) => (
+                    {product.colors.map((c) => (
                         <div
-                            key={c.color+index}
+                            key={c.id}
                             onClick={() => handleColorChange(c)}
                             className="border rounded-xl overflow-hidden cursor-pointer relative size-18"
                             style={{
-                                borderWidth: selectedColorHex === c.color ? "2px" : "1px",
-                                borderColor: selectedColorHex === c.color ? "#823D9A" : "#000000",
+                                borderWidth: selectedProductColor.id === c.id ? "2px" : "1px",
+                                borderColor: selectedProductColor.id === c.id ? "#823D9A" : "#000000",
                             }}>
                             {c.isBestSeller && (
                                 <span

@@ -19,6 +19,11 @@ export const relatedProductSelect = {
     },
     colors: {
         include: {
+            filterColors: {
+                include: {
+                    catalogColor: true,
+                },
+            },
             images: {
                 take: 1,
                 orderBy: {order: "asc"},
