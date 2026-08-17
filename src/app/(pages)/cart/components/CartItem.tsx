@@ -165,7 +165,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                             {item.productName}
                         </span>
                         {
-                            !item.isDecoration &&
+                            item.sizes.length > 1 &&
                             <div className="flex  items-center gap-2 sm:gap-8 text-base flex-wrap lg:flex-nowrap">
                                 {
                                     item.size ?
