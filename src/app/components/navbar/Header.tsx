@@ -22,7 +22,12 @@ const mobileNavigationOptions = [
     {href: "/exchange", label: "Обмін та повернення", icon: FiRefreshCw},
 ];
 
-const ContactDropdown = () => {return (<div className="relative group"><button className="hover:opacity-60 hover:-translate-y-0.5 transition">Контакти</button>
+const ContactDropdown = () => {
+    return (
+        <div className="relative group">
+            <button className="hover:text-primary hover:-translate-y-0.5 transition">
+                Контакти
+            </button>
 
         <div
             className="
@@ -112,8 +117,9 @@ export default function Header() {const pathname = usePathname();const [menuOpen
 
                     {/* Десктоп навигация */}
                     <nav className="hidden tablet:flex items-center text-base gap-8">
-                        <Link href="/about" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Про нас</Link>
-                        <Link href="/catalog" className="hover:opacity-60 hover:-translate-y-0.5 transition ">Каталог</Link>
+                        <Link href="/" className="hover:-translate-y-0.5 hover:text-primary transition">Головна</Link>
+                        <Link href="/about" className="hover:-translate-y-0.5 hover:text-primary transition">Про нас</Link>
+                        <Link href="/catalog" className="hover:-translate-y-0.5 hover:text-primary transition">Каталог</Link>
                         <ContactDropdown/>
                     </nav>
 
