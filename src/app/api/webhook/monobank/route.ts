@@ -268,7 +268,8 @@ export async function POST(request: Request) {
                     for (const admin of admins) {
                         await sendTelegramMessage(
                             admin.chatId,
-                            telegramMessage
+                            telegramMessage,
+                            order.invoiceId ?? ""
                         );
                     }
                 } catch (telegramError) {

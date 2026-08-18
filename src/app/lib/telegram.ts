@@ -40,7 +40,7 @@ const formatOrderItem = (item: IOrderItem, index: number): string => {
     ].filter((line): line is string => line !== null).join("\n");
 };
 
-export async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
+export async function sendTelegramMessage(chatId: string, text: string, invoiceId: string): Promise<void> {
     const token: string | undefined = process.env.TELEGRAM_BOT_TOKEN;
 
     if (!token) {
@@ -63,7 +63,7 @@ export async function sendTelegramMessage(chatId: string, text: string): Promise
                         [
                             {
                                 text: "🔎 Відкрити замовлення",
-                                url: `${process.env.ADMIN_URL}orders?tab=AllOrders`,
+                                url: `${process.env.ADMIN_URL}/orders?tab=AllOrders&search=${invoiceId}`,
                             },
                         ],
                     ],
