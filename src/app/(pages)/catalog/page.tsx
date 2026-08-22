@@ -9,7 +9,7 @@ import {createMetadata} from "@/app/lib/seo";
 import JsonLd from "@/app/components/seo/JsonLd";
 import {BreadcrumbListJsonLd, createBreadcrumbJsonLd} from "@/app/lib/structuredData";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = createMetadata({
     title: "Каталог авторських головних уборів та аксесуарів",

@@ -1,4 +1,4 @@
-import {getProducts} from "@/app/actions/getProducts";
+import {getBestSellerProducts} from "@/app/actions/getProducts";
 import Hero from "@/app/components/homePage/Hero";
 import BestSellers from "@/app/components/homePage/BestSellers";
 import Categories from "@/app/components/homePage/Categories";
@@ -12,7 +12,7 @@ import JsonLd from "@/app/components/seo/JsonLd";
 import {ONLINE_STORE_JSON_LD} from "@/app/lib/structuredData";
 import {getCategories} from "@/app/actions/getCategories";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = createMetadata({
     title: DEFAULT_TITLE,
@@ -24,7 +24,7 @@ export const metadata: Metadata = createMetadata({
 
 export default async function HomePage() {
     const [products, banners, categories] = await Promise.all([
-        getProducts(),
+        getBestSellerProducts(),
         getBanners(),
         getCategories(),
     ])

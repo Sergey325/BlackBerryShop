@@ -2,6 +2,10 @@
 
 import prisma from "@/app/lib/prisma";
 import {ICategory, IRelatedProductCategory} from "@/app/actions/getCategories";
+import {Prisma} from "@prisma/client";
+import {unstable_cache} from "next/cache";
+
+const PRODUCTS_CACHE_SECONDS = 300;
 
 export interface IRelatedProduct {
     id: number;
@@ -97,11 +101,63 @@ export interface IProductsParams {
     priceMax?: string;
 }
 
-export async function getProducts(params: IProductsParams = {}): Promise<IProduct[] | undefined> {
-    try {
-        const { title, category, sorting, priceMin, priceMax, size, material, color } = params;
+export interface IProductSearchResult {
+    id: number;
+    name: string;
+    slug: string;
+    price: number;
+    categorySlug: string | null;
+    imageUrl: string | null;
+    colorCount: number;
+}
 
-        const where: any = {};
+interface IProductSearchRow extends IProductSearchResult {
+    score: number;
+}
+
+function normalizeValues(values?: string[]): string[] | undefined {
+    if (!values?.length) return undefined;
+
+    const normalized: string[] = Array.from(
+        new Set(values.map((value: string): string => value.trim()).filter(Boolean))
+    ).sort();
+
+    return normalized.length ? normalized : undefined;
+}
+
+function normalizePrice(value?: string): string | undefined {
+    if (!value?.trim()) return undefined;
+
+    const parsed: number = Number(value);
+
+    return Number.isFinite(parsed) ? parsed.toString() : undefined;
+}
+
+function normalizeProductsParams(params: IProductsParams): IProductsParams {
+    const sorting: IProductsParams["sorting"] = ["asc", "desc", "newest"]
+        .includes(params.sorting ?? "")
+        ? params.sorting
+        : undefined;
+
+    return {
+        title: params.title?.trim() || undefined,
+        category: params.category?.trim() || undefined,
+        sorting,
+        priceMin: normalizePrice(params.priceMin),
+        priceMax: normalizePrice(params.priceMax),
+        size: normalizeValues(params.size),
+        material: normalizeValues(params.material),
+        color: normalizeValues(params.color),
+    };
+}
+
+async function queryProducts(
+    params: IProductsParams,
+    bestSellersOnly: boolean
+): Promise<IProduct[]> {
+        const {title, category, sorting, priceMin, priceMax, size, material, color} = params;
+
+        const where: Prisma.ProductWhereInput = {};
 
         const searchedProducts = title ? await prisma.$queryRaw<{ id: number; score: number }[]>`
             SELECT
@@ -157,6 +213,14 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             };
         }
 
+        if (bestSellersOnly) {
+            where.colors = {
+                some: {
+                    isBestSeller: true,
+                },
+            };
+        }
+
         if (category) {
             where.category = {
                 slug: category,
@@ -170,7 +234,10 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             };
         }
 
-        let orderBy: any = [{ position: "asc" }, { id: "asc" }];
+        let orderBy: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[] | undefined = [
+            {position: "asc"},
+            {id: "asc"},
+        ];
 
         if (searchedProducts) {
             where.id = {
@@ -202,6 +269,7 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
             orderBy,
             include: {
                 colors: {
+                    ...(bestSellersOnly && {where: {isBestSeller: true}}),
                     orderBy: [{position: "asc"}, {id: "asc"}],
                     include: {
                         filterColors: {
@@ -211,6 +279,7 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
                         },
                         images: {
                             orderBy: {order: "asc"},
+                            take: 1,
                         },
                         sizes: true,
                     },
@@ -259,8 +328,82 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
         }
 
         return productsWithRelationFlags;
+}
 
-    } catch (e) {
-        console.error(e);
+const getCachedProducts = unstable_cache(
+    queryProducts,
+    ["storefront-products-v2"],
+    {
+        revalidate: PRODUCTS_CACHE_SECONDS,
+        tags: ["products"],
     }
+);
+
+export async function getProducts(params: IProductsParams = {}): Promise<IProduct[] | undefined> {
+    try {
+        return await getCachedProducts(normalizeProductsParams(params), false);
+    } catch (error) {
+        console.error("Failed to get products:", error);
+    }
+}
+
+export async function getBestSellerProducts(): Promise<IProduct[] | undefined> {
+    try {
+        return await getCachedProducts(normalizeProductsParams({}), true);
+    } catch (error) {
+        console.error("Failed to get best sellers:", error);
+    }
+}
+
+export async function searchProducts(title: string): Promise<IProductSearchResult[]> {
+    const normalizedTitle: string = title.trim().slice(0, 100);
+
+    if (normalizedTitle.length < 2) return [];
+
+    const titlePattern: string = `%${normalizedTitle}%`;
+    const rows: IProductSearchRow[] = await prisma.$queryRaw<IProductSearchRow[]>`
+        SELECT
+            product.id,
+            product.name,
+            product.slug,
+            product.price,
+            category.slug AS "categorySlug",
+            (
+                SELECT image.url
+                FROM "ProductColor" AS product_color
+                INNER JOIN "ProductImage" AS image
+                    ON image."productColorId" = product_color.id
+                WHERE product_color."productId" = product.id
+                ORDER BY product_color.position ASC,
+                         product_color.id ASC,
+                         image."order" ASC,
+                         image.id ASC
+                LIMIT 1
+            ) AS "imageUrl",
+            (
+                SELECT COUNT(*)::integer
+                FROM "ProductColor" AS product_color
+                WHERE product_color."productId" = product.id
+            ) AS "colorCount",
+            GREATEST(
+                similarity(product.name, ${normalizedTitle}),
+                CASE WHEN product.name ILIKE ${titlePattern} THEN 1 ELSE 0 END
+            ) AS score
+        FROM "Product" AS product
+        LEFT JOIN "Category" AS category ON category.id = product."categoryId"
+        WHERE product.name ILIKE ${titlePattern}
+           OR similarity(product.name, ${normalizedTitle}) > 0.15
+        ORDER BY score DESC, product.id ASC
+        LIMIT 12
+    `;
+
+    return rows.map((row: IProductSearchRow): IProductSearchResult => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        price: row.price,
+        categorySlug: row.categorySlug,
+        imageUrl: row.imageUrl,
+        colorCount: row.colorCount,
+    }));
 }

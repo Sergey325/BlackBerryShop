@@ -80,17 +80,19 @@ export default function SearchBar() {
                         results.map((product) => (
                             <Link
                                 key={product.id}
-                                href={getProductPath(product.category?.slug ?? "", product.id, product.slug)}
+                                href={getProductPath(product.categorySlug ?? "", product.id, product.slug)}
                                 onClick={handleClose}
                                 className="flex items-center gap-3 p-3 hover:bg-gray-50 transition border-b border-primary/30 last:border-0"
                             >
                                 <div className="relative w-13 h-13 shrink-0 rounded overflow-hidden bg-gray-100">
-                                    <Image src={product.colors[0].images[0].url} alt={product.name} fill className="object-cover" />
+                                    {product.imageUrl && (
+                                        <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                                    )}
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-sm truncate">{product.name}</span>
                                     <span className="text-xs font-light truncate">
-                                        В наявності {product.colors.length} {pluralizeUk(product.colors.length,["колір", "кольори", "кольорів"])}
+                                        В наявності {product.colorCount} {pluralizeUk(product.colorCount,["колір", "кольори", "кольорів"])}
                                     </span>
                                     <span className="text-sm font-medium">{product.price} ₴</span>
                                 </div>

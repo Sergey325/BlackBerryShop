@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import {unstable_cache} from "next/cache";
 
 export interface IBanner {
     id: number;
@@ -14,13 +15,22 @@ export interface IBanner {
 }
 
 
-export async function getBanners() {
-    try{
-        const banners = await prisma.banner.findMany({
+const getCachedBanners = unstable_cache(
+    async (): Promise<IBanner[]> => {
+        return prisma.banner.findMany({
             orderBy: [{ order: "asc" }, { id: "asc" }],
         });
+    },
+    ["storefront-banners-v1"],
+    {
+        revalidate: 300,
+        tags: ["banners"],
+    }
+);
 
-        return banners
+export async function getBanners(): Promise<IBanner[]> {
+    try{
+        return await getCachedBanners();
     } catch (error) {
         console.error("Failed to get banners:", error);
 

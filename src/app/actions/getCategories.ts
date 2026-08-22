@@ -2,6 +2,7 @@
 
 import prisma from "@/app/lib/prisma";
 import {Season} from "@prisma/client";
+import {unstable_cache} from "next/cache";
 
 export interface IRelatedProductCategory {
     id: number;
@@ -35,9 +36,9 @@ export interface ICategory {
     }
 }
 
-export async function getCategories() {
-    try {
-        const categories = await prisma.category.findMany({
+const getCachedCategories = unstable_cache(
+    async (): Promise<ICategory[]> => {
+        return prisma.category.findMany({
             orderBy: {
                 id: "asc",
             },
@@ -54,8 +55,17 @@ export async function getCategories() {
                 },
             },
         });
+    },
+    ["storefront-categories-v1"],
+    {
+        revalidate: 300,
+        tags: ["categories"],
+    }
+);
 
-        return categories;
+export async function getCategories(): Promise<ICategory[]> {
+    try {
+        return await getCachedCategories();
     } catch (error) {
         console.error("Failed to get categories:", error);
 

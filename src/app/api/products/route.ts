@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {revalidateTag} from "next/cache";
 
 export async function POST(request: Request) {
     try {
@@ -59,6 +60,8 @@ export async function POST(request: Request) {
                 },
             });
         }
+
+        revalidateTag("products", "max");
 
         return NextResponse.json(null, { status: 200 });
     } catch (error) {

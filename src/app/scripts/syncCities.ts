@@ -1,4 +1,16 @@
 import prisma from "@/app/lib/prisma";
+import {Prisma} from "@prisma/client";
+
+interface INovaPoshtaCity {
+    Ref: string;
+    Description: string;
+    AreaDescription: string;
+}
+
+interface INovaPoshtaCitiesResponse {
+    success: boolean;
+    data: INovaPoshtaCity[];
+}
 
 export async function syncCities() {
     try {
@@ -11,8 +23,16 @@ export async function syncCities() {
             }),
         });
 
-        const data = await res.json();
-        const cities = data.data;
+        if (!res.ok) {
+            throw new Error(`Nova Poshta returned HTTP ${res.status}`);
+        }
+
+        const data: INovaPoshtaCitiesResponse = await res.json() as INovaPoshtaCitiesResponse;
+        const cities: INovaPoshtaCity[] = data.data;
+
+        if (!data.success || !Array.isArray(cities)) {
+            throw new Error("Nova Poshta returned an invalid cities response");
+        }
 
         //first time
         // await prisma.novaPoshtaCity.createMany({
@@ -23,28 +43,33 @@ export async function syncCities() {
         //     })),
         //     skipDuplicates: true,
         // });
-        const BATCH_SIZE = 500;
+        const BATCH_SIZE = 1000;
 
         for (let i = 0; i < cities.length; i += BATCH_SIZE) {
-            const batch = cities.slice(i, i + BATCH_SIZE);
+            const batch: INovaPoshtaCity[] = cities.slice(i, i + BATCH_SIZE);
+            const values: Prisma.Sql[] = batch.map((city: INovaPoshtaCity): Prisma.Sql => Prisma.sql`
+                (${city.Ref}, ${city.Description}, ${city.AreaDescription}, NOW())
+            `);
 
-            await prisma.$transaction(
-                batch.map((city: any) =>
-                    prisma.novaPoshtaCity.upsert({
-                        where: { ref: city.Ref },
-                        update: { name: city.Description, area: city.AreaDescription },
-                        create: { ref: city.Ref, name: city.Description, area: city.AreaDescription },
-                    })
-                )
-            );
+            await prisma.$executeRaw`
+                INSERT INTO "NovaPoshtaCity" ("ref", "name", "area", "updatedAt")
+                VALUES ${Prisma.join(values)}
+                ON CONFLICT ("ref") DO UPDATE
+                SET "name" = EXCLUDED."name",
+                    "area" = EXCLUDED."area",
+                    "updatedAt" = NOW()
+                WHERE "NovaPoshtaCity"."name" IS DISTINCT FROM EXCLUDED."name"
+                   OR "NovaPoshtaCity"."area" IS DISTINCT FROM EXCLUDED."area"
+            `;
 
             console.log(`Processed ${Math.min(i + BATCH_SIZE, cities.length)} / ${cities.length}`);
         }
 
-        console.log(`Successfully created ${cities.length} cities.`);
+        console.log(`Successfully synchronized ${cities.length} cities.`);
         return cities.length;
     } catch (e) {
-        console.log(e);
+        console.error("Failed to synchronize Nova Poshta cities:", e);
+        throw e;
     }
 
 }
