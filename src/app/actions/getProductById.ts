@@ -3,18 +3,13 @@
 import prisma from "@/app/lib/prisma";
 import {IProduct, IRelatedProduct} from "./getProducts";
 import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
+import {unstable_cache} from "next/cache";
 
 export interface IProductWithRelated extends IProduct {
     relatedTo: IRelatedProduct[];
 }
 
-export async function getProductById(productId: string): Promise<IProductWithRelated | null> {
-    const id = Number(productId);
-
-    if (Number.isNaN(id)) {
-        return null;
-    }
-
+async function queryProductById(id: number): Promise<IProductWithRelated | null> {
     const product = await prisma.product.findUnique({
         where: { id },
         include: {
@@ -72,4 +67,23 @@ export async function getProductById(productId: string): Promise<IProductWithRel
     };
 
     return response;
+}
+
+const getCachedProductById = unstable_cache(
+    queryProductById,
+    ["storefront-product-by-id-v1"],
+    {
+        revalidate: 300,
+        tags: ["products"],
+    }
+);
+
+export async function getProductById(productId: string): Promise<IProductWithRelated | null> {
+    const id: number = Number(productId);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        return null;
+    }
+
+    return getCachedProductById(id);
 }
