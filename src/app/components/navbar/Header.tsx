@@ -100,7 +100,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                             className="flex items-center tablet:gap-1 cursor-pointer bg-white"
                         >
                             <Image
-                                src="/icon.png"
+                                src="/header-logo.png"
                                 alt="BlackBerry"
                                 width={36}
                                 height={36}

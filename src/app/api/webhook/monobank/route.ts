@@ -4,6 +4,7 @@ import {createTTN} from "@/app/lib/novaposhta";
 import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
 import {hashSha256} from "@/app/lib/fbHash";
 import * as Sentry from "@sentry/nextjs";
+import {revalidateTag} from "next/cache";
 
 export async function POST(request: Request) {
     let orderId: number | undefined;
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
 
 
 
-        let order = await prisma.$transaction(async (tx) => {
+        const transactionResult = await prisma.$transaction(async (tx) => {
             const existingOrder = await tx.order.findUniqueOrThrow({
                 where: {invoiceId},
                 select: {
@@ -153,11 +154,35 @@ export async function POST(request: Request) {
                 `;
             }
 
-            return tx.order.findUniqueOrThrow({
+            const order = await tx.order.findUniqueOrThrow({
                 where: {id: existingOrder.id},
                 include: {items: true},
             });
+
+            return {
+                order,
+                inventoryChanged: shouldCountPromoCode,
+            };
         });
+
+        let order = transactionResult.order;
+
+        if (transactionResult.inventoryChanged) {
+            try {
+                revalidateTag("products", {expire: 0});
+            } catch (cacheError: unknown) {
+                console.error("Failed to invalidate product cache", cacheError);
+
+                Sentry.withScope((scope) => {
+                    scope.setContext("order", {
+                        orderId: order.id,
+                        invoiceId,
+                    });
+                    scope.setTag("error_type", "product_cache_invalidation_failed");
+                    Sentry.captureException(cacheError);
+                });
+            }
+        }
 
         orderId = order.id;
 
