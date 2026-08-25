@@ -21,12 +21,13 @@ model Product {
   materialId  Int?
   position    Int      @default(0)
 
-  category          Category?          @relation(fields: [categoryId], references: [id])
-  material          Material?          @relation(fields: [materialId], references: [id])
-  colors            ProductColor[]
-  relatedTo         ProductRelation[]  @relation("ProductRelation_From")
-  relatedFrom       ProductRelation[]  @relation("ProductRelation_To")
-  promoCodeProducts PromoCodeProduct[]
+  category               Category?                      @relation(fields: [categoryId], references: [id])
+  material               Material?                      @relation(fields: [materialId], references: [id])
+  specificationOverrides ProductSpecificationOverride[]
+  colors                 ProductColor[]
+  relatedTo              ProductRelation[]              @relation("ProductRelation_From")
+  relatedFrom            ProductRelation[]              @relation("ProductRelation_To")
+  promoCodeProducts      PromoCodeProduct[]
 
   @@index([categoryId, position])
 }
@@ -134,14 +135,28 @@ model Category {
 }
 
 model CategorySpecification {
-  id         Int      @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   name       String
   value      String
-  order      Int      @default(0)
+  order      Int    @default(0)
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  category  Category                       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  overrides ProductSpecificationOverride[]
 
   @@unique([categoryId, name])
+}
+
+model ProductSpecificationOverride {
+  productId               Int
+  categorySpecificationId Int
+  value                   String
+
+  product               Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categorySpecification CategorySpecification @relation(fields: [categorySpecificationId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categorySpecificationId])
+  @@index([categorySpecificationId])
 }
 
 model NovaPoshtaCity {

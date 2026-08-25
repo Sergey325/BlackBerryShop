@@ -7,6 +7,12 @@ import {unstable_cache} from "next/cache";
 
 export interface IProductWithRelated extends IProduct {
     relatedTo: IRelatedProduct[];
+    specificationOverrides: IProductSpecificationOverride[];
+}
+
+export interface IProductSpecificationOverride {
+    categorySpecificationId: number;
+    value: string;
 }
 
 async function queryProductById(id: number): Promise<IProductWithRelated | null> {
@@ -25,9 +31,19 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
                 },
             },
             material: true,
+            specificationOverrides: {
+                select: {
+                    categorySpecificationId: true,
+                    value: true,
+                },
+            },
             category: {
                 include: {
-                    specifications: true,
+                    specifications: {
+                        orderBy: {
+                            order: "asc",
+                        },
+                    },
                     _count: {
                         select: {
                             products: true,
@@ -71,7 +87,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
 
 const getCachedProductById = unstable_cache(
     queryProductById,
-    ["storefront-product-by-id-v1"],
+    ["storefront-product-by-id-v2"],
     {
         revalidate: 300,
         tags: ["products"],

@@ -22,6 +22,19 @@ const ProductClient = ({ product, category }: Props) => {
     const firstSentenceMatch: RegExpMatchArray | null = displayedDescription.match(/^[\s\S]*?[.!?](?=\s|$)/);
     const snippetDescription: string = firstSentenceMatch?.[0] ?? displayedDescription;
     const remainingDescription: string = displayedDescription.slice(snippetDescription.length);
+    const specifications: ICategory["specifications"] = useMemo(() => {
+        const overrideBySpecificationId: Map<number, string> = new Map(
+            product.specificationOverrides.map((override): [number, string] => [
+                override.categorySpecificationId,
+                override.value,
+            ])
+        );
+
+        return category.specifications.map((specification) => ({
+            ...specification,
+            value: overrideBySpecificationId.get(specification.id) ?? specification.value,
+        }));
+    }, [category.specifications, product.specificationOverrides]);
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
@@ -173,7 +186,7 @@ const ProductClient = ({ product, category }: Props) => {
                         </p>
                     )}
                     {tab === 'specifications' && (() => {
-                        const specs = [{ name: 'Матеріал', value: product.material?.name }, ...category.specifications];
+                        const specs = [{ name: 'Матеріал', value: product.material?.name }, ...specifications];
                         const half = Math.ceil(specs.length / 2);
                         const col = (items: typeof specs) => (
                             <div className="flex-1 flex flex-col">
