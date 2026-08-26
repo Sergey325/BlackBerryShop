@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import {getActiveSeasonType} from "@/app/utils/sortSeasons";
 import {Season} from "@prisma/client";
 import {unstable_cache} from "next/cache";
 
@@ -37,7 +38,9 @@ export interface ICategory {
 }
 
 function compareCategories(a: ICategory, b: ICategory): number {
-    const seasonOrder: number = Number(b.season === Season.WINTER) - Number(a.season === Season.WINTER);
+    const activeSeason: ReturnType<typeof getActiveSeasonType> = getActiveSeasonType();
+    const seasonOrder: number =
+        Number(b.season === activeSeason) - Number(a.season === activeSeason);
 
     if (seasonOrder !== 0) {
         return seasonOrder;

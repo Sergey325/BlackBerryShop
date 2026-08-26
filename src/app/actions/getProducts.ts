@@ -298,10 +298,26 @@ async function queryProducts(
                 _count: {
                     select: {
                         relatedTo: true,
+                        colors: true,
                     },
                 },
             },
         });
+
+        const bestSellerRankByProductId: Map<number, {
+            bestSellerColorCount: number;
+            colorCount: number;
+        }> = new Map(
+            products.map((product) => [
+                product.id,
+                {
+                    bestSellerColorCount: product.colors.filter(
+                        (productColor): boolean => productColor.isBestSeller
+                    ).length,
+                    colorCount: product._count.colors,
+                },
+            ])
+        );
 
         const productsWithRelationFlags: IProduct[] = products.map((product): IProduct => {
             const {_count, ...productData} = product;
@@ -325,6 +341,32 @@ async function queryProducts(
                     (orderMap.get(a.id) ?? 999) -
                     (orderMap.get(b.id) ?? 999)
             );
+        }
+
+        if (!sorting) {
+            const defaultOrderByProductId: Map<number, number> = new Map(
+                productsWithRelationFlags.map((product, index): [number, number] => [
+                    product.id,
+                    index,
+                ])
+            );
+
+            return productsWithRelationFlags.sort((a, b): number => {
+                const aRank = bestSellerRankByProductId.get(a.id)!;
+                const bRank = bestSellerRankByProductId.get(b.id)!;
+                const percentageComparison: number =
+                    bRank.bestSellerColorCount * aRank.colorCount -
+                    aRank.bestSellerColorCount * bRank.colorCount;
+
+                if (percentageComparison !== 0) return percentageComparison;
+
+                const countComparison: number =
+                    bRank.bestSellerColorCount - aRank.bestSellerColorCount;
+
+                if (countComparison !== 0) return countComparison;
+
+                return defaultOrderByProductId.get(a.id)! - defaultOrderByProductId.get(b.id)!;
+            });
         }
 
         return productsWithRelationFlags;
