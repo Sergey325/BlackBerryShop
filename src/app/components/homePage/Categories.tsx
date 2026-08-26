@@ -82,6 +82,7 @@ const Categories = ({ categories }: Props) => {
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-2">
                             {categories
                                 .filter((cat: ICategory) => !cat.isOnMainPage)
+                                .sort((a, b) => Number(b.season === "WINTER") - Number(a.season === "WINTER"))
                                 .map((cat: ICategory) => (
                                     <CategoryCard category={cat} key={cat.id}/>
                                 ))}

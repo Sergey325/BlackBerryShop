@@ -36,6 +36,16 @@ export interface ICategory {
     }
 }
 
+function compareCategories(a: ICategory, b: ICategory): number {
+    const seasonOrder: number = Number(b.season === Season.WINTER) - Number(a.season === Season.WINTER);
+
+    if (seasonOrder !== 0) {
+        return seasonOrder;
+    }
+
+    return Number(Boolean(a.isDecoration)) - Number(Boolean(b.isDecoration));
+}
+
 const getCachedCategories = unstable_cache(
     async (): Promise<ICategory[]> => {
         return prisma.category.findMany({
@@ -65,7 +75,9 @@ const getCachedCategories = unstable_cache(
 
 export async function getCategories(): Promise<ICategory[]> {
     try {
-        return await getCachedCategories();
+        const categories: ICategory[] = await getCachedCategories();
+
+        return [...categories].sort(compareCategories);
     } catch (error) {
         console.error("Failed to get categories:", error);
 
