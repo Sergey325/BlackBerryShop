@@ -95,6 +95,20 @@ const ProductCard = ({
 
     const [activeIdx, setActiveIdx] = useState(initialIdx);
 
+    const activeImageSrc: string = list
+        ? optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 320)
+        : optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500, 18);
+    const [loadedImageSrcs, setLoadedImageSrcs] = useState<Set<string>>(() => new Set<string>());
+    const isImageLoading: boolean = !loadedImageSrcs.has(activeImageSrc);
+
+    const handleImageLoad = (imageSrc: string): void => {
+        setLoadedImageSrcs((loadedSrcs: Set<string>): Set<string> => {
+            if (loadedSrcs.has(imageSrc)) return loadedSrcs;
+
+            return new Set<string>(loadedSrcs).add(imageSrc);
+        });
+    };
+
     const productPath: string = useMemo(()=> {
         return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?colorId=${product.colors[activeIdx].id}`
     }, [activeIdx, product.category?.slug, product.colors, product.id, product.slug])
@@ -153,16 +167,29 @@ const ProductCard = ({
                 <Link
                     href={productPath}
                     onClick={handleViewContent}
-                    className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100 sm:w-36"
+                    className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100/20 sm:w-36"
                 >
                     <Image
-                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 320)}
+                        key={activeImageSrc}
+                        src={activeImageSrc}
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 112px, 144px"
                         draggable={false}
-                        className={`select-none object-cover transition-transform duration-500 ${isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-60"}`}
+                        onLoad={() => handleImageLoad(activeImageSrc)}
+                        className={`select-none object-cover transition-[opacity,transform] duration-500 ${
+                            isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-60 grayscale"
+                        }`}
                     />
+                    {isImageLoading && (
+                        <div
+                            className={"absolute inset-0 motion-safe:animate-pulse"}
+                            style={{
+                                backgroundColor: `color-mix(in srgb, ${product.colors[activeIdx].color} 40%, transparent)`
+                            }}
+                            aria-hidden="true"
+                        />
+                    )}
                     {colors && product.colors[activeIdx].isBestSeller && (
                         <span
                             title="Хіт продажу"
@@ -282,16 +309,27 @@ const ProductCard = ({
             <div className="relative aspect-square w-full min-w-0 shrink-0 overflow-hidden bg-white">
                 <div className="absolute inset-1 overflow-hidden rounded-lg sm:inset-2">
                     <Image
-                        src={optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500, 18)}
+                        key={activeImageSrc}
+                        src={activeImageSrc}
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 50vw, 300px"
                         //unoptimized
                         draggable={false}
+                        onLoad={() => handleImageLoad(activeImageSrc)}
                         className={`object-cover transition-all duration-500 ease-out ${
-                            isAvailable ? "group-hover:scale-[1.04]" : "grayscale opacity-55"
+                            isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-55 grayscale"
                         }`}
                     />
+                    {isImageLoading && (
+                        <div
+                            className="absolute inset-0 bg-slate-100 motion-safe:animate-pulse"
+                            style={{
+                                backgroundColor: `color-mix(in srgb, ${product.colors[activeIdx].color} 40%, transparent)`
+                            }}
+                            aria-hidden="true"
+                        />
+                    )}
                     {colors && product.colors[activeIdx].isBestSeller && (
                         <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-orange-700 shadow-sm backdrop-blur-sm sm:left-2 sm:top-2 sm:px-2.5 sm:text-xs">
                             <FaFire
