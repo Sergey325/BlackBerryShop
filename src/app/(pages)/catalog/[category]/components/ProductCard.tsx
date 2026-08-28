@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {IRelatedProduct} from "@/app/actions/getProducts";
+import type {IProductCardData} from "@/app/actions/getProducts";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
@@ -9,7 +9,6 @@ import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
 import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
-import {IProductWithRelated} from "@/app/actions/getProductById";
 import Link from "next/link";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {getProductPath} from "@/app/lib/productUrl";
@@ -17,7 +16,7 @@ import {FaFire} from "react-icons/fa";
 import {getProductColorBackground} from "@/app/utils/getProductColorBackground";
 
 type Props = {
-    product: IProductWithRelated | IRelatedProduct;
+    product: IProductCardData;
     list?: boolean;
     colors?: boolean;
     preferredCatalogColorCodes?: string[];

@@ -89,7 +89,7 @@ const getCachedProductById = unstable_cache(
     queryProductById,
     ["storefront-product-by-id-v2"],
     {
-        revalidate: 300,
+        revalidate: 86400,
         tags: ["products"],
     }
 );

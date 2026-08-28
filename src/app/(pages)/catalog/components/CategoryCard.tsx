@@ -1,12 +1,12 @@
 import Image from "next/image";
 import {FaArrowRightLong} from "react-icons/fa6";
-import {ICategory} from "@/app/actions/getCategories";
+import type {ICategoryCardData} from "@/app/actions/getCategories";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
 import Link from "next/link";
 
 type Props = {
-    category: ICategory;
+    category: ICategoryCardData;
 }
 
 export default function CategoryCard({ category }: Props) {

@@ -5,9 +5,9 @@ import {ICategory, IRelatedProductCategory} from "@/app/actions/getCategories";
 import {Prisma} from "@prisma/client";
 import {unstable_cache} from "next/cache";
 
-const PRODUCTS_CACHE_SECONDS = 300;
+const PRODUCTS_CACHE_SECONDS = 86400;
 
-export interface IRelatedProduct {
+export interface IRelatedProduct extends IProductCardData {
     id: number;
     name: string;
     slug: string;
@@ -74,7 +74,31 @@ export interface IProductMaterial {
     name: string;
 }
 
-export interface IProduct {
+export interface IProductCardColor {
+    id: number;
+    color: string;
+    colorName: string;
+    isBestSeller: boolean;
+    filterColors: IProductColorFilter[];
+    images: Pick<IProductImage, "url">[];
+    sizes: IProductSize[];
+}
+
+export interface IProductCardData {
+    id: number;
+    name: string;
+    slug: string;
+    hasRelatedProducts: boolean;
+    price: number;
+    discount: number;
+    material: Pick<IProductMaterial, "name"> | null;
+    category: Pick<IRelatedProductCategory, "slug" | "season" | "isDecoration"> | null;
+    colors: IProductCardColor[];
+}
+
+export type IHomeProduct = IProductCardData;
+
+export interface IProduct extends IProductCardData {
     id: number;
     name: string;
     slug: string;
@@ -381,6 +405,134 @@ const getCachedProducts = unstable_cache(
     }
 );
 
+const homeBestSellerProductSelect = {
+    id: true,
+    name: true,
+    slug: true,
+    price: true,
+    discount: true,
+    category: {
+        select: {
+            slug: true,
+            season: true,
+            isDecoration: true,
+        },
+    },
+    colors: {
+        where: {
+            isBestSeller: true,
+        },
+        orderBy: [{position: "asc"}, {id: "asc"}],
+        select: {
+            id: true,
+            color: true,
+            colorName: true,
+            isBestSeller: true,
+            images: {
+                orderBy: {
+                    order: "asc",
+                },
+                take: 1,
+                select: {
+                    url: true,
+                },
+            },
+            sizes: {
+                select: {
+                    id: true,
+                    size: true,
+                    quantity: true,
+                    available: true,
+                    productColorId: true,
+                },
+            },
+        },
+    },
+    _count: {
+        select: {
+            relatedTo: true,
+            colors: true,
+        },
+    },
+} satisfies Prisma.ProductSelect;
+
+type HomeBestSellerProductRow = Prisma.ProductGetPayload<{
+    select: typeof homeBestSellerProductSelect;
+}>;
+
+async function queryHomeBestSellerProducts(): Promise<IHomeProduct[]> {
+    const rows: HomeBestSellerProductRow[] = await prisma.product.findMany({
+        where: {
+            colors: {
+                some: {
+                    isBestSeller: true,
+                },
+            },
+        },
+        orderBy: [{position: "asc"}, {id: "asc"}],
+        select: homeBestSellerProductSelect,
+    });
+
+    const defaultOrderByProductId: Map<number, number> = new Map(
+        rows.map((row: HomeBestSellerProductRow, index: number): [number, number] => [
+            row.id,
+            index,
+        ])
+    );
+    const rankByProductId: Map<number, {
+        bestSellerColorCount: number;
+        colorCount: number;
+    }> = new Map(
+        rows.map((row: HomeBestSellerProductRow) => [
+            row.id,
+            {
+                bestSellerColorCount: row.colors.length,
+                colorCount: row._count.colors,
+            },
+        ])
+    );
+    const products: IHomeProduct[] = rows.map((row: HomeBestSellerProductRow): IHomeProduct => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        price: row.price,
+        discount: row.discount,
+        hasRelatedProducts: row._count.relatedTo > 0,
+        material: null,
+        category: row.category,
+        colors: row.colors.map((color): IProductCardColor => ({
+            ...color,
+            filterColors: [],
+        })),
+    }));
+
+    return products.sort((a: IHomeProduct, b: IHomeProduct): number => {
+        const aRank = rankByProductId.get(a.id)!;
+        const bRank = rankByProductId.get(b.id)!;
+        const percentageComparison: number =
+            bRank.bestSellerColorCount * aRank.colorCount -
+            aRank.bestSellerColorCount * bRank.colorCount;
+
+        if (percentageComparison !== 0) return percentageComparison;
+
+        const countComparison: number =
+            bRank.bestSellerColorCount - aRank.bestSellerColorCount;
+
+        if (countComparison !== 0) return countComparison;
+
+        return defaultOrderByProductId.get(a.id)! - defaultOrderByProductId.get(b.id)!;
+    });
+}
+
+const getCachedHomeBestSellerProducts = unstable_cache(
+    queryHomeBestSellerProducts,
+    ["storefront-home-best-sellers-v1"],
+    {
+        revalidate: PRODUCTS_CACHE_SECONDS,
+        tags: ["products"],
+    }
+);
+
 export async function getProducts(params: IProductsParams = {}): Promise<IProduct[] | undefined> {
     try {
         return await getCachedProducts(normalizeProductsParams(params), false);
@@ -389,9 +541,9 @@ export async function getProducts(params: IProductsParams = {}): Promise<IProduc
     }
 }
 
-export async function getBestSellerProducts(): Promise<IProduct[] | undefined> {
+export async function getBestSellerProducts(): Promise<IHomeProduct[] | undefined> {
     try {
-        return await getCachedProducts(normalizeProductsParams({}), true);
+        return await getCachedHomeBestSellerProducts();
     } catch (error) {
         console.error("Failed to get best sellers:", error);
     }

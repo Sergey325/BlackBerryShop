@@ -4,14 +4,12 @@ import prisma from "@/app/lib/prisma";
 import {unstable_cache} from "next/cache";
 
 export interface IBanner {
-    id: number;
     image: string;
     badge: string | null;
     title: string;
     features: string[];
     ctaHref: string | null;
     ctaLabel: string | null;
-    order: number;
 }
 
 
@@ -19,11 +17,19 @@ const getCachedBanners = unstable_cache(
     async (): Promise<IBanner[]> => {
         return prisma.banner.findMany({
             orderBy: [{ order: "asc" }, { id: "asc" }],
+            select: {
+                image: true,
+                badge: true,
+                title: true,
+                features: true,
+                ctaHref: true,
+                ctaLabel: true,
+            },
         });
     },
-    ["storefront-banners-v1"],
+    ["storefront-banners-v2"],
     {
-        revalidate: 300,
+        revalidate: 86400,
         tags: ["banners"],
     }
 );

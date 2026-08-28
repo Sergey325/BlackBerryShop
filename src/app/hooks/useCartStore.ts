@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, ProductSelection } from "@/app/types";
-import { IProduct, IRelatedProduct } from "@/app/actions/getProducts";
+import type {IProductCardData} from "@/app/actions/getProducts";
 
 type CartStore = {
     items: CartItem[];
@@ -40,7 +40,7 @@ function migrateCartItem(item: LegacyCartItem): CartItem {
 }
 
 export function createProductSelection(
-    product: IProduct | IRelatedProduct,
+    product: IProductCardData,
     colorIndex = 0
 ): ProductSelection {
     const color = product.colors[colorIndex];

@@ -1,12 +1,12 @@
 "use client"
 
-import {IProduct} from "@/app/actions/getProducts";
+import type {IHomeProduct} from "@/app/actions/getProducts";
 import {GoHeartFill} from "react-icons/go";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 
 type Props = {
-    products: IProduct[];
+    products: IHomeProduct[];
 };
 
 // ─── Carousel config ────────────────────────────────────────────────────────

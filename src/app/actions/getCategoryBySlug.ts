@@ -32,7 +32,7 @@ const getCachedCategoryBySlug = unstable_cache(
     },
     ["storefront-category-by-slug-v1"],
     {
-        revalidate: 300,
+        revalidate: 86400,
         tags: ["categories"],
     }
 );

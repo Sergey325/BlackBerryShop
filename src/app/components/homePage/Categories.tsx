@@ -1,6 +1,6 @@
 import {GoHeartFill} from "react-icons/go";
 import {FaArrowRightLong} from "react-icons/fa6";
-import {ICategory} from "@/app/actions/getCategories";
+import type {IHomeCategory} from "@/app/actions/getCategories";
 import Accordion from "@/app/components/reusable/Accordion";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import Link from "next/link";
@@ -33,7 +33,7 @@ import Link from "next/link";
 //     </Link>
 
 type Props = {
-    categories: ICategory[];
+    categories: IHomeCategory[];
 }
 
 const Categories = ({ categories }: Props) => {
@@ -66,8 +66,8 @@ const Categories = ({ categories }: Props) => {
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {categories
-                        .filter((cat: ICategory) => cat.isOnMainPage)
-                        .map((cat: ICategory) => (
+                        .filter((cat: IHomeCategory) => cat.isOnMainPage)
+                        .map((cat: IHomeCategory) => (
                             <CategoryCard category={cat} key={cat.id}/>
                         ))}
                 </div>
@@ -81,9 +81,9 @@ const Categories = ({ categories }: Props) => {
                     >
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-2">
                             {categories
-                                .filter((cat: ICategory) => !cat.isOnMainPage)
+                                .filter((cat: IHomeCategory) => !cat.isOnMainPage)
                                 .sort((a, b) => Number(b.season === "WINTER") - Number(a.season === "WINTER"))
-                                .map((cat: ICategory) => (
+                                .map((cat: IHomeCategory) => (
                                     <CategoryCard category={cat} key={cat.id}/>
                                 ))}
                         </div>

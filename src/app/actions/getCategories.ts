@@ -37,7 +37,27 @@ export interface ICategory {
     }
 }
 
-function compareCategories(a: ICategory, b: ICategory): number {
+export interface ICategoryCardData {
+    id: number;
+    name: string;
+    slug: string;
+    coverImage: string;
+    season: Season;
+    isOnMainPage: boolean | null;
+    isDecoration: boolean | null;
+    _count: {
+        products: number;
+    };
+}
+
+export type IHomeCategory = ICategoryCardData;
+
+interface ICategorySortData {
+    season: Season;
+    isDecoration: boolean | null;
+}
+
+function compareCategories<T extends ICategorySortData>(a: T, b: T): number {
     const activeSeason: ReturnType<typeof getActiveSeasonType> = getActiveSeasonType();
     const seasonOrder: number =
         Number(b.season === activeSeason) - Number(a.season === activeSeason);
@@ -71,7 +91,36 @@ const getCachedCategories = unstable_cache(
     },
     ["storefront-categories-v1"],
     {
-        revalidate: 300,
+        revalidate: 86400,
+        tags: ["categories"],
+    }
+);
+
+const getCachedHomeCategories = unstable_cache(
+    async (): Promise<IHomeCategory[]> => {
+        return prisma.category.findMany({
+            orderBy: {
+                id: "asc",
+            },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                coverImage: true,
+                season: true,
+                isOnMainPage: true,
+                isDecoration: true,
+                _count: {
+                    select: {
+                        products: true,
+                    },
+                },
+            },
+        });
+    },
+    ["storefront-home-categories-v1"],
+    {
+        revalidate: 86400,
         tags: ["categories"],
     }
 );
@@ -85,5 +134,17 @@ export async function getCategories(): Promise<ICategory[]> {
         console.error("Failed to get categories:", error);
 
         throw new Error("Failed to get categories");
+    }
+}
+
+export async function getHomeCategories(): Promise<IHomeCategory[]> {
+    try {
+        const categories: IHomeCategory[] = await getCachedHomeCategories();
+
+        return [...categories].sort(compareCategories);
+    } catch (error) {
+        console.error("Failed to get home categories:", error);
+
+        throw new Error("Failed to get home categories");
     }
 }

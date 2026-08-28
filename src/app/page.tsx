@@ -10,9 +10,9 @@ import type {Metadata} from "next";
 import {createMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE} from "@/app/lib/seo";
 import JsonLd from "@/app/components/seo/JsonLd";
 import {ONLINE_STORE_JSON_LD} from "@/app/lib/structuredData";
-import {getCategories} from "@/app/actions/getCategories";
+import {getHomeCategories} from "@/app/actions/getCategories";
 
-export const revalidate = 300;
+export const revalidate = 86400;
 
 export const metadata: Metadata = createMetadata({
     title: DEFAULT_TITLE,
@@ -26,7 +26,7 @@ export default async function HomePage() {
     const [products, banners, categories] = await Promise.all([
         getBestSellerProducts(),
         getBanners(),
-        getCategories(),
+        getHomeCategories(),
     ])
 
     return (
