@@ -11,7 +11,7 @@ export function getActiveSeasonType(): Season["id"] {
         : "SUMMER";
 }
 
-export function sortSeasonsByCurrent(seasons: Season[]) {
+export function sortSeasonsByCurrent<T extends Pick<Season, "id">>(seasons: T[]): T[] {
     const active = getActiveSeasonType();
 
     return [...seasons].sort((a, b) => {

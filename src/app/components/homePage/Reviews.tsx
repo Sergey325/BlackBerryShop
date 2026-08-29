@@ -6,6 +6,7 @@ import TestimonialCard from "@/app/components/homePage/TestimonialCard";
 import {GoHeartFill} from "react-icons/go";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
+import Reveal from "@/app/components/reusable/Reveal";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 const reviews = [
@@ -227,7 +228,7 @@ const reviews = [
 // ─── Compact card (mobile — 3 per row) ──────────────────────────────────────
 function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
     return (
-        <div className="bg-primary/7 rounded-2xl overflow-hidden flex flex-col shadow-sm h-full">
+        <div className="h-full overflow-hidden rounded-2xl border border-primary/15 bg-white">
             {/* Photo */}
             <div className="relative w-full aspect-3/4">
                 <Image src={optimizeCloudinaryUrl(review.image, 500)} alt={review.name} fill unoptimized draggable={false} className="object-cover object-center" />
@@ -246,8 +247,9 @@ function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
 
 export function Reviews() {
     return (
-        <section className="pb-12 sm:pb-16">
-            <div className="mx-auto px-4 sm:px-4 lg:px-4">
+        <Reveal>
+            <section>
+                <div className="mx-auto px-4 sm:px-4 lg:px-4">
 
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 lg:mb-8 -mx-2 flex items-center gap-2">
                     Відгуки наших клієнтів
@@ -282,7 +284,8 @@ export function Reviews() {
                         {reviews.map((r) => <ReviewCardCompact key={r.id} review={r} />)}
                     </CarouselWrapper>
                 </div>
-            </div>
-        </section>
+                </div>
+            </section>
+        </Reveal>
     );
 }

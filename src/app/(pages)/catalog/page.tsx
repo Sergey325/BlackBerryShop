@@ -8,6 +8,7 @@ import type {Metadata} from "next";
 import {createMetadata} from "@/app/lib/seo";
 import JsonLd from "@/app/components/seo/JsonLd";
 import {BreadcrumbListJsonLd, createBreadcrumbJsonLd} from "@/app/lib/structuredData";
+import {SEASON_COLLECTIONS} from "@/app/lib/seasonCollections";
 
 export const revalidate = 86400;
 
@@ -24,26 +25,10 @@ const breadcrumbJsonLd: BreadcrumbListJsonLd = createBreadcrumbJsonLd([
 ]);
 
 // ─── Data ──────────────────────────────────────────────────────────────────
-const seasonsConfig = [
-    {
-        id: 'SUMMER' as "WINTER" | "SUMMER",
-        label: 'Весна / Літо',
-        icon: '☀️',
-        desc: 'Легкі та яскраві аксесуари для сонячних днів',
-        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403242/BlackBerry/Banners/IMG_1613_hlahun.png',
-        heroBg: '#fdf2f8',
-        particles: <PetalParticles />,
-    },
-    {
-        id: 'WINTER' as "WINTER" | "SUMMER",
-        label: 'Осінь / Зима',
-        icon: '❄️',
-        desc: 'Теплі та затишні аксесуари для холодних днів',
-        heroImage: 'https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403241/BlackBerry/Banners/IMG_1604_efzqvf.png',
-        heroBg: '#ede9fe',
-        particles: <SnowParticles />,
-    },
-];
+const seasonsConfig = SEASON_COLLECTIONS.map((season) => ({
+    ...season,
+    particles: season.id === "WINTER" ? <SnowParticles/> : <PetalParticles/>,
+}));
 
 
 export default async function CatalogPage() {

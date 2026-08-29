@@ -154,27 +154,25 @@ const Hero = ({banners}: Props) => {
                                     {/*<Dots count={slides.length} active={active} onSelect={goTo} className="mt-12" />*/}
                                 </div>
 
-                                <div className="absolute right-0 top-0 h-full w-3/4 laptop:w-[65%]">
-                                    <Image
+                                <div className="absolute inset-y-0 right-0 flex max-w-3/4 laptop:max-w-[65%]">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
                                         src={optimizeCloudinaryUrl(banner.image, 1500)}
                                         alt={""}
-                                        fill
                                         fetchPriority={i === 0 ? "high" : "auto"}
                                         loading={i === 0 ? "eager" : "lazy"}
-                                        sizes="(min-width: 1024px) 75vw, 1px"
-                                        unoptimized
                                         draggable={false}
-                                        className="object-cover object-center select-none"
+                                        className="block h-full w-auto max-w-full object-cover object-right select-none"
                                     />
 
-                                    {/* Матовая стыковка: белый градиент + блюр самого фото под ним */}
+                                    {/* Градиент привязан к фактическому левому краю contain-изображения. */}
                                     <div
-                                        className="absolute inset-y-0 left-0 w-[15%] pointer-events-none
+                                        className="absolute inset-y-0 -left-0.5 w-[calc(30%+2px)] pointer-events-none
                                                    bg-linear-to-r from-white to-transparent
                                                    "
                                         style={{
-                                            maskImage: 'linear-gradient(to right, black 0%, black 55%, transparent 100%)',
-                                            WebkitMaskImage: 'linear-gradient(to right, black 0%, black 55%, transparent 100%)',
+                                            maskImage: 'linear-gradient(to right, black 0%, black 85%, transparent 100%)',
+                                            WebkitMaskImage: 'linear-gradient(to right, black 0%, black 85%, transparent 100%)',
                                         }}
                                     />
                                 </div>

@@ -1,6 +1,47 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type {JSX} from 'react';
+
+interface DurationRange {
+    min: number;
+    max: number;
+}
+
+interface ParticleViewportOptions {
+    count?: number;
+    durationSeconds?: DurationRange;
+}
+
+export interface ParticleEffectProps {
+    desktop?: ParticleViewportOptions;
+    mobile?: ParticleViewportOptions;
+}
+
+interface RequiredParticleViewportOptions {
+    count: number;
+    durationSeconds: DurationRange;
+}
+
+interface ParticleEffectDefaults {
+    desktop: RequiredParticleViewportOptions;
+    mobile: RequiredParticleViewportOptions;
+}
+
+interface ResolvedParticleOptions {
+    count: number;
+    durationSeconds: [number, number];
+}
+
+const SNOW_DEFAULTS: ParticleEffectDefaults = {
+    desktop: {count: 300, durationSeconds: {min: 5, max: 9}},
+    mobile: {count: 30, durationSeconds: {min: 1, max: 3}},
+};
+
+const PETAL_DEFAULTS: ParticleEffectDefaults = {
+    desktop: {count: 16, durationSeconds: {min: 10, max: 18}},
+    mobile: {count: 5, durationSeconds: {min: 5, max: 9}},
+};
 
 // ── адаптивные хуки ───────────────────────────
 
@@ -32,6 +73,41 @@ function useResponsiveRange(
         return () => { clearTimeout(t); window.removeEventListener('resize', onResize); };
     }, [desktopMin, desktopMax, mobileMin, mobileMax]);
     return range;
+}
+
+function normalizeDurationRange(range: DurationRange): [number, number] {
+    const min: number = Math.max(0.1, Math.min(range.min, range.max));
+    const max: number = Math.max(min, Math.max(range.min, range.max));
+
+    return [min, max];
+}
+
+function normalizeCount(count: number): number {
+    return Math.max(0, Math.round(count));
+}
+
+function useParticleOptions(
+    defaults: ParticleEffectDefaults,
+    options: ParticleEffectProps,
+): ResolvedParticleOptions {
+    const desktopCount: number = normalizeCount(options.desktop?.count ?? defaults.desktop.count);
+    const mobileCount: number = normalizeCount(options.mobile?.count ?? defaults.mobile.count);
+    const desktopDuration: [number, number] = normalizeDurationRange(
+        options.desktop?.durationSeconds ?? defaults.desktop.durationSeconds,
+    );
+    const mobileDuration: [number, number] = normalizeDurationRange(
+        options.mobile?.durationSeconds ?? defaults.mobile.durationSeconds,
+    );
+
+    const count: number = useResponsiveCount(desktopCount, mobileCount);
+    const durationSeconds: [number, number] = useResponsiveRange(
+        desktopDuration[0],
+        desktopDuration[1],
+        mobileDuration[0],
+        mobileDuration[1],
+    );
+
+    return {count, durationSeconds};
 }
 
 // ── общий canvas-движок: сайзинг, видимость, rAF-цикл ──────────────────
@@ -182,14 +258,12 @@ function getFlakes(count: number): Flake[] {
     return flakeCache.get(count)!;
 }
 
-export function SnowParticles() {
-    const count = useResponsiveCount(300, 30);
-    const flakes = getFlakes(count);
-
-    const [durMin, durMax] = useResponsiveRange(
-        5, 9,   // desktop
-        1, 3     // mobile
+export function SnowParticles(options: ParticleEffectProps = {}): JSX.Element {
+    const {count, durationSeconds: [durMin, durMax]}: ResolvedParticleOptions = useParticleOptions(
+        SNOW_DEFAULTS,
+        options,
     );
+    const flakes = getFlakes(count);
 
     const draw = useCallback<DrawFn>((ctx, width, height, _dt, elapsed) => {
         ctx.fillStyle = 'rgba(255,255,255,0.8)';
@@ -256,9 +330,11 @@ function getPetalsBase(count: number): PetalBase[] {
     return petalCache.get(count)!;
 }
 
-export function PetalParticles() {
-    const count = useResponsiveCount(16, 5);
-    const [durMin, durMax] = useResponsiveRange(10, 18, 5, 9); // на мобилке в ~2 раза быстрее
+export function PetalParticles(options: ParticleEffectProps = {}): JSX.Element {
+    const {count, durationSeconds: [durMin, durMax]}: ResolvedParticleOptions = useParticleOptions(
+        PETAL_DEFAULTS,
+        options,
+    );
     const base = getPetalsBase(count);
 
     const draw = useCallback<DrawFn>((ctx, width, height, _dt, elapsed) => {

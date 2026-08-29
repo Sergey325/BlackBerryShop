@@ -11,6 +11,8 @@ import {createMetadata, DEFAULT_DESCRIPTION, DEFAULT_TITLE} from "@/app/lib/seo"
 import JsonLd from "@/app/components/seo/JsonLd";
 import {ONLINE_STORE_JSON_LD} from "@/app/lib/structuredData";
 import {getHomeCategories} from "@/app/actions/getCategories";
+import FinalCatalogCta from "@/app/components/reusable/FinalCatalogCta";
+import SeasonCollections from "@/app/components/homePage/SeasonCollections";
 
 export const revalidate = 86400;
 
@@ -39,6 +41,8 @@ export default async function HomePage() {
                     <h1 className="sr-only">Авторські головні убори та аксесуари BlackBerry</h1>
                     <Hero banners={banners}/>
 
+                    {/*<SeasonCollections/>*/}
+
                     <BestSellers products={products} />
 
                     <Categories categories={categories}/>
@@ -46,6 +50,8 @@ export default async function HomePage() {
                     <WhyUs/>
 
                     <Reviews/>
+
+                    {/*<FinalCatalogCta/>*/}
                 </main>
             )}
         </>

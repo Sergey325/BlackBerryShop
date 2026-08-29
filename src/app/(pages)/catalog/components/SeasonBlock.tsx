@@ -2,6 +2,7 @@ import Image from "next/image";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import {Season} from "@/app/types";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
+import {getSeasonAnchor} from "@/app/lib/seasonCollections";
 
 type Props = {
     season: Season;
@@ -10,7 +11,10 @@ type Props = {
 
 export default function SeasonBlock({ season, eager = false }: Props) {
     return (
-        <div className="mb-6 lg:mb-12 select-none">
+        <div
+            id={getSeasonAnchor(season.id)}
+            className="mb-6 scroll-mt-24 select-none lg:mb-12"
+        >
 
             {/* ── MOBILE ────────────────────────────────────────────────── */}
             <div className={"sm:hidden rounded-3xl relative overflow-hidden "} style={{ backgroundColor: season.heroBg }}>

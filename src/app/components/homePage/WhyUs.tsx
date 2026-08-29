@@ -1,3 +1,5 @@
+import type {JSX} from "react";
+import Reveal from "@/app/components/reusable/Reveal";
 
 const features = [
     {
@@ -62,10 +64,12 @@ const features = [
     },
 ];
 
-const WhyUs = ({}) => {
+const WhyUs = (): JSX.Element => {
     return (
-        <section className="px-2">
-            <div className="mx-auto px-4 lg:px-8 py-12 bg-primary/7 rounded-xl">
+        <Reveal>
+            <section className="px-2">
+                {/*bg-linear-to-br from-[#fdf6f9] via-[#fbf9fc] to-[#f1eafa]*/}
+                <div className="mx-auto rounded-3xl border border-primary/10 bg-primary/7 px-4 py-12 shadow-[0_10px_30px_rgba(60,34,72,0.05)] lg:px-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-10 sm:mb-14">
                     Чому обирають Black Berry?
                 </h2>
@@ -76,8 +80,8 @@ const WhyUs = ({}) => {
                             key={i}
                             className="flex flex-col items-center text-center group w-full max-w-[250px]"
                         >
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-primary/20
-                                            bg-white flex items-center justify-center mb-4 sm:mb-5
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-primary/15
+                                            bg-white/90 shadow-sm flex items-center justify-center mb-4 sm:mb-5
                                             group-hover:border-primary group-hover:shadow-lg
                                             group-hover:shadow-violet-100 transition-all duration-300">
                                 {f.svg}
@@ -93,8 +97,9 @@ const WhyUs = ({}) => {
                         </div>
                     ))}
                 </div>
-            </div>
-        </section>
+                </div>
+            </section>
+        </Reveal>
     );
 };
 

@@ -17,7 +17,7 @@ export default function TestimonialCard({
     quote,
 }: Props): JSX.Element {
     return (
-        <div className="relative flex flex-col gap-4 rounded-[28px] bg-primary/7 border border-primary/50 p-6 md:flex-row md:gap-4 md:p-4 h-[220px] select-none">
+        <div className="relative flex h-[220px] select-none flex-col gap-4 rounded-[28px] border border-primary/20 bg-primary/2 p-6 transition-colors duration-300 hover:border-primary/40 md:flex-row md:gap-4 md:p-4">
             {/* Photo */}
             <div className="relative mx-auto w-full max-w-[150px] md:mx-0">
                 <div className="relative aspect-4/5 w-full -rotate-4 overflow-hidden rounded-[22px] bg-white shadow-lg">
