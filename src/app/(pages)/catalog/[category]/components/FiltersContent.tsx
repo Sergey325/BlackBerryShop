@@ -125,7 +125,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
 
             {/* Materials */}
             {
-                options.materials.length > 1 &&
+                options.materials.length > 0 &&
                 <FilterSection title="Матеріал">
                     <ul className="space-y-2">
                         {options.materials.map((m, i) => (

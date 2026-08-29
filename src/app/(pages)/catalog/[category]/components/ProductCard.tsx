@@ -172,6 +172,7 @@ const ProductCard = ({
             <article className="group flex min-h-28 gap-3 overflow-hidden rounded-2xl border border-primary/15 bg-white p-2 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-md sm:min-h-40 sm:gap-4 sm:p-3">
                 <Link
                     href={productPath}
+                    prefetch={false}
                     onClick={handleViewContent}
                     className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100/20 sm:w-36"
                 >
@@ -214,7 +215,7 @@ const ProductCard = ({
 
                 <div className="flex min-w-0 flex-1 flex-col py-0.5 sm:py-1">
                     <div className="min-w-0">
-                        <Link href={productPath} onClick={handleViewContent}>
+                        <Link href={productPath} prefetch={false} onClick={handleViewContent}>
                             <h3 className="line-clamp-2 text-sm font-medium leading-[18px] text-slate-700 transition-colors group-hover:text-primary sm:text-base sm:leading-5">
                                 {product.name}
                             </h3>
@@ -288,6 +289,7 @@ const ProductCard = ({
     return (
         <Link
             key={product.id}
+            prefetch={false}
             onMouseDown={(e) => {
                 start.current = { x: e.clientX, y: e.clientY };
                 dragged.current = false;
