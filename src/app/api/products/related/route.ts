@@ -79,6 +79,23 @@ export async function POST(request: Request): Promise<NextResponse> {
             select: {
                 id: true,
                 relatedTo: {
+                    where: {
+                        toProduct: {
+                            colors: {
+                                some: {
+                                    sizes: {
+                                        some: {
+                                            available: true,
+                                            OR: [
+                                                {quantity: null},
+                                                {quantity: {gt: 0}},
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                     orderBy: {order: "asc"},
                     select: {
                         toProduct: {
