@@ -15,6 +15,7 @@ import CheckBox from "@/app/components/reusable/CheckBox";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {FaFire} from "react-icons/fa";
+import {sortColorsByAvailability} from "@/app/utils/productColorAvailability";
 
 type Props = {
     product: IProductWithRelated;
@@ -65,6 +66,11 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
             ? undefined
             : Math.max(0, selectedSizeObj.quantity - existingCartQuantity);
 
+    const sortedColors: IProductColor[] = useMemo(
+        (): IProductColor[] => sortColorsByAvailability(product.colors),
+        [product.colors],
+    );
+
     useEffect(() => {
         if (colorIdFromUrl === String(selectedProductColor.id) && !params.has("color")) return;
 
@@ -80,14 +86,14 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
         qs.set("colorId", String(colorItem.id));
         qs.delete("color");
         qs.delete("size");
-        router.push(`?${qs.toString()}`, {scroll: false});
+        router.replace(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleSizeChange = (size: string) => {
         setCount(1);
         const qs = new URLSearchParams(params);
         qs.set("size", size);
-        router.push(`?${qs.toString()}`, {scroll: false});
+        router.replace(`?${qs.toString()}`, {scroll: false});
     };
 
     const handleAddToCart = () => {
@@ -154,7 +160,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
 
             <div className="flex mt-2 gap-4">
                 <div className="flex flex-wrap gap-1.5">
-                    {product.colors.map((c) => (
+                    {sortedColors.map((c) => (
                         <div
                             key={c.id}
                             onClick={() => handleColorChange(c)}

@@ -14,6 +14,10 @@ import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {getProductPath} from "@/app/lib/productUrl";
 import {FaFire} from "react-icons/fa";
 import {getProductColorBackground} from "@/app/utils/getProductColorBackground";
+import {
+    isProductColorAvailable,
+    sortColorsByAvailability,
+} from "@/app/utils/productColorAvailability";
 
 type Props = {
     product: IProductCardData;
@@ -30,10 +34,12 @@ const ProductCard = ({
 }: Props) => {
     const searchParams = useSearchParams();
 
-    const isAvailable: boolean = product.colors.some(color =>
-        color.sizes.some(size =>
-            size.available && (size.quantity === null || size.quantity > 0)
-        )
+    const sortedProduct: IProductCardData = useMemo(
+        (): IProductCardData => ({
+            ...product,
+            colors: sortColorsByAvailability(product.colors),
+        }),
+        [product],
     );
 
     const cartModal = useCartModal();
@@ -52,7 +58,7 @@ const ProductCard = ({
             let bestIndex: number = -1;
             let bestScore: number = -1;
 
-            product.colors.forEach((productColor, index: number): void => {
+            sortedProduct.colors.forEach((productColor, index: number): void => {
                 const colorCodes: Set<string> = new Set(
                     productColor.filterColors.map((filterColor): string =>
                         filterColor.catalogColor.code.toLowerCase()
@@ -81,7 +87,7 @@ const ProductCard = ({
         if (!colors.length) return 0;
 
         for (let i = colors.length - 1; i >= 0; i--) {
-            const idx = product.colors.findIndex(
+            const idx = sortedProduct.colors.findIndex(
                 c => c.filterColors.some(
                     filterColor => filterColor.catalogColor.code.toLowerCase() === colors[i].toLowerCase()
                 )
@@ -90,13 +96,14 @@ const ProductCard = ({
         }
 
         return 0;
-    }, [preferredCatalogColorCodes, searchParams, product.colors]);
+    }, [preferredCatalogColorCodes, searchParams, sortedProduct.colors]);
 
     const [activeIdx, setActiveIdx] = useState(initialIdx);
+    const isAvailable: boolean = isProductColorAvailable(sortedProduct.colors[activeIdx]);
 
     const activeImageSrc: string = list
-        ? optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 320)
-        : optimizeCloudinaryUrl(product.colors[activeIdx].images[0].url, 500, 18);
+        ? optimizeCloudinaryUrl(sortedProduct.colors[activeIdx].images[0].url, 320)
+        : optimizeCloudinaryUrl(sortedProduct.colors[activeIdx].images[0].url, 500, 18);
     const [loadedImageSrcs, setLoadedImageSrcs] = useState<Set<string>>(() => new Set<string>());
     const isImageLoading: boolean = !loadedImageSrcs.has(activeImageSrc);
 
@@ -109,8 +116,8 @@ const ProductCard = ({
     };
 
     const productPath: string = useMemo(()=> {
-        return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?colorId=${product.colors[activeIdx].id}`
-    }, [activeIdx, product.category?.slug, product.colors, product.id, product.slug])
+        return `${getProductPath(product.category?.slug ?? "", product.id, product.slug)}?colorId=${sortedProduct.colors[activeIdx].id}`
+    }, [activeIdx, product.category?.slug, product.id, product.slug, sortedProduct.colors])
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -126,15 +133,15 @@ const ProductCard = ({
         return () => window.removeEventListener('resize', update);
     }, [list]);
 
-    const visibleColors = product.colors.slice(0, visibleCount);
-    const hasMoreColors = product.colors.length > visibleColors.length;
+    const visibleColors = sortedProduct.colors.slice(0, visibleCount);
+    const hasMoreColors = sortedProduct.colors.length > visibleColors.length;
 
     const handleAddToCart = (): void => {
         if (!isAvailable) return;
 
         cart.addItem({
-            ...createProductSelection(product, activeIdx),
-            size: product.colors[activeIdx].sizes.length === 1 ? product.colors[activeIdx].sizes[0].size : undefined,
+            ...createProductSelection(sortedProduct, activeIdx),
+            size: sortedProduct.colors[activeIdx].sizes.length === 1 ? sortedProduct.colors[activeIdx].sizes[0].size : undefined,
             quantity: 1,
             isDecoration: product.category?.isDecoration || false
         });
@@ -146,7 +153,7 @@ const ProductCard = ({
             content_type: "product",
             value: product.price,
             currency: "UAH",
-            color: product.colors[activeIdx].colorName,
+            color: sortedProduct.colors[activeIdx].colorName,
         });
     }
 
@@ -184,12 +191,12 @@ const ProductCard = ({
                         <div
                             className={"absolute inset-0 motion-safe:animate-pulse"}
                             style={{
-                                backgroundColor: `color-mix(in srgb, ${product.colors[activeIdx].color} 40%, transparent)`
+                                backgroundColor: `color-mix(in srgb, ${sortedProduct.colors[activeIdx].color} 40%, transparent)`
                             }}
                             aria-hidden="true"
                         />
                     )}
-                    {colors && product.colors[activeIdx].isBestSeller && (
+                    {colors && sortedProduct.colors[activeIdx].isBestSeller && (
                         <span
                             title="Хіт продажу"
                             aria-label="Хіт продажу"
@@ -238,11 +245,11 @@ const ProductCard = ({
                             ))}
                             {hasMoreColors && (
                                 <span className="shrink-0 text-xs font-medium text-slate-500">
-                                    +{product.colors.length - visibleColors.length}
+                                    +{sortedProduct.colors.length - visibleColors.length}
                                 </span>
                             )}
                             <span className="ml-1 hidden min-w-0 truncate text-xs text-slate-500 sm:inline">
-                                {product.colors[activeIdx].colorName}
+                                {sortedProduct.colors[activeIdx].colorName}
                             </span>
                         </div>
                     )}
@@ -252,9 +259,9 @@ const ProductCard = ({
                             <p className="text-base font-semibold leading-none text-slate-950 sm:text-lg">
                                 {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
                             </p>
-                            {colors && product.colors.length > 1 && (
+                            {colors && sortedProduct.colors.length > 1 && (
                                 <p className="mt-1 hidden text-[11px] text-slate-500 md:block">
-                                    {product.colors.length} {pluralizeUk(product.colors.length, ["колір", "кольори", "кольорів"])}
+                                    {sortedProduct.colors.length} {pluralizeUk(sortedProduct.colors.length, ["колір", "кольори", "кольорів"])}
                                 </p>
                             )}
                         </div>
@@ -324,12 +331,12 @@ const ProductCard = ({
                         <div
                             className="absolute inset-0 bg-slate-100 motion-safe:animate-pulse"
                             style={{
-                                backgroundColor: `color-mix(in srgb, ${product.colors[activeIdx].color} 40%, transparent)`
+                                backgroundColor: `color-mix(in srgb, ${sortedProduct.colors[activeIdx].color} 40%, transparent)`
                             }}
                             aria-hidden="true"
                         />
                     )}
-                    {colors && product.colors[activeIdx].isBestSeller && (
+                    {colors && sortedProduct.colors[activeIdx].isBestSeller && (
                         <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-orange-700 shadow-sm backdrop-blur-sm sm:left-2 sm:top-2 sm:px-2.5 sm:text-xs">
                             <FaFire
                                 aria-hidden="true"
@@ -378,20 +385,20 @@ const ProductCard = ({
 
                         {hasMoreColors && (
                             <span className="ml-0.5 shrink-0 text-[12px] font-medium text-slate-700">
-                                +{product.colors.length - visibleColors.length}
+                                +{sortedProduct.colors.length - visibleColors.length}
                             </span>
                         )}
 
                         <span
                             className="ml-auto hidden min-w-0 truncate text-[11px] text-slate-500 md:inline"
-                            title={product.colors[activeIdx].colorName}
+                            title={sortedProduct.colors[activeIdx].colorName}
                         >
-                            {product.colors[activeIdx].colorName}
+                            {sortedProduct.colors[activeIdx].colorName}
                         </span>
                     </div>
                 )}
 
-                <div className={`${product.colors.length > 1 ? "mt-1" : "mt-auto"} flex w-full items-end justify-between gap-2 `}>
+                <div className={`${sortedProduct.colors.length > 1 ? "mt-1" : "mt-auto"} flex w-full items-end justify-between gap-2 `}>
                     <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
                         {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
                     </p>
