@@ -16,7 +16,7 @@ const HOME_SEASON_PARTICLES: Record<SeasonCollectionConfig["id"], JSX.Element> =
     WINTER: (
         <SnowParticles
             desktop={{count: 80, durationSeconds: {min: 2, max: 5}}}
-            mobile={{count: 25}}
+            mobile={{count: 25, durationSeconds: {min: 2, max: 4}}}
         />
     ),
     SUMMER: (
@@ -69,7 +69,7 @@ const SeasonCollections = (): JSX.Element => {
                                 <p className="mt-2 text-xs leading-relaxed text-gray-600 sm:text-sm">
                                     {season.desc}
                                 </p>
-                                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary text-nowrap">
                                     Дивитися колекцію
                                     <FaArrowRightLong className="size-4 transition-transform duration-300 group-hover:translate-x-1"/>
                                 </span>

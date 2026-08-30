@@ -107,14 +107,15 @@ model ProductRelation {
 }
 
 model Banner {
-  id       Int      @id @default(autoincrement())
-  image    String
-  badge    String?
-  title    String
-  features String[]
-  ctaHref  String?
-  ctaLabel String?
-  order    Int      @default(0)
+  id          Int      @id @default(autoincrement())
+  image       String
+  mobileImage String?
+  badge       String?
+  title       String
+  features    String[]
+  ctaHref     String?
+  ctaLabel    String?
+  order       Int      @default(0)
 }
 
 model Category {

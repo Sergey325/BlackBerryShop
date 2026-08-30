@@ -41,7 +41,7 @@ export default async function HomePage() {
                     <h1 className="sr-only">Авторські головні убори та аксесуари BlackBerry</h1>
                     <Hero banners={banners}/>
 
-                    {/*<SeasonCollections/>*/}
+                    <SeasonCollections/>
 
                     <BestSellers products={products} />
 
@@ -51,7 +51,7 @@ export default async function HomePage() {
 
                     <Reviews/>
 
-                    {/*<FinalCatalogCta/>*/}
+                    <FinalCatalogCta/>
                 </main>
             )}
         </>

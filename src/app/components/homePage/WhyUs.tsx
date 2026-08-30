@@ -69,7 +69,7 @@ const WhyUs = (): JSX.Element => {
         <Reveal>
             <section className="px-2">
                 {/*bg-linear-to-br from-[#fdf6f9] via-[#fbf9fc] to-[#f1eafa]*/}
-                <div className="mx-auto rounded-3xl border border-primary/10 bg-primary/7 px-4 py-12 shadow-[0_10px_30px_rgba(60,34,72,0.05)] lg:px-8">
+                <div className="mx-auto rounded-3xl border border-primary/10 bg-linear-to-br from-[#fdf6f9] via-[#fbf9fc] to-[#f1eafa] px-4 py-12 shadow-[0_10px_30px_rgba(60,34,72,0.05)] lg:px-8">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-10 sm:mb-14">
                     Чому обирають Black Berry?
                 </h2>

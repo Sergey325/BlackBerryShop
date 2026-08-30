@@ -228,7 +228,7 @@ const reviews = [
 // ─── Compact card (mobile — 3 per row) ──────────────────────────────────────
 function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
     return (
-        <div className="h-full overflow-hidden rounded-2xl border border-primary/15 bg-white">
+        <div className="h-full overflow-hidden rounded-2xl border border-primary/15 bg-[#fbf9fc]">
             {/* Photo */}
             <div className="relative w-full aspect-3/4">
                 <Image src={optimizeCloudinaryUrl(review.image, 500)} alt={review.name} fill unoptimized draggable={false} className="object-cover object-center" />
@@ -259,7 +259,7 @@ export function Reviews() {
                 </h2>
 
                 {/* ── Desktop / tablet carousel (hidden on mobile) ── */}
-                <div className="hidden lg:block relative ">
+                <div className="hidden lg:block relative">
                     <CarouselWrapper
                         itemClass="px-2"
                         carouselClass="py-2"

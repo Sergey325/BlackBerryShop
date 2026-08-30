@@ -5,6 +5,7 @@ import {unstable_cache} from "next/cache";
 
 export interface IBanner {
     image: string;
+    mobileImage: string | null;
     badge: string | null;
     title: string;
     features: string[];
@@ -19,6 +20,7 @@ const getCachedBanners = unstable_cache(
             orderBy: [{ order: "asc" }, { id: "asc" }],
             select: {
                 image: true,
+                mobileImage: true,
                 badge: true,
                 title: true,
                 features: true,
