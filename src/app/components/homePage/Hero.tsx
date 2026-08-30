@@ -120,8 +120,8 @@ const Hero = ({banners}: Props) => {
                                 <div className="relative z-10 w-1/2 px-10 xl:px-16">
                                     {
                                         banner.badge &&
-                                        <span className="inline-flex items-center gap-1.5 bg-white/80 shadow-[0_0_5px_rgba(130,61,154,0.50)] transition
-                                                     text-gray-600 rounded-full px-4 py-1.5
+                                        <span className="inline-flex items-center gap-1.5 bg-white/55 shadow-[0_0_5px_rgba(130,61,154,0.50)] transition
+                                                     text-gray-700 rounded-full px-4 py-1.5
                                                      border border-primary mb-7">
                                             {banner.badge}
                                             <FaHeart className="size-4 text-primary" />
@@ -135,7 +135,7 @@ const Hero = ({banners}: Props) => {
 
                                     {
                                         banner.features.length > 0 &&
-                                        <ul role="list" className="list-disc marker:text-lg space-y-2 pl-5 text-gray-600">
+                                        <ul role="list" className="list-disc marker:text-lg space-y-2 pl-5 text-gray-800">
                                             {banner.features.map((f, fi) => <li key={fi}>{f}</li>)}
                                         </ul>
                                     }
