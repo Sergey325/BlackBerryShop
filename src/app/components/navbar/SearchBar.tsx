@@ -8,6 +8,7 @@ import {AiOutlineLoading} from "react-icons/ai";
 import Link from "next/link";
 import {getProductPath} from "@/app/lib/productUrl";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 export default function SearchBar() {
     const [open, setOpen] = useState(false);
@@ -86,7 +87,7 @@ export default function SearchBar() {
                             >
                                 <div className="relative w-13 h-13 shrink-0 rounded overflow-hidden bg-gray-100">
                                     {product.imageUrl && (
-                                        <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                                        <Image src={optimizeCloudinaryUrl(product.imageUrl, 120)} alt={product.name} fill unoptimized className="object-cover" />
                                     )}
                                 </div>
                                 <div className="flex flex-col min-w-0">

@@ -146,10 +146,11 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                     className="flex lg:contents gap-3 items-center cursor-pointer"
                 >
                     <Image
-                        src={item.photoUrl}
+                        src={optimizeCloudinaryUrl(item.photoUrl, 200)}
                         alt={`${item.productName}, колір ${item.colorName ?? item.color}`}
                         width={80}
                         height={80}
+                        unoptimized
                         draggable={false}
                         className="object-cover self-stretch sm:self-auto sm:aspect-square select-none rounded-lg"
                         // onClick={() => router.push(`/catalog/${item.categorySlug}/${item.productId}?&size=${item.size}&color=%23${item.color?.slice(1)}&colorName=${item.colorName}`)}
@@ -260,7 +261,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                         className="flex items-center gap-3 pr-2 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300"
                                     >
                                         <Image
-                                            src={optimizeCloudinaryUrl(related.colors[0].images[0].url, 100)}
+                                            src={optimizeCloudinaryUrl(related.colors[0].images[0].url, 200)}
                                             alt={related.name}
                                             width={80}
                                             height={80}

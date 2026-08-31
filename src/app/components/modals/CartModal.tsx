@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import {getProductPath} from "@/app/lib/productUrl";
 import {FiTrash2} from "react-icons/fi";
 import ToolTip from "@/app/components/reusable/ToolTip";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 
 const CartModal = () => {
@@ -31,9 +32,10 @@ const CartModal = () => {
                             {/* Картинка */}
                             <div className='relative self-stretch w-20 aspect-10/13 shrink sm:size-28 rounded-lg overflow-hidden border border-primary/50'>
                                 <Image
-                                    src={item.photoUrl}
+                                    src={optimizeCloudinaryUrl(item.photoUrl, 200)}
                                     alt={`${item.productName}, колір ${item.colorName ?? item.color}`}
                                     fill
+                                    unoptimized
                                     className="object-cover"
                                 />
 

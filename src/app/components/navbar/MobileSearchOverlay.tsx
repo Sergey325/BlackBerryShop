@@ -10,6 +10,7 @@ import {useModalHistory} from "@/app/hooks/useModalHistory";
 import Link from "next/link";
 import {getProductPath} from "@/app/lib/productUrl";
 import {pluralizeUk} from "@/app/utils/pluralizeUk";
+import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 export default function MobileSearchOverlay() {
     const { isOpen, onClose } = useMobileSearchModal();
@@ -51,7 +52,7 @@ export default function MobileSearchOverlay() {
 
     return (
         <div
-            className={`tablet::hidden fixed inset-0 bg-white z-[60] flex flex-col transition-all duration-300 ${
+            className={`tablet::hidden fixed inset-0 bg-white z-60 flex flex-col transition-all duration-300 ${
                 showModal ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
             }`}
         >
@@ -90,7 +91,7 @@ export default function MobileSearchOverlay() {
                         >
                             <div className="relative w-14 h-14 shrink-0 rounded overflow-hidden bg-gray-100">
                                 {product.imageUrl && (
-                                    <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
+                                    <Image src={optimizeCloudinaryUrl(product.imageUrl, 150)} unoptimized alt={product.name} fill className="object-cover" />
                                 )}
                             </div>
                             <div className="flex flex-col min-w-0 self-stretch">
