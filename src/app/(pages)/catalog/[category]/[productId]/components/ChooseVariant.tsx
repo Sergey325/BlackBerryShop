@@ -16,6 +16,8 @@ import {IProductWithRelated} from "@/app/actions/getProductById";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {FaFire} from "react-icons/fa";
 import {sortColorsByAvailability} from "@/app/utils/productColorAvailability";
+import ToolTip from "@/app/components/reusable/ToolTip";
+import {BsQuestionCircle} from "react-icons/bs";
 
 type Props = {
     product: IProductWithRelated;
@@ -228,7 +230,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
             {
                 hasLining &&
                 <div className="mt-5">
-                    <div className="flex gap-2 mb-3">
+                    <div className="flex gap-2 mb-3 items-center">
                         <CheckBox
                             label="Додати підкладку"
                             colorOnChecked={"text-primary"}
@@ -236,9 +238,9 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                             urlValue="true"
                             multiplyParameter={false}
                         />
-                        {/*<ToolTip label="z vkjrwlkfglwrfwfwf">*/}
-                        {/*    <BiSolidInfoCircle className="size-6 text-primary"/>*/}
-                        {/*</ToolTip>*/}
+                        <ToolTip label="М’яка підкладка з мікрофлісу добре зігріває в холодну погоду. Вона легка, ніжна до шкіри та допомагає зберігати тепло, не обтяжуючи виріб.">
+                            <BsQuestionCircle  className="size-5 text-neutral-700 cursor-pointer hover:text-primary transition-colors"/>
+                        </ToolTip>
                     </div>
                     <hr className="text-gray-300 -mx-4 mt-2"/>
                 </div>

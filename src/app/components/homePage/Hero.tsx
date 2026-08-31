@@ -156,7 +156,6 @@ const Hero = ({banners}: Props) => {
 
                                 <div className="absolute inset-y-0 right-0 flex">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-
                                     <img
                                         src={optimizeCloudinaryUrl(banner.image, 1500)}
                                         alt={""}
@@ -185,6 +184,7 @@ const Hero = ({banners}: Props) => {
                                     src={optimizeCloudinaryUrl(banner.mobileImage || banner.image, 1500)}
                                     alt={""}
                                     fill
+                                    unoptimized
                                     fetchPriority={i === 0 ? "high" : "auto"}
                                     loading={i === 0 ? "eager" : "lazy"}
                                     sizes="(max-width: 1023px) 100vw, 1px"
