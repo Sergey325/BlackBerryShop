@@ -72,7 +72,7 @@ const ProductClient = ({ product, category }: Props) => {
                 <span>›</span>
                 <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
                 <span>›</span>
-                <Link href={`/catalog/${category.slug}`} className="hover:text-gray-600 transition-colors text-nowrap truncate">{category.name}</Link>
+                <Link href={`/catalog/${category.slug}`} prefetch={false} className="hover:text-gray-600 transition-colors text-nowrap truncate">{category.name}</Link>
                 <span>›</span>
                 <span className="text-gray-700 truncate">{product.name}</span>
             </nav>

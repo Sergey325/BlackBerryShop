@@ -60,6 +60,7 @@ const FiltersContent = ({categories, options, selectedCategorySlug}: Props) => {
                             <li key={cat.slug}>
                                 <Link
                                     href={href}
+                                    prefetch={false}
                                     scroll={false}
                                     className={`flex items-center justify-between text-sm px-2.5 py-1.5 rounded-lg transition-colors gap-0.5 ${
                                         cat.slug === selectedCategorySlug

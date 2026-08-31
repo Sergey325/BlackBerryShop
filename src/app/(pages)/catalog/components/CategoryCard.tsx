@@ -13,6 +13,7 @@ export default function CategoryCard({ category }: Props) {
     return (
         <Link
             href={`/catalog/${category.slug}`}
+            prefetch={false}
             className="group sm:backdrop-blur-xs rounded-2xl overflow-hidden
                        shadow-sm hover:shadow-md relative
                        transition-all duration-500 flex flex-col z-10 aspect-5/3"
