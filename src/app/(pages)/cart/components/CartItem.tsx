@@ -18,6 +18,8 @@ import type {IRelatedProduct} from "@/app/actions/getProducts";
 import {getCartItemMaximum} from "@/app/utils/inventory";
 import toast from "react-hot-toast";
 import {getProductPath} from "@/app/lib/productUrl";
+import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
 
 type Props = {
     item: CartItemType,
@@ -122,6 +124,15 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
             label: s.size,
             onClick: function () {
                 cart.changeSize(item, this.value);
+                trackMetaEvent("AddToCart", {
+                    content_ids: [buildCatalogItemId(item.productId, item.productColorId, s.id)],
+                    content_name: item.productName,
+                    content_type: "product",
+                    value: calculatePriceWithDiscount(item.price, item.discount),
+                    currency: "UAH",
+                    color: item.colorName,
+                    size: s.size,
+                });
             },
             }))
     }, [cart, item]);

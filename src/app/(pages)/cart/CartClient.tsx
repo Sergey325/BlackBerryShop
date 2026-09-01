@@ -18,6 +18,8 @@ import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import type {IRelatedProduct} from "@/app/actions/getProducts";
 import type {IProductSize} from "@/app/actions/getProducts";
 import type {CartItem as CartItemType} from "@/app/types";
+import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+import {getSelectedProductSize} from "@/app/utils/inventory";
 
 type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
 type InventoryResponse = {
@@ -305,17 +307,28 @@ const CartClient = () => {
                 fbc,
             }
 
+            const checkoutContents: Array<{
+                id: string;
+                quantity: number;
+                color: string;
+                size: string;
+            }> = cart.items.flatMap((item: CartItemType) => {
+                const productSize: IProductSize | undefined = getSelectedProductSize(item);
+
+                return productSize ? [{
+                    id: buildCatalogItemId(item.productId, item.productColorId, productSize.id),
+                    quantity: item.quantity,
+                    color: item.colorName,
+                    size: productSize.size,
+                }] : [];
+            });
+
             trackMetaEvent("InitiateCheckout", {
-                content_ids: cart.items.map(item => item.productId.toString()),
+                content_ids: checkoutContents.map((item): string => item.id),
                 content_type: "product",
                 value: totalPrice,
                 currency: "UAH",
-                contents: cart.items.map(item => ({
-                    id: item.productId,
-                    quantity: item.quantity,
-                    color: item.colorName,
-                    size: item.size,
-                })),
+                contents: checkoutContents,
             });
 
             try {

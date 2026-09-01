@@ -1,17 +1,19 @@
 
 type ColorWithSizes = {
-    sizes: Array<{
-        available: boolean;
-        quantity: number | null;
-    }>;
+    sizes: SizeAvailability[];
 };
 
+type SizeAvailability = {
+    available: boolean;
+    quantity: number | null;
+};
+
+export function isProductSizeAvailable(size: SizeAvailability): boolean {
+    return size.available && (size.quantity === null || size.quantity > 0);
+}
+
 export function isProductColorAvailable(color: ColorWithSizes): boolean {
-    return color.sizes.some(
-        (size): boolean =>
-            size.available &&
-            (size.quantity === null || size.quantity > 0)
-    );
+    return color.sizes.some(isProductSizeAvailable);
 }
 
 export function sortColorsByAvailability<T extends ColorWithSizes>(

@@ -5,6 +5,7 @@ import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
 import {hashSha256} from "@/app/lib/fbHash";
 import * as Sentry from "@sentry/nextjs";
 import {revalidateTag} from "next/cache";
+import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 
 export async function POST(request: Request) {
     let orderId: number | undefined;
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
                     promoCodeId: true,
                     items: {
                         select: {
+                            id: true,
                             productSizeId: true,
                             productId: true,
                             color: true,
@@ -67,39 +69,45 @@ export async function POST(request: Request) {
                 });
 
                 shouldCountPromoCode = paidTransition.count === 1;
+                const requestedByProductSizeId = new Map<number, number>();
 
-                if (shouldCountPromoCode) {
-                    const requestedByProductSizeId = new Map<number, number>();
+                for (const item of existingOrder.items) {
+                    let productSizeId: number | null = item.productSizeId;
 
-                    for (const item of existingOrder.items) {
-                        let productSizeId: number | null = item.productSizeId;
-
-                        if (productSizeId === null) {
-                            const legacyMatches = await tx.productSize.findMany({
-                                where: {
-                                    productColor: {
-                                        productId: item.productId,
-                                        color: item.color,
-                                    },
-                                    ...(item.size ? {size: item.size} : {}),
+                    if (productSizeId === null) {
+                        const legacyMatches = await tx.productSize.findMany({
+                            where: {
+                                productColor: {
+                                    productId: item.productId,
+                                    color: item.color,
                                 },
-                                select: {id: true},
-                                take: 2,
-                            });
+                                ...(item.size ? {size: item.size} : {}),
+                            },
+                            select: {id: true},
+                            take: 2,
+                        });
 
-                            if (legacyMatches.length !== 1) {
-                                throw new Error(`Order ${existingOrder.id} item has no resolvable productSizeId`);
-                            }
-
-                            productSizeId = legacyMatches[0].id;
+                        if (legacyMatches.length !== 1) {
+                            throw new Error(`Order ${existingOrder.id} item has no resolvable productSizeId`);
                         }
 
+                        productSizeId = legacyMatches[0].id;
+
+                        await tx.orderItem.update({
+                            where: {id: item.id},
+                            data: {productSizeId},
+                        });
+                    }
+
+                    if (shouldCountPromoCode) {
                         requestedByProductSizeId.set(
                             productSizeId,
                             (requestedByProductSizeId.get(productSizeId) ?? 0) + item.quantity
                         );
                     }
+                }
 
+                if (shouldCountPromoCode) {
                     for (const [productSizeId, requestedQuantity] of requestedByProductSizeId) {
                         const updatedCount = await tx.$executeRaw`
                             UPDATE "ProductSize"
@@ -156,7 +164,18 @@ export async function POST(request: Request) {
 
             const order = await tx.order.findUniqueOrThrow({
                 where: {id: existingOrder.id},
-                include: {items: true},
+                include: {
+                    items: {
+                        include: {
+                            productSize: {
+                                select: {
+                                    id: true,
+                                    productColorId: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
 
             return {
@@ -215,7 +234,18 @@ export async function POST(request: Request) {
                 order = await prisma.order.update({
                     where: { id: order.id },
                     data: { ttnNumber, ttnRef },
-                    include: { items: true },
+                    include: {
+                        items: {
+                            include: {
+                                productSize: {
+                                    select: {
+                                        id: true,
+                                        productColorId: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
                 });
 
             } catch (ttnError) {
@@ -238,8 +268,23 @@ export async function POST(request: Request) {
 
 
         if (newStatus === "PAID") {
-            // Отправляем событие в FBPixel
+            // Purchase is sent server-side through Meta Conversions API.
             try {
+                const purchaseContents: Array<{id: string; quantity: number}> = order.items.map((item) => {
+                    if (!item.productSize) {
+                        throw new Error(`Order ${order.id} item ${item.id} has no catalog variant ID`);
+                    }
+
+                    return {
+                        id: buildCatalogItemId(
+                            item.productId,
+                            item.productSize.productColorId,
+                            item.productSize.id,
+                        ),
+                        quantity: item.quantity,
+                    };
+                });
+
                 await fetch(`https://graph.facebook.com/v20.0/${process.env.PIXEL_ID}/events`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -260,7 +305,8 @@ export async function POST(request: Request) {
                             custom_data: {
                                 currency: 'UAH',
                                 value: itemsTotal,
-                                contents: order.items.map(i => ({ id: i.productId, quantity: i.quantity })),
+                                content_ids: purchaseContents.map((item): string => item.id),
+                                contents: purchaseContents,
                                 content_type: 'product',
                             },
                         }],

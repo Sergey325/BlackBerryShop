@@ -18,6 +18,7 @@ import {
     isProductColorAvailable,
     sortColorsByAvailability,
 } from "@/app/utils/productColorAvailability";
+import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 
 type Props = {
     product: IProductCardData;
@@ -139,32 +140,30 @@ const ProductCard = ({
     const handleAddToCart = (): void => {
         if (!isAvailable) return;
 
+        const productColor = sortedProduct.colors[activeIdx];
+        const productSize = productColor.sizes.length === 1 ? productColor.sizes[0] : undefined;
+
         cart.addItem({
             ...createProductSelection(sortedProduct, activeIdx),
-            size: sortedProduct.colors[activeIdx].sizes.length === 1 ? sortedProduct.colors[activeIdx].sizes[0].size : undefined,
+            size: productSize?.size,
             quantity: 1,
             isDecoration: product.category?.isDecoration || false
         });
         cartModal.onOpen();
 
-        trackMetaEvent("AddToCart", {
-            content_ids: [product.id.toString()],
-            content_name: product.name,
-            content_type: "product",
-            value: product.price,
-            currency: "UAH",
-            color: sortedProduct.colors[activeIdx].colorName,
-        });
-    }
-
-    const handleViewContent = (): void => {
-        trackMetaEvent("ViewContent", {
-            content_ids: [product.id.toString()],
-            content_name: product.name,
-            content_type: "product",
-            value: product.price,
-            currency: "UAH",
-        });
+        // For multi-size products the exact catalog item is not known until
+        // the customer selects a size in the cart.
+        if (productSize) {
+            trackMetaEvent("AddToCart", {
+                content_ids: [buildCatalogItemId(product.id, productColor.id, productSize.id)],
+                content_name: product.name,
+                content_type: "product",
+                value: product.price,
+                currency: "UAH",
+                color: productColor.colorName,
+                size: productSize.size,
+            });
+        }
     };
 
     if (list) {
@@ -173,7 +172,6 @@ const ProductCard = ({
                 <Link
                     href={productPath}
                     prefetch={false}
-                    onClick={handleViewContent}
                     className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100/20 sm:w-36"
                 >
                     <Image
@@ -215,7 +213,7 @@ const ProductCard = ({
 
                 <div className="flex min-w-0 flex-1 flex-col py-0.5 sm:py-1">
                     <div className="min-w-0">
-                        <Link href={productPath} prefetch={false} onClick={handleViewContent}>
+                        <Link href={productPath} prefetch={false}>
                             <h3 className="line-clamp-2 text-sm font-medium leading-[18px] text-slate-700 transition-colors group-hover:text-primary sm:text-base sm:leading-5">
                                 {product.name}
                             </h3>
@@ -308,7 +306,6 @@ const ProductCard = ({
                     e.stopPropagation();
                     return;
                 }
-                handleViewContent();
             }}
             href={productPath}
             className={`group mx-auto flex h-full w-full max-w-[300px] cursor-pointer select-none flex-col overflow-hidden rounded-xl sm:rounded-2xl border border-primary/15 bg-white shadow-md  transition-all duration-300 hover:-translate-y-1 hover:border-primary/35  ${colors ? "sm:shadow-[0_3px_14px_rgba(15,23,42,0.09)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.14)]" : "sm:shadow-sm"}`}

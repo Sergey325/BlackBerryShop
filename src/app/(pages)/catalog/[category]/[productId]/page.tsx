@@ -14,6 +14,8 @@ import {
 } from "@/app/lib/structuredData";
 import {notFound, permanentRedirect} from "next/navigation";
 import {extractProductId, getProductPath, getProductRouteSegment} from "@/app/lib/productUrl";
+import {getProductDescription} from "@/app/lib/productDescription";
+import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
 
 type Props = {
     params: Promise<{ category:string, productId: string }>;
@@ -99,12 +101,6 @@ function getProductCategoryJsonLd(categorySlug: string): ProductCategoryCodeJson
     };
 }
 
-function getProductDescription(product: IProductWithRelated): string {
-    return product.description?.trim()
-        || product.category?.productsDescription.trim()
-        || `Купити ${product.name} від українського бренду BlackBerry. Авторський дизайн, ручна робота та доставка по Україні.`;
-}
-
 function getFirstSentence(value: string): string {
     const normalizedValue: string = value.replace(/\s+/g, " ").trim();
     const firstSentence: RegExpMatchArray | null = normalizedValue.match(/^.*?[.!?](?=\s|$)/);
@@ -127,9 +123,7 @@ function getProductImages(product: IProductWithRelated): string[] {
 
 function isProductInStock(product: IProductWithRelated): boolean {
     return product.colors.some((color) =>
-        color.sizes.some((size) =>
-            size.available && (size.quantity === null || size.quantity > 0),
-        ),
+        color.sizes.some(isProductSizeAvailable),
     );
 }
 

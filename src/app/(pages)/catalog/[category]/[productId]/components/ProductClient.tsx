@@ -1,7 +1,7 @@
 "use client"
 
 import ProductImages from "@/app/(pages)/catalog/[category]/[productId]/components/ProductImages";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import ChooseVariant from "@/app/(pages)/catalog/[category]/[productId]/components/ChooseVariant";
 import Accordion from "@/app/components/reusable/Accordion";
@@ -9,6 +9,9 @@ import {ICategory} from "@/app/actions/getCategories";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import RelatedAndCustomization from "@/app/(pages)/catalog/[category]/[productId]/components/RelatedAndCustomization";
 import Link from "next/link";
+import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
+import {trackMetaEvent} from "@/app/lib/analytics/meta";
+import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 
 type Props = {
     product: IProductWithRelated
@@ -38,6 +41,16 @@ const ProductClient = ({ product, category }: Props) => {
 
     const [tab, setTab] = useState<"description" | "specifications">("description");
 
+    useEffect(() => {
+        trackMetaEvent("ViewContent", {
+            content_ids: [String(product.id)],
+            content_name: product.name,
+            content_type: "product_group",
+            value: calculatePriceWithDiscount(product.price, product.discount),
+            currency: "UAH",
+        });
+    }, [product.discount, product.id, product.name, product.price]);
+
     // ProductColor.id uniquely identifies the variant. Catalog color codes do
     // not: one multicolor variant can have several of them.
     const colorIdParam: string | null = params.get("colorId");
@@ -57,8 +70,8 @@ const ProductClient = ({ product, category }: Props) => {
         return [
             color,
             size
-                ? size.available && (size.quantity === null || size.quantity > 0)
-                : color.sizes.some(item => item.available && (item.quantity === null || item.quantity > 0)),
+                ? isProductSizeAvailable(size)
+                : color.sizes.some(isProductSizeAvailable),
             size?.quantity !== null && size?.quantity !== undefined && size.quantity <= 10 && size.quantity > 0
                 ? size.quantity
                 : null,

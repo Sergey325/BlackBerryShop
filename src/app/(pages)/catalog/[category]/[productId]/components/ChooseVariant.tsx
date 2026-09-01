@@ -15,9 +15,10 @@ import CheckBox from "@/app/components/reusable/CheckBox";
 import {IProductWithRelated} from "@/app/actions/getProductById";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {FaFire} from "react-icons/fa";
-import {sortColorsByAvailability} from "@/app/utils/productColorAvailability";
+import {isProductSizeAvailable, sortColorsByAvailability} from "@/app/utils/productColorAvailability";
 import ToolTip from "@/app/components/reusable/ToolTip";
 import {BsQuestionCircle} from "react-icons/bs";
+import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 
 type Props = {
     product: IProductWithRelated;
@@ -50,10 +51,9 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
         (s) => s.size === selectedSize
     ) ?? (selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0] : undefined);
     const effectiveSelectedSize: string = selectedSizeObj?.size ?? selectedSize;
-    const selectedSizeAvailable: boolean = Boolean(
-        selectedSizeObj?.available
-        && (selectedSizeObj.quantity === null || (selectedSizeObj.quantity ?? 0) > 0)
-    );
+    const selectedSizeAvailable: boolean = selectedSizeObj
+        ? isProductSizeAvailable(selectedSizeObj)
+        : false;
     const existingCartQuantity: number = useMemo((): number => {
         return cart.items
             .filter(item =>
@@ -105,7 +105,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
             })
             return
         }
-        else if (!selectedSizeAvailable) {
+        else if (!selectedSizeObj || !selectedSizeAvailable) {
             toast.error("Цього варіанта вже немає в наявності");
             return;
         }
@@ -132,13 +132,13 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
         cartModal.onOpen();
 
         trackMetaEvent("AddToCart", {
-            content_ids: [product.id.toString()],
+            content_ids: [buildCatalogItemId(product.id, selectedProductColor.id, selectedSizeObj.id)],
             content_name: product.name,
             content_type: "product",
             value: discountedPrice,
             currency: "UAH",
             color: selectedProductColor.colorName,
-            size: selectedSize,
+            size: effectiveSelectedSize,
         });
     }
 
@@ -215,11 +215,11 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                                     borderWidth: selectedSize === s.size ? "2px" : "1px",
                                     borderColor: selectedSize === s.size ? "#823D9A" : "#454649",
                                     color: selectedSize === s.size ? "#823D9A" : "#454649",
-                                    opacity: s.available && (s.quantity === null || s.quantity > 0) ? 1 : 0.4,
-                                    cursor: s.available && (s.quantity === null || s.quantity > 0) ? "pointer" : "not-allowed",
+                                    opacity: isProductSizeAvailable(s) ? 1 : 0.4,
+                                    cursor: isProductSizeAvailable(s) ? "pointer" : "not-allowed",
                                 }}
                                 className="rounded-lg py-0.5 px-4 font-medium select-none text-sm sm:text-base"
-                                onClick={() => s.available && (s.quantity === null || s.quantity > 0) && handleSizeChange(s.size)}
+                                onClick={() => isProductSizeAvailable(s) && handleSizeChange(s.size)}
                             >
                                 {s.size}
                             </div>
