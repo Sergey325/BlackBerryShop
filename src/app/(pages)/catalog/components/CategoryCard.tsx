@@ -21,7 +21,7 @@ export default function CategoryCard({ category }: Props) {
             {/* Photo */}
             <div className="relative h-full w-full overflow-hidden">
                 <Image
-                    src={optimizeCloudinaryUrl(category.coverImage, 600)}
+                    src={optimizeCloudinaryUrl(category.coverImage, 300)}
                     alt={category.name}
                     fill
                     unoptimized

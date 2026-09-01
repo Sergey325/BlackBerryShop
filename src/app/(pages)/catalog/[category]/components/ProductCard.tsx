@@ -102,9 +102,7 @@ const ProductCard = ({
     const [activeIdx, setActiveIdx] = useState(initialIdx);
     const isAvailable: boolean = isProductColorAvailable(sortedProduct.colors[activeIdx]);
 
-    const activeImageSrc: string = list
-        ? optimizeCloudinaryUrl(sortedProduct.colors[activeIdx].images[0].url, 320)
-        : optimizeCloudinaryUrl(sortedProduct.colors[activeIdx].images[0].url, 500, 18);
+    const activeImageSrc = sortedProduct.colors[activeIdx].images[0].url
     const [loadedImageSrcs, setLoadedImageSrcs] = useState<Set<string>>(() => new Set<string>());
     const isImageLoading: boolean = !loadedImageSrcs.has(activeImageSrc);
 
@@ -319,7 +317,7 @@ const ProductCard = ({
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 50vw, 300px"
-                        //unoptimized
+                        quality={75}
                         draggable={false}
                         onLoad={() => handleImageLoad(activeImageSrc)}
                         className={`object-cover transition-all duration-500 ease-out ${

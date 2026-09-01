@@ -231,7 +231,7 @@ function ReviewCardCompact({ review }: { review: typeof reviews[0] }) {
         <div className="h-full overflow-hidden rounded-2xl border border-primary/15 bg-[#fbf9fc]">
             {/* Photo */}
             <div className="relative w-full aspect-3/4">
-                <Image src={optimizeCloudinaryUrl(review.image, 500)} alt={review.name} fill unoptimized draggable={false} className="object-cover object-center" />
+                <Image src={optimizeCloudinaryUrl(review.image, 250)} alt={review.name} fill unoptimized draggable={false} className="object-cover object-center" />
                 <div className="absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-black/20 to-transparent" />
             </div>
 

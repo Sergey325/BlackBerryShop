@@ -77,10 +77,11 @@ const SeasonCollections = (): JSX.Element => {
 
                             <div className="absolute inset-y-0 right-0 z-0 w-[58%]">
                                 <Image
-                                    src={optimizeCloudinaryUrl(season.heroImage, 900)}
+                                    src={optimizeCloudinaryUrl(season.heroImage, 400)}
                                     alt={`Колекція ${season.label}`}
                                     fill
                                     loading="lazy"
+                                    unoptimized
                                     sizes="(max-width: 1023px) 58vw, 29vw"
                                     className="object-contain object-right transition-transform duration-700 group-hover:scale-[1.03]"
                                 />

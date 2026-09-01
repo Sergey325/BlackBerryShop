@@ -41,6 +41,7 @@ export default function SeasonBlock({ season, eager = false }: Props) {
                             src={optimizeCloudinaryUrl(season.heroImage, 300)}
                             alt={season.label}
                             fill
+                            unoptimized
                             fetchPriority={eager ? "high" : "auto"}
                             loading={eager ? "eager" : "lazy"}
                             sizes="(max-width: 639px) 45vw, 1px"
@@ -91,9 +92,10 @@ export default function SeasonBlock({ season, eager = false }: Props) {
                 */}
                 <div className="absolute top-0 right-0 h-[280px] lg:h-[400px] w-[60%]">
                     <Image
-                        src={optimizeCloudinaryUrl(season.heroImage, 1500)}
+                        src={optimizeCloudinaryUrl(season.heroImage, 500)}
                         alt={season.label}
                         fill
+                        unoptimized
                         fetchPriority={eager ? "high" : "auto"}
                         loading={eager ? "eager" : "lazy"}
                         sizes="(min-width: 640px) 60vw, 1px"

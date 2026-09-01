@@ -133,7 +133,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                     </div>
                     {/* Hero image — right side */}
                     <div className="relative w-[42%] shrink-0">
-                        <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 1200)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(min-width: 640px) 42vw, 1px" unoptimized
+                        <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 600)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(min-width: 640px) 42vw, 1px" unoptimized
                                className="object-scale-down object-top-right" />{/* object-cover lg:object-scale-down object-top-right */}
                         {/* fade into banner bg */}
                         {/*<div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r bg-amber-50 to-transparent pointer-events-none" />*/}
@@ -142,7 +142,7 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* Mobile */}
                 <div className={`sm:hidden relative h-56 rounded-2xl overflow-hidden mb-4 ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
-                    <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 1200)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(max-width: 639px) 100vw, 1px" unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
+                    <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 500)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(max-width: 639px) 100vw, 1px" unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
                     <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10" />
                     <div className="absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
                         <div className="flex flex-col items-start gap-2 mb-1.5">
