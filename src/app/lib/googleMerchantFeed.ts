@@ -3,9 +3,13 @@ import {getProductPath} from "@/app/lib/productUrl";
 import {absoluteUrl, SITE_URL} from "@/app/lib/seo";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
-import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+import {
+    buildCatalogItemId,
+    buildCatalogMpn,
+    buildCatalogVariantUrl,
+    CATALOG_BRAND,
+} from "@/app/lib/catalogItemId";
 
-const MERCHANT_BRAND = "Black Berry";
 const MAX_ADDITIONAL_IMAGES = 10;
 
 export interface GoogleMerchantFeedProduct {
@@ -190,11 +194,9 @@ function xmlElement(name: string, value: string | number): string {
 }
 
 function buildProductLink(product: GoogleMerchantFeedProduct, colorId: number, size: string): string {
-    const url: URL = new URL(absoluteUrl(getProductPath(product.category.slug, product.id, product.slug)));
-    url.searchParams.set("colorId", String(colorId));
-    url.searchParams.set("size", size);
+    const productUrl: string = absoluteUrl(getProductPath(product.category.slug, product.id, product.slug));
 
-    return url.toString();
+    return buildCatalogVariantUrl(productUrl, colorId, size);
 }
 
 function buildItemXml(
@@ -242,14 +244,14 @@ function buildItemXml(
             ? [xmlElement("g:sale_price", formatPrice(salePrice))]
             : []),
         xmlElement("g:condition", "new"),
-        xmlElement("g:brand", MERCHANT_BRAND),
+        xmlElement("g:brand", CATALOG_BRAND),
         xmlElement("g:color", color.colorName),
         xmlElement("g:size", size.size),
         ...(gender ? [xmlElement("g:gender", gender)] : []),
         ...(ageGroup ? [xmlElement("g:age_group", ageGroup)] : []),
         ...(product.material?.name.trim() ? [xmlElement("g:material", product.material.name.trim())] : []),
         xmlElement("g:product_type", product.category.name),
-        xmlElement("g:mpn", `BB-${product.id}-${color.id}-${size.id}`),
+        xmlElement("g:mpn", buildCatalogMpn(product.id, color.id, size.id)),
     ];
 
     return `<item>\n${fields.map((field: string): string => `    ${field}`).join("\n")}\n</item>`;

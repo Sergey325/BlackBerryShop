@@ -16,6 +16,12 @@ import {notFound, permanentRedirect} from "next/navigation";
 import {extractProductId, getProductPath, getProductRouteSegment} from "@/app/lib/productUrl";
 import {getProductDescription} from "@/app/lib/productDescription";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
+import {
+    buildCatalogItemId,
+    buildCatalogMpn,
+    buildCatalogVariantUrl,
+    CATALOG_BRAND,
+} from "@/app/lib/catalogItemId";
 
 type Props = {
     params: Promise<{ category:string, productId: string }>;
@@ -54,13 +60,27 @@ interface ProductCategoryCodeJsonLd {
     codeValue: string;
 }
 
-interface ProductJsonLd {
-    "@context": "https://schema.org";
+interface ProductVariantJsonLd {
     "@type": "Product";
     "@id": string;
     name: string;
     description: string;
     sku: string;
+    mpn: string;
+    url: string;
+    image: string[];
+    color: string;
+    size: string;
+    offers: ProductOfferJsonLd;
+}
+
+interface ProductGroupJsonLd {
+    "@context": "https://schema.org";
+    "@type": "ProductGroup";
+    "@id": string;
+    name: string;
+    description: string;
+    productGroupID: string;
     url: string;
     image?: string[];
     brand: {
@@ -69,7 +89,8 @@ interface ProductJsonLd {
     };
     category?: ProductCategoryCodeJsonLd;
     material?: string;
-    offers: ProductOfferJsonLd;
+    variesBy: ["https://schema.org/color", "https://schema.org/size"];
+    hasVariant: ProductVariantJsonLd[];
 }
 
 const GOOGLE_PRODUCT_CATEGORY_BY_SLUG: Record<string, string> = {
@@ -119,12 +140,6 @@ function getProductImages(product: IProductWithRelated): string[] {
         .map((image) => image.url);
 
     return Array.from(new Set(imageUrls));
-}
-
-function isProductInStock(product: IProductWithRelated): boolean {
-    return product.colors.some((color) =>
-        color.sizes.some(isProductSizeAvailable),
-    );
 }
 
 function addSearchParams(path: string, searchParams: Record<string, string | string[] | undefined>): string {
@@ -187,46 +202,82 @@ const ProductPage = async ({ params, searchParams }: Props) => {
     const productUrl: string = absoluteUrl(productPath);
     const productImages: string[] = getProductImages(product);
     const productCategoryJsonLd: ProductCategoryCodeJsonLd | null = getProductCategoryJsonLd(product.category.slug);
-    const productJsonLd: ProductJsonLd = {
+    const productDescription: string = getProductDescription(product);
+    const productVariantsJsonLd: ProductVariantJsonLd[] = product.colors.flatMap((color): ProductVariantJsonLd[] => {
+        const colorImages: string[] = Array.from(new Set(
+            [...color.images]
+                .sort((firstImage, secondImage): number =>
+                    firstImage.order - secondImage.order || firstImage.id - secondImage.id
+                )
+                .map((image): string => image.url),
+        ));
+
+        if (colorImages.length === 0 || !color.colorName.trim()) {
+            return [];
+        }
+
+        return color.sizes.flatMap((size): ProductVariantJsonLd[] => {
+            if (!size.size.trim()) return [];
+
+            const catalogItemId: string = buildCatalogItemId(product.id, color.id, size.id);
+            const variantUrl: string = buildCatalogVariantUrl(productUrl, color.id, size.size);
+
+            return [{
+                "@type": "Product",
+                "@id": `${variantUrl}#product`,
+                name: `${product.name} — ${color.colorName}, ${size.size}`,
+                description: productDescription,
+                sku: catalogItemId,
+                mpn: buildCatalogMpn(product.id, color.id, size.id),
+                url: variantUrl,
+                image: colorImages,
+                color: color.colorName,
+                size: size.size,
+                offers: {
+                    "@type": "Offer",
+                    url: variantUrl,
+                    price: calculatePriceWithDiscount(product.price, product.discount),
+                    priceCurrency: "UAH",
+                    availability: isProductSizeAvailable(size)
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                    itemCondition: "https://schema.org/NewCondition",
+                    seller: {
+                        "@type": "OnlineStore",
+                        "@id": ORGANIZATION_ID,
+                        name: SITE_NAME,
+                        url: SITE_URL,
+                    },
+                    hasMerchantReturnPolicy: {
+                        "@id": RETURN_POLICY_ID,
+                    },
+                    shippingDetails: {
+                        "@type": "OfferShippingDetails",
+                        hasShippingService: {
+                            "@id": SHIPPING_SERVICE_ID,
+                        },
+                    },
+                },
+            }];
+        });
+    });
+    const productJsonLd: ProductGroupJsonLd = {
         "@context": "https://schema.org",
-        "@type": "Product",
-        "@id": `${productUrl}#product`,
+        "@type": "ProductGroup",
+        "@id": `${productUrl}#product-group`,
         name: product.name,
-        description: getProductDescription(product),
-        sku: String(product.id),
+        description: productDescription,
+        productGroupID: String(product.id),
         url: productUrl,
         ...(productImages.length > 0 ? {image: productImages} : {}),
         brand: {
             "@type": "Brand",
-            name: SITE_NAME,
+            name: CATALOG_BRAND,
         },
         ...(productCategoryJsonLd ? {category: productCategoryJsonLd} : {}),
         ...(product.material ? {material: product.material.name} : {}),
-        offers: {
-            "@type": "Offer",
-            url: productUrl,
-            price: calculatePriceWithDiscount(product.price, product.discount),
-            priceCurrency: "UAH",
-            availability: isProductInStock(product)
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
-            itemCondition: "https://schema.org/NewCondition",
-            seller: {
-                "@type": "OnlineStore",
-                "@id": ORGANIZATION_ID,
-                name: SITE_NAME,
-                url: SITE_URL,
-            },
-            hasMerchantReturnPolicy: {
-                "@id": RETURN_POLICY_ID,
-            },
-            shippingDetails: {
-                "@type": "OfferShippingDetails",
-                hasShippingService: {
-                    "@id": SHIPPING_SERVICE_ID,
-                },
-            },
-        },
+        variesBy: ["https://schema.org/color", "https://schema.org/size"],
+        hasVariant: productVariantsJsonLd,
     };
     const breadcrumbJsonLd: BreadcrumbListJsonLd = createBreadcrumbJsonLd([
         {name: "Головна", path: "/"},
