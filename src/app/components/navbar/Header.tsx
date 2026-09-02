@@ -101,7 +101,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                         >
                             <Image
                                 src="/header-logo.png"
-                                alt="BlackBerry"
+                                alt="Black Berry"
                                 width={36}
                                 height={36}
                                 quality={100}

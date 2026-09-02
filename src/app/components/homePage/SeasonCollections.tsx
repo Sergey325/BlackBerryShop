@@ -35,7 +35,7 @@ const SeasonCollections = (): JSX.Element => {
             <Reveal>
                 <div className="mb-5 px-2 sm:mb-7">
                     <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.18em] text-primary sm:text-sm">
-                        Колекції BlackBerry
+                        Колекції Black Berry
                     </p>
                     <h2
                         id="season-collections-title"

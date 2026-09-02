@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-export const SITE_NAME = "BlackBerry";
+export const SITE_NAME = "Black Berry";
 export const SITE_URL = "https://black-berry.shop";
-export const DEFAULT_TITLE = "BlackBerry — авторські головні убори та аксесуари";
-export const DEFAULT_DESCRIPTION = "BlackBerry — український бренд авторських головних уборів та аксесуарів. Балаклави, панамки, шапочки та багато інших унікальних моделей для дітей і дорослих.";
+export const DEFAULT_TITLE = "Black Berry — авторські головні убори та аксесуари";
+export const DEFAULT_DESCRIPTION = "Black Berry — український бренд авторських головних уборів та аксесуарів. Балаклави, панамки, шапочки та багато інших унікальних моделей для дітей і дорослих.";
 export const DEFAULT_OG_IMAGE = "/og-logo.png";
 
 interface CreateMetadataOptions {

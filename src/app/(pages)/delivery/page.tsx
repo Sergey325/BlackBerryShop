@@ -5,7 +5,7 @@ import {createMetadata} from "@/app/lib/seo";
 
 export const metadata: Metadata = createMetadata({
     title: "Доставка та оплата",
-    description: "Умови доставки та оплати замовлень BlackBerry. Доставка Новою Поштою по Україні, онлайн-оплата карткою та накладений платіж.",
+    description: "Умови доставки та оплати замовлень Black Berry. Доставка Новою Поштою по Україні, онлайн-оплата карткою та накладений платіж.",
     path: "/delivery",
 });
 

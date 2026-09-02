@@ -14,9 +14,9 @@ export const revalidate = 86400;
 
 export const metadata: Metadata = createMetadata({
     title: "Каталог авторських головних уборів та аксесуарів",
-    description: "Каталог BlackBerry: авторські панами, кепки та аксесуари ручної роботи для дітей і дорослих. Обирайте сезон, модель, колір і розмір.",
+    description: "Каталог Black Berry: авторські панами, кепки та аксесуари ручної роботи для дітей і дорослих. Обирайте сезон, модель, колір і розмір.",
     path: "/catalog",
-    imageAlt: "Каталог головних уборів та аксесуарів BlackBerry",
+    imageAlt: "Каталог головних уборів та аксесуарів Black Berry",
 });
 
 const breadcrumbJsonLd: BreadcrumbListJsonLd = createBreadcrumbJsonLd([
