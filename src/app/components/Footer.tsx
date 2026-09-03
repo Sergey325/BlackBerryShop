@@ -11,6 +11,7 @@ export default function Footer() {
             <Link href="/about" className="text-sm  hover:text-primary transition">Про нас</Link>
             <Link href="/delivery" className="text-sm hover:text-primary transition">Доставка та оплата</Link>
             <Link href="/exchange" className="text-sm hover:text-primary transition">Обмін та повернення</Link>
+            <Link href="/wholesale" className="text-sm hover:text-primary transition">Оптовим покупцям</Link>
             <Link href="/offer" className="text-sm hover:text-primary transition">Договір публічної оферти</Link>
         </div>
 

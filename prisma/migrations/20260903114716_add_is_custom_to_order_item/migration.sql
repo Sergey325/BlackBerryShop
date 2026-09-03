@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Order" ALTER COLUMN "phone" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "OrderItem" ADD COLUMN     "isCustom" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "productId" DROP NOT NULL,
+ALTER COLUMN "color" DROP NOT NULL,
+ALTER COLUMN "imageUrl" DROP NOT NULL;
