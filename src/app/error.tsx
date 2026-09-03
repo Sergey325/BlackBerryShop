@@ -1,6 +1,8 @@
 "use client"
 
+import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
+import {usePathname} from "next/navigation";
 import EmptyState from "@/app/components/reusable/EmptyState";
 
 type Props = {
@@ -9,9 +11,18 @@ type Props = {
 };
 
 const Error = ({ error, reset }: Props) => {
+    const pathname: string = usePathname();
+
     useEffect(() => {
-        console.error(error);
-    }, [error]);
+        Sentry.withScope((scope): void => {
+            scope.setTag("nextjs.error_boundary", "app/error");
+            scope.setContext("nextjs", {
+                pathname,
+                digest: error.digest,
+            });
+            scope.captureException(error);
+        });
+    }, [error, pathname]);
 
     return (
         <EmptyState

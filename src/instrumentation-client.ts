@@ -5,6 +5,8 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
+  // A DSN is public by design. Keep the env override, but do not silently
+  // disable all browser reporting when it is missing from the deployment.
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   enabled: ["production", "preview"].includes(

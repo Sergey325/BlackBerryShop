@@ -55,7 +55,7 @@ export default function WholesalePage() {
                 підібрати товари та зробимо розрахунок саме під ваше замовлення.
             </p>
 
-            <div className="bg-gray-50 rounded-md p-6 text-center">
+            <div className="bg-gray-50 rounded-md px-6 py-3 sm:py-6 text-center">
                 <p className="text-gray-700 font-medium">
                     Напишіть нам — обговоримо ваше замовлення та умови співпраці.
                 </p>

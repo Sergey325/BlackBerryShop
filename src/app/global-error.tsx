@@ -10,7 +10,16 @@ export default function GlobalError({
   error: Error & { digest?: string };
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    Sentry.captureException(error, {
+      tags: {
+        "nextjs.error_boundary": "app/global-error",
+      },
+      contexts: {
+        nextjs: {
+          digest: error.digest,
+        },
+      },
+    });
   }, [error]);
 
   return (
