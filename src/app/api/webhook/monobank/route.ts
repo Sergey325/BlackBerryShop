@@ -74,7 +74,7 @@ export async function POST(request: Request) {
                 for (const item of existingOrder.items) {
                     let productSizeId: number | null = item.productSizeId;
 
-                    if (productSizeId === null) {
+                    if (productSizeId === null && item.productId && item.color) {
                         const legacyMatches = await tx.productSize.findMany({
                             where: {
                                 productColor: {
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
                         });
                     }
 
-                    if (shouldCountPromoCode) {
+                    if (shouldCountPromoCode && productSizeId) {
                         requestedByProductSizeId.set(
                             productSizeId,
                             (requestedByProductSizeId.get(productSizeId) ?? 0) + item.quantity
@@ -219,12 +219,12 @@ export async function POST(request: Request) {
         if (newStatus === "PAID" && !order.ttnNumber) {
             try {
                 const { ttnNumber, ttnRef } = await createTTN({
-                    recipientFirstName:order.firstName,
-                    recipientLastName: order.lastName,
-                    recipientPhone: order.phone,
-                    recipientCityRef: order.cityRef,
+                    recipientFirstName:order.firstName!,
+                    recipientLastName: order.lastName!,
+                    recipientPhone: order.phone!,
+                    recipientCityRef: order.cityRef!,
                     recipientWarehouseRef: order.warehouseRef!,
-                    recipientWarehouseNumber: order.warehouseNumber.toString(),
+                    recipientWarehouseNumber: order.warehouseNumber!.toString(),
                     serviceType: order.warehouse?.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
                     cost: itemsTotal,
                     codAmount: order.paymentMethod === "MONOBANK" ? 0 : codAmount,
@@ -277,7 +277,7 @@ export async function POST(request: Request) {
 
                     return {
                         id: buildCatalogItemId(
-                            item.productId,
+                            item.productId!,
                             item.productSize.productColorId,
                             item.productSize.id,
                         ),
@@ -333,6 +333,8 @@ export async function POST(request: Request) {
                     },
                 });
 
+
+                // @ts-ignore
                 const telegramMessage = createOrderMessage(order)
 
                 try {
