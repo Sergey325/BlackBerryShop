@@ -44,8 +44,8 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) =>
                             mobile:   { breakpoint: { max: 640,  min: 0    }, items: 2 },
                         }}
                     >
-                        {relatedProducts.map((p, i) => (
-                            <div key={p.id+i} className="py-1 h-full">
+                        {relatedProducts.map((p) => (
+                            <div key={p.id} className="py-1 h-full">
                                 <ProductCard
                                     product={p}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}
@@ -70,8 +70,8 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) =>
                             mobile:   { breakpoint: { max: 640,  min: 0    }, items: 2 },
                         }}
                     >
-                        {customizationOptions.map((p, i) => (
-                            <div key={p.id+i} className="py-1 h-full">
+                        {customizationOptions.map((p) => (
+                            <div key={p.id} className="py-1 h-full">
                                 <ProductCard
                                     product={p}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}

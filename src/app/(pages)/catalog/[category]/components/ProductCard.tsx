@@ -3,7 +3,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import type {IProductCardData} from "@/app/actions/getProducts";
 import Image from "next/image";
-import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import {useSearchParams} from "next/navigation";
@@ -99,7 +98,20 @@ const ProductCard = ({
         return 0;
     }, [preferredCatalogColorCodes, searchParams, sortedProduct.colors]);
 
-    const [activeIdx, setActiveIdx] = useState(initialIdx);
+    const [activeSelection, setActiveSelection] = useState<{
+        productId: number;
+        colorIndex: number;
+    }>(() => ({
+        productId: product.id,
+        colorIndex: initialIdx,
+    }));
+    const activeIdx: number = activeSelection.productId === product.id
+        && sortedProduct.colors[activeSelection.colorIndex]
+        ? activeSelection.colorIndex
+        : initialIdx;
+    const setActiveIdx = (colorIndex: number): void => {
+        setActiveSelection({productId: product.id, colorIndex});
+    };
     const isAvailable: boolean = isProductColorAvailable(sortedProduct.colors[activeIdx]);
 
     const activeImageSrc = sortedProduct.colors[activeIdx].images[0].url
@@ -120,8 +132,8 @@ const ProductCard = ({
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setActiveIdx(initialIdx);
-    }, [initialIdx]);
+        setActiveSelection({productId: product.id, colorIndex: initialIdx});
+    }, [initialIdx, product.id]);
 
     const [visibleCount, setVisibleCount] = useState(6);
 

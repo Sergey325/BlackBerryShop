@@ -1,7 +1,7 @@
 "use client"
 
 import ProductImages from "@/app/(pages)/catalog/[category]/[productId]/components/ProductImages";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import ChooseVariant from "@/app/(pages)/catalog/[category]/[productId]/components/ChooseVariant";
 import Accordion from "@/app/components/reusable/Accordion";
@@ -21,6 +21,11 @@ type Props = {
 
 const ProductClient = ({ product, category }: Props) => {
     const params = useSearchParams();
+
+    useLayoutEffect((): void => {
+        window.scrollTo({top: 0, left: 0, behavior: "auto"});
+    }, [product.id]);
+
     const displayedDescription: string = product.description || category.productsDescription;
     const firstSentenceMatch: RegExpMatchArray | null = displayedDescription.match(/^[\s\S]*?[.!?](?=\s|$)/);
     const snippetDescription: string = firstSentenceMatch?.[0] ?? displayedDescription;
