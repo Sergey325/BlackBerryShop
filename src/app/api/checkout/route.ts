@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
-import {PaymentMethod} from "@prisma/client";
+import {PaymentMethod, TrafficSource} from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
     calculateCartPricing,
@@ -42,6 +42,7 @@ type CheckoutRequest = {
     promoCode?: string | null;
     fbp?: string | null;
     fbc?: string | null;
+    trafficSource?: TrafficSource | null;
 };
 
 type MonobankResponse = {
@@ -63,12 +64,17 @@ class InventoryConflictError extends Error {
     }
 }
 
+function isTrafficSource(value: unknown): value is TrafficSource {
+    return typeof value === "string"
+        && Object.values(TrafficSource).some((source: TrafficSource): boolean => source === value);
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
     let orderId: number | undefined;
 
     try {
         const body: CheckoutRequest = await request.json() as CheckoutRequest;
-        const {contact, delivery, paymentMethod, items, promoCode, fbp, fbc} = body;
+        const {contact, delivery, paymentMethod, items, promoCode, fbp, fbc, trafficSource} = body;
 
         if (!contact || !delivery || !Array.isArray(items) || items.length === 0) {
             return NextResponse.json({error: "Некоректні дані замовлення"}, {status: 400});
@@ -80,6 +86,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         if (promoCode !== null && promoCode !== undefined && typeof promoCode !== "string") {
             return NextResponse.json({error: "Некоректний промокод"}, {status: 400});
+        }
+
+        if (trafficSource !== null && trafficSource !== undefined && !isTrafficSource(trafficSource)) {
+            return NextResponse.json({error: "Некоректне джерело переходу"}, {status: 400});
         }
 
         if (items.some((item: CheckoutItem): boolean =>
@@ -110,6 +120,8 @@ export async function POST(request: Request): Promise<NextResponse> {
             ? forwardedFor.split(",")[0].trim()
             : request.headers.get("x-real-ip") ?? null;
         const userAgent: string | null = request.headers.get("user-agent") ?? null;
+        const resolvedTrafficSource: TrafficSource | null = trafficSource
+            ?? (typeof fbc === "string" && fbc.length > 0 ? TrafficSource.FACEBOOK : null);
 
         const order = await prisma.$transaction(async (tx) => {
             const productColorIds: number[] = [...new Set(
@@ -212,6 +224,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                     paymentMethod,
                     fbp: fbp ?? null,
                     fbc: fbc ?? null,
+                    trafficSource: resolvedTrafficSource,
                     clientIp,
                     userAgent,
                     promoCodeId: pricing.promoCode?.id ?? null,

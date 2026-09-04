@@ -20,6 +20,7 @@ import type {IProductSize} from "@/app/actions/getProducts";
 import type {CartItem as CartItemType} from "@/app/types";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {getSelectedProductSize} from "@/app/utils/inventory";
+import {getCheckoutTrafficSource} from "@/app/lib/analytics/trafficSource";
 
 type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
 type InventoryResponse = {
@@ -273,6 +274,7 @@ const CartClient = () => {
 
             const fbp = getCookie('_fbp');
             const fbc = getCookie('_fbc');
+            const trafficSource = getCheckoutTrafficSource(fbc);
 
             const data = {
                 contact: {
@@ -305,6 +307,7 @@ const CartClient = () => {
                 })),
                 fbp,
                 fbc,
+                trafficSource,
             }
 
             const checkoutContents: Array<{

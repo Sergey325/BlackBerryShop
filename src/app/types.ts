@@ -1,4 +1,4 @@
-import {OrderStatus, PaymentMethod} from "@prisma/client";
+import {OrderStatus, PaymentMethod, TrafficSource} from "@prisma/client";
 import {JSX} from "react";
 import {ICategory} from "@/app/actions/getCategories";
 import {IProductSize} from "@/app/actions/getProducts";
@@ -79,6 +79,7 @@ export interface IOrder {
     createdAt: Date | string;
     updatedAt: Date | string;
     paymentMethod: PaymentMethod;
+    trafficSource: TrafficSource | null;
     area: string;
     ttnNumber: string | null;
     ttnRef: string | null;

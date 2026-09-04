@@ -16,6 +16,13 @@ const escapeHtml = (value: string | number): string => String(value)
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
+const TRAFFIC_SOURCE_LABELS: Record<NonNullable<IOrder["trafficSource"]>, string> = {
+    FACEBOOK: "Facebook",
+    GOOGLE_SEARCH: "Google пошук",
+    GOOGLE_FREE_LISTING: "Google безкоштовна картка товару",
+    INSTAGRAM: "Instagram",
+};
+
 const formatOrderDate = (value: Date | string): string => new Intl.DateTimeFormat("uk-UA", {
     timeZone: "Europe/Kyiv",
     day: "2-digit",
@@ -89,6 +96,7 @@ export function createOrderMessage(order: IOrder): string {
         `👤 <b>${escapeHtml(`${order.firstName} ${order.lastName}`)}</b>`,
         `📞 <code>${escapeHtml(order.phone)}</code>`,
         order.email ? `✉️ ${escapeHtml(order.email)}` : null,
+        order.trafficSource ? `🔗 Джерело: ${TRAFFIC_SOURCE_LABELS[order.trafficSource]}` : null,
     ].filter((line): line is string => line !== null);
     const deliveryLines: string[] = [
         `📍 ${escapeHtml(order.city)}${order.area ? `, ${escapeHtml(order.area)} обл.` : ""}`,

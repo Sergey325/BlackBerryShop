@@ -199,6 +199,7 @@ model Order {
   clientIp               String?
   fbc                    String?
   fbp                    String?
+  trafficSource          TrafficSource?
   userAgent              String?
   paidAt                 DateTime?
   discountAmount         Float?
@@ -314,4 +315,11 @@ enum OrderStatus {
 enum PaymentMethod {
   MONOBANK
   CASH_ON_DELIVERY
+}
+
+enum TrafficSource {
+  FACEBOOK
+  GOOGLE_SEARCH
+  GOOGLE_FREE_LISTING
+  INSTAGRAM
 }
