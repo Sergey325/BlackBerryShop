@@ -18,6 +18,7 @@ import {
     SITE_NAME,
     SITE_URL,
 } from "@/app/lib/seo";
+import RouteAnnouncerTranslationGuard from "@/app/components/RouteAnnouncerTranslationGuard";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -62,6 +63,7 @@ export default function RootLayout({
         <html lang="uk" className={`${montserrat.variable} antialiased`}>
             <body className="2xl:px-0 font-(family-name:--font-montserrat) bg-gray-50 w-full min-h-screen flex flex-col">
                 <Header/>
+                <RouteAnnouncerTranslationGuard/>
                 <ToasterProvider/>
                 <BackToTop/>
                 <CartModal/>
