@@ -184,7 +184,85 @@ export async function POST(request: Request) {
             };
         });
 
-        let order = transactionResult.order;
+        type WebhookOrder = typeof transactionResult.order;
+        type WebhookOrderItem = WebhookOrder["items"][number];
+        type CompleteStorefrontOrderItem = Omit<
+            WebhookOrderItem,
+            "productId" | "color" | "imageUrl" | "productSize"
+        > & {
+            productId: number;
+            color: string;
+            imageUrl: string;
+            productSize: {
+                id: number;
+                productColorId: number;
+            };
+        };
+        type CompleteStorefrontOrder = Omit<
+            WebhookOrder,
+            | "firstName"
+            | "lastName"
+            | "phone"
+            | "area"
+            | "city"
+            | "cityRef"
+            | "warehouse"
+            | "warehouseNumber"
+            | "warehouseRef"
+            | "items"
+        > & {
+            firstName: string;
+            lastName: string;
+            phone: string;
+            area: string;
+            city: string;
+            cityRef: string;
+            warehouse: string;
+            warehouseNumber: number;
+            warehouseRef: string;
+            items: CompleteStorefrontOrderItem[];
+        };
+
+        function assertCompleteStorefrontOrder(
+            storefrontOrder: WebhookOrder
+        ): asserts storefrontOrder is CompleteStorefrontOrder {
+            const requiredFields: Array<string | number | null> = [
+                storefrontOrder.firstName,
+                storefrontOrder.lastName,
+                storefrontOrder.phone,
+                storefrontOrder.area,
+                storefrontOrder.city,
+                storefrontOrder.cityRef,
+                storefrontOrder.warehouse,
+                storefrontOrder.warehouseNumber,
+                storefrontOrder.warehouseRef,
+            ];
+
+            if (requiredFields.some((value: string | number | null): boolean => value === null)) {
+                throw new Error(
+                    `Storefront order ${storefrontOrder.id} has incomplete customer or delivery data`
+                );
+            }
+
+            const invalidItem: WebhookOrderItem | undefined = storefrontOrder.items.find(
+                (item: WebhookOrderItem): boolean =>
+                    item.productId === null
+                    || item.color === null
+                    || item.imageUrl === null
+                    || item.productSize === null
+            );
+
+            if (invalidItem) {
+                throw new Error(
+                    `Storefront order ${storefrontOrder.id}, item ${invalidItem.id} has incomplete product data`
+                );
+            }
+        }
+
+        const initialOrder = transactionResult.order;
+        assertCompleteStorefrontOrder(initialOrder);
+
+        let order: CompleteStorefrontOrder = initialOrder;
 
         if (transactionResult.inventoryChanged) {
             try {
@@ -219,34 +297,28 @@ export async function POST(request: Request) {
         if (newStatus === "PAID" && !order.ttnNumber) {
             try {
                 const { ttnNumber, ttnRef } = await createTTN({
-                    recipientFirstName:order.firstName!,
-                    recipientLastName: order.lastName!,
-                    recipientPhone: order.phone!,
-                    recipientCityRef: order.cityRef!,
-                    recipientWarehouseRef: order.warehouseRef!,
-                    recipientWarehouseNumber: order.warehouseNumber!.toString(),
-                    serviceType: order.warehouse?.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
+                    recipientFirstName:order.firstName,
+                    recipientLastName: order.lastName,
+                    recipientPhone: order.phone,
+                    recipientCityRef: order.cityRef,
+                    recipientWarehouseRef: order.warehouseRef,
+                    recipientWarehouseNumber: order.warehouseNumber.toString(),
+                    serviceType: order.warehouse.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
                     cost: itemsTotal,
                     codAmount: order.paymentMethod === "MONOBANK" ? 0 : codAmount,
                     description: order.items.map(i => i.name).join(", "),
                 });
 
-                order = await prisma.order.update({
+                await prisma.order.update({
                     where: { id: order.id },
                     data: { ttnNumber, ttnRef },
-                    include: {
-                        items: {
-                            include: {
-                                productSize: {
-                                    select: {
-                                        id: true,
-                                        productColorId: true,
-                                    },
-                                },
-                            },
-                        },
-                    },
                 });
+
+                order = {
+                    ...order,
+                    ttnNumber,
+                    ttnRef,
+                };
 
             } catch (ttnError) {
                 console.error("Failed to create TTN for order", order.id, ttnError);
@@ -271,13 +343,9 @@ export async function POST(request: Request) {
             // Purchase is sent server-side through Meta Conversions API.
             try {
                 const purchaseContents: Array<{id: string; quantity: number}> = order.items.map((item) => {
-                    if (!item.productSize) {
-                        throw new Error(`Order ${order.id} item ${item.id} has no catalog variant ID`);
-                    }
-
                     return {
                         id: buildCatalogItemId(
-                            item.productId!,
+                            item.productId,
                             item.productSize.productColorId,
                             item.productSize.id,
                         ),
@@ -333,8 +401,6 @@ export async function POST(request: Request) {
                     },
                 });
 
-
-                // @ts-ignore
                 const telegramMessage = createOrderMessage(order)
 
                 try {
@@ -342,7 +408,7 @@ export async function POST(request: Request) {
                         await sendTelegramMessage(
                             admin.chatId,
                             telegramMessage,
-                            order.invoiceId ?? ""
+                            order.id
                         );
                     }
                 } catch (telegramError) {
