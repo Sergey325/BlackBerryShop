@@ -234,6 +234,8 @@ function buildItemXml(
         xmlElement("g:title", title),
         xmlElement("g:description", description),
         xmlElement("g:link", buildProductLink(product, color.id, size.size)),
+        // Consolidate variant URLs under the same canonical URL as the product page.
+        xmlElement("g:canonical_link", absoluteUrl(getProductPath(product.category.slug, product.id, product.slug))),
         xmlElement("g:image_link", mainImageUrl),
         ...imageUrls.slice(1, MAX_ADDITIONAL_IMAGES + 1).map(
             (url: string): string => xmlElement("g:additional_image_link", url),
