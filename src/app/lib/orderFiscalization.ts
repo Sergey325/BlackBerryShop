@@ -4,6 +4,7 @@ import {OrderStatus, PaymentMethod, Prisma} from "@prisma/client";
 import prisma from "@/app/lib/prisma";
 import {
     CheckboxFiscalizationResult,
+    CheckboxInitialPaymentSource,
     createCheckboxAfterpaymentReceipt,
     createCheckboxPaymentReceipt,
 } from "@/app/lib/checkbox";
@@ -55,7 +56,10 @@ async function getOrder(orderId: number): Promise<FiscalizationOrder> {
     return order;
 }
 
-export async function fiscalizeInitialOrder(orderId: number): Promise<CheckboxFiscalizationResult> {
+export async function fiscalizeInitialOrder(
+    orderId: number,
+    paymentSource: CheckboxInitialPaymentSource = "MONOBANK",
+): Promise<CheckboxFiscalizationResult> {
     const order: FiscalizationOrder = await getOrder(orderId);
 
     if (order.checkboxReceiptId && order.checkboxReceiptStatus === "DONE") {
@@ -77,7 +81,7 @@ export async function fiscalizeInitialOrder(orderId: number): Promise<CheckboxFi
         throw new Error(`Order ${order.id} with status ${order.status} cannot be fiscalized`);
     }
 
-    const result: CheckboxFiscalizationResult = await createCheckboxPaymentReceipt(order);
+    const result: CheckboxFiscalizationResult = await createCheckboxPaymentReceipt(order, paymentSource);
 
     await prisma.order.update({
         where: {id: order.id},

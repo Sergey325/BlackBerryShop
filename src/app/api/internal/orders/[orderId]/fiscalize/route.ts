@@ -4,12 +4,13 @@ import {
     fiscalizeAfterpaymentOrder,
     fiscalizeInitialOrder,
 } from "@/app/lib/orderFiscalization";
-import {CheckboxFiscalizationResult} from "@/app/lib/checkbox";
+import {CheckboxFiscalizationResult, CheckboxInitialPaymentSource} from "@/app/lib/checkbox";
 
 type FiscalizationType = "initial" | "afterpayment";
 
 type FiscalizationRequestBody = {
     type?: unknown;
+    paymentSource?: unknown;
 };
 
 type RouteContext = {
@@ -49,9 +50,32 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
 
     const type: FiscalizationType = body.type;
 
+    if (type === "afterpayment" && body.paymentSource !== undefined) {
+        return NextResponse.json(
+            {error: "paymentSource can only be specified for an initial receipt"},
+            {status: 400},
+        );
+    }
+
+    if (
+        type === "initial" &&
+        body.paymentSource !== undefined &&
+        body.paymentSource !== "MONOBANK" &&
+        body.paymentSource !== "CURRENT_ACCOUNT"
+    ) {
+        return NextResponse.json(
+            {error: "paymentSource must be MONOBANK or CURRENT_ACCOUNT"},
+            {status: 400},
+        );
+    }
+
+    const paymentSource: CheckboxInitialPaymentSource = body.paymentSource === "CURRENT_ACCOUNT"
+        ? "CURRENT_ACCOUNT"
+        : "MONOBANK";
+
     try {
         const result: CheckboxFiscalizationResult = type === "initial"
-            ? await fiscalizeInitialOrder(orderId)
+            ? await fiscalizeInitialOrder(orderId, paymentSource)
             : await fiscalizeAfterpaymentOrder(orderId);
 
         return NextResponse.json({
@@ -64,7 +88,11 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
         });
     } catch (error: unknown) {
         Sentry.withScope((scope) => {
-            scope.setContext("fiscalization", {orderId, type});
+            scope.setContext("fiscalization", {
+                orderId,
+                type,
+                paymentSource: type === "initial" ? paymentSource : "NOVAPAY",
+            });
             scope.setTag("error_type", "internal_fiscalization_failed");
             Sentry.captureException(error);
         });

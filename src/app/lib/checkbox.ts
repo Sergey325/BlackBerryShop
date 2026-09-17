@@ -31,6 +31,23 @@ type CheckboxDelivery = {
     phone?: string;
 };
 
+export type CheckboxInitialPaymentSource = "MONOBANK" | "CURRENT_ACCOUNT";
+
+type CheckboxPaymentSource = CheckboxInitialPaymentSource | "NOVAPAY";
+
+type CheckboxPayment = {
+    type: "CASHLESS";
+    code: 1;
+    value: number;
+    label: string;
+};
+
+const CHECKBOX_PAYMENT_LABELS: Record<CheckboxPaymentSource, string> = {
+    MONOBANK: "Платіж через інтегратора mono",
+    NOVAPAY: "Платіж через інтегратора NovaPay",
+    CURRENT_ACCOUNT: "З поточного рахунку",
+};
+
 export type CheckboxOrder = {
     id: number;
     invoiceId: string | null;
@@ -268,6 +285,15 @@ function toKopecks(value: number): number {
     return Math.round(value * 100);
 }
 
+function buildCashlessPayment(value: number, source: CheckboxPaymentSource): CheckboxPayment {
+    return {
+        type: "CASHLESS",
+        code: 1,
+        value,
+        label: CHECKBOX_PAYMENT_LABELS[source],
+    };
+}
+
 function normalizePhone(phone: string | null): string | undefined {
     if (!phone) {
         return undefined;
@@ -405,7 +431,10 @@ function toFiscalizationResult(
     };
 }
 
-export async function createCheckboxPaymentReceipt(order: CheckboxOrder): Promise<CheckboxFiscalizationResult> {
+export async function createCheckboxPaymentReceipt(
+    order: CheckboxOrder,
+    paymentSource: CheckboxInitialPaymentSource = "MONOBANK",
+): Promise<CheckboxFiscalizationResult> {
     const token: string = await signInCashier();
     const receiptId: string = createStableUuid(order.id, "payment");
     const relationId: string | null = order.paymentMethod === PaymentMethod.CASH_ON_DELIVERY
@@ -453,21 +482,13 @@ export async function createCheckboxPaymentReceipt(order: CheckboxOrder): Promis
             ...commonPayload,
             custom_relation_id: relationId,
             ettn: order.ttnNumber,
-            payments: [{
-                type: "CASHLESS",
-                value: COD_PREPAYMENT_KOPECKS,
-                label: "Платіж через інтегратора mono",
-            }],
+            payments: [buildCashlessPayment(COD_PREPAYMENT_KOPECKS, paymentSource)],
         };
     } else {
         endpoint = "/receipts/sell";
         payload = {
             ...commonPayload,
-            payments: [{
-                type: "CASHLESS",
-                value: goodsTotalKopecks,
-                label: "Платіж через інтегратора mono",
-            }],
+            payments: [buildCashlessPayment(goodsTotalKopecks, paymentSource)],
         };
     }
 
@@ -514,11 +535,7 @@ export async function createCheckboxAfterpaymentReceipt(
         receiptId,
         {
             id: receiptId,
-            payments: [{
-                type: "CASHLESS",
-                value: afterpaymentKopecks,
-                label: "Платіж через інтегратора NovaPay",
-            }],
+            payments: [buildCashlessPayment(afterpaymentKopecks, "NOVAPAY")],
             ...(delivery ? {delivery} : {}),
         },
     );
