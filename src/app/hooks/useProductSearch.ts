@@ -1,7 +1,8 @@
 "use client";
 
 import {useCallback, useEffect, useRef, useState, useTransition} from "react";
-import {IProductSearchResult, searchProducts} from "@/app/actions/getProducts";
+import {searchProducts} from "@/app/actions/getProducts";
+import type {IProductSearchResult} from "@/app/types";
 
 export function useProductSearch() {
     const [value, setValue] = useState("");

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import {IProductColor} from "@/app/actions/getProducts";
+import type {IProductColor, IProductWithRelated} from "@/app/types";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import Counter from "@/app/components/reusable/Counter";
 import Button from "@/app/components/reusable/Button";
@@ -12,7 +12,6 @@ import useSizesModal from "@/app/hooks/useSizesModal";
 import toast from "react-hot-toast";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CheckBox from "@/app/components/reusable/CheckBox";
-import {IProductWithRelated} from "@/app/actions/getProductById";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {FaFire} from "react-icons/fa";
 import {isProductSizeAvailable, sortColorsByAvailability} from "@/app/utils/productColorAvailability";
@@ -212,15 +211,30 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
                             <div
                                 key={s.id}
                                 style={{
-                                    borderWidth: selectedSize === s.size ? "2px" : "1px",
-                                    borderColor: selectedSize === s.size ? "#823D9A" : "#454649",
+                                    borderColor: "#454649",
                                     color: selectedSize === s.size ? "#823D9A" : "#454649",
                                     opacity: isProductSizeAvailable(s) ? 1 : 0.4,
                                     cursor: isProductSizeAvailable(s) ? "pointer" : "not-allowed",
                                 }}
-                                className="rounded-lg py-0.5 px-4 font-medium select-none text-sm sm:text-base"
-                                onClick={() => isProductSizeAvailable(s) && handleSizeChange(s.size)}
+                                className="
+                                    relative rounded-lg border
+                                    py-0.5 px-4 font-medium select-none
+                                    text-sm sm:text-base
+                                    transition-[color,opacity] duration-200
+                                "
+                                onClick={() =>
+                                    isProductSizeAvailable(s) && handleSizeChange(s.size)
+                                }
                             >
+                                <span
+                                    aria-hidden
+                                    className={`
+                                        pointer-events-none absolute inset-[-1px]
+                                        rounded-lg border-2 border-[#823D9A]
+                                        transition-opacity duration-200 ease-out
+                                        ${selectedSize === s.size ? "opacity-100" : "opacity-0"}
+                                    `}
+                                />
                                 {s.size}
                             </div>
                         ))}

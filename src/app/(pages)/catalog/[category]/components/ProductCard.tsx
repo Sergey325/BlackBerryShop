@@ -1,7 +1,7 @@
 "use client"
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import type {IProductCardData} from "@/app/actions/getProducts";
+import type {IProductCardData} from "@/app/types";
 import Image from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";

@@ -171,30 +171,43 @@ model NovaPoshtaCity {
 }
 
 model Order {
-  id            Int           @id @default(autoincrement())
-  invoiceId     String?       @unique
-  status        OrderStatus   @default(PENDING)
-  totalAmount   Float
-  firstName     String?
-  lastName      String?
-  phone         String?
-  email         String?
-  comment       String?
-  area          String?
-  city          String?
-  cityRef       String?
-  warehouse     String?
-  warehouseNumber        Int?
-  warehouseRef  String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  paymentMethod PaymentMethod
+  id              Int           @id @default(autoincrement())
+  publicToken     String        @unique @default(uuid())
+  invoiceId       String?       @unique
+  status          OrderStatus   @default(PENDING)
+  totalAmount     Float
+  firstName       String?
+  lastName        String?
+  phone           String?
+  email           String?
+  comment         String?
+  area            String?
+  city            String?
+  cityRef         String?
+  warehouse       String?
+  warehouseNumber Int?
+  warehouseRef    String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  paymentMethod   PaymentMethod
 
   ttnNumber          String?
   ttnRef             String?
   ttnStatus          String? // текстовый статус от НП, напр. "Прямує до м. Київ"
   ttnStatusCode      String? // код статуса НП, напр. "9", "41", "44"
   ttnStatusUpdatedAt DateTime?
+
+  checkboxReceiptId              String?   @unique
+  checkboxReceiptFiscalCode      String?
+  checkboxReceiptStatus          String?
+  checkboxReceiptCreatedAt       DateTime?
+  checkboxReceiptUrl             String?
+  checkboxAfterpaymentReceiptUrl String?
+  checkboxPrepaymentRelationId   String?   @unique
+  checkboxAfterpaymentReceiptId  String?   @unique
+  checkboxAfterpaymentFiscalCode String?
+  checkboxAfterpaymentStatus     String?
+  checkboxAfterpaymentCreatedAt  DateTime?
 
   clientIp               String?
   fbc                    String?
@@ -206,7 +219,7 @@ model Order {
   discountPercentApplied Float?
   promoCodeId            Int?
   promoCodeSnapshot      String?
-  promoCode              PromoCode?  @relation(fields: [promoCodeId], references: [id])
+  promoCode              PromoCode?     @relation(fields: [promoCodeId], references: [id])
   items                  OrderItem[]
 }
 

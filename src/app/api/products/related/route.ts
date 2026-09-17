@@ -1,13 +1,11 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
-import type {IRelatedProduct} from "@/app/actions/getProducts";
 import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
+import type {IRelatedProduct, RelatedProductsByProductId} from "@/app/types";
 
 interface RelatedProductsRequest {
     productIds?: unknown;
 }
-
-export type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
 
 function parseRelatedProductsRequest(rawBody: string): RelatedProductsRequest | null {
     if (!rawBody.trim()) {

@@ -1,19 +1,9 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import {IProduct, IRelatedProduct} from "./getProducts";
 import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
 import {unstable_cache} from "next/cache";
-
-export interface IProductWithRelated extends IProduct {
-    relatedTo: IRelatedProduct[];
-    specificationOverrides: IProductSpecificationOverride[];
-}
-
-export interface IProductSpecificationOverride {
-    categorySpecificationId: number;
-    value: string;
-}
+import type {IProductWithRelated, IRelatedProduct} from "@/app/types";
 
 async function queryProductById(id: number): Promise<IProductWithRelated | null> {
     const product = await prisma.product.findUnique({

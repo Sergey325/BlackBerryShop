@@ -1,6 +1,6 @@
 import {GoHeartFill} from "react-icons/go";
 import {FaArrowRightLong} from "react-icons/fa6";
-import type {IHomeCategory} from "@/app/actions/getCategories";
+import type {IHomeCategory} from "@/app/types";
 import Accordion from "@/app/components/reusable/Accordion";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import Link from "next/link";

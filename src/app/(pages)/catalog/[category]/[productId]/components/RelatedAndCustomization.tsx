@@ -1,6 +1,6 @@
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
-import {IRelatedProduct} from "@/app/actions/getProducts";
+import type {IRelatedProduct} from "@/app/types";
 
 
 type Props = {

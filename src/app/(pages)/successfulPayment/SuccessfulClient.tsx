@@ -1,16 +1,17 @@
 "use client";
 
 import type {ReactElement, ReactNode} from "react";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
-import type {OrderStatus, Prisma} from "@prisma/client";
+import type {OrderStatus, PaymentMethod} from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
+import {AiOutlineLoading} from "react-icons/ai";
 import {FaInstagram, FaTelegram} from "react-icons/fa";
 import {
     FiArrowRight,
     FiCheck,
     FiClock,
+    FiFileText,
     FiHome,
     FiPackage,
     FiRefreshCw,
@@ -23,12 +24,20 @@ import {useCartStore} from "@/app/hooks/useCartStore";
 
 type Props = {
     id: string;
-    order: Prisma.OrderGetPayload<{
-        include: {
-            items: true;
-        };
-    }>;
+    publicToken: string;
+    order: {
+        totalAmount: number;
+        paymentMethod: PaymentMethod;
+        checkboxReceiptStatus: string | null;
+        checkboxReceiptUrl: string | null;
+    };
     status: OrderStatus;
+};
+
+type OrderStatusResponse = {
+    status: OrderStatus;
+    checkboxReceiptStatus: string | null;
+    checkboxReceiptUrl: string | null;
 };
 
 type StatusCardProps = {
@@ -36,36 +45,55 @@ type StatusCardProps = {
     tone: "success" | "pending" | "error";
 };
 
-const SuccessfulClient = ({id, status, order}: Props): ReactElement => {
-    const router = useRouter();
+const SuccessfulClient = ({id, publicToken, status: initialStatus, order}: Props): ReactElement => {
     const clearCart = useCartStore((state) => state.clearCart);
+    const [status, setStatus] = useState<OrderStatus>(initialStatus);
+    const [checkboxReceiptStatus, setCheckboxReceiptStatus] = useState<string | null>(order.checkboxReceiptStatus);
+    const [checkboxReceiptUrl, setCheckboxReceiptUrl] = useState<string | null>(order.checkboxReceiptUrl);
+    const isWaitingForReceipt: boolean = status === "PAID" && checkboxReceiptStatus !== "DONE";
+
+    useEffect((): void => {
+        if (status !== "PAID") {
+            return;
+        }
+
+        Sentry.withScope((scope) => {
+            scope.setTag("event", "payment_success_page");
+            scope.setContext("order", {
+                orderId: id,
+                totalAmount: order.totalAmount,
+                paymentMethod: order.paymentMethod,
+            });
+            Sentry.captureMessage("User viewed successful payment page", "info");
+        });
+
+        clearCart();
+    }, [status, clearCart, id, order.paymentMethod, order.totalAmount]);
 
     useEffect((): (() => void) | undefined => {
-        if (status === "PAID") {
-            Sentry.withScope((scope) => {
-                scope.setTag("event", "payment_success_page");
-                scope.setContext("order", {
-                    orderId: id,
-                    totalAmount: order.totalAmount,
-                    paymentMethod: order.paymentMethod,
-                });
-                Sentry.captureMessage("User viewed successful payment page", "info");
+        if (status !== "PENDING" && !isWaitingForReceipt) {
+            return;
+        }
+
+        const interval: ReturnType<typeof setInterval> = setInterval((): void => {
+            void fetch(`/api/orders/status?token=${encodeURIComponent(publicToken)}`, {
+                cache: "no-store",
+            }).then(async (response: Response): Promise<void> => {
+                if (!response.ok) {
+                    return;
+                }
+
+                const data: OrderStatusResponse = await response.json() as OrderStatusResponse;
+                setStatus(data.status);
+                setCheckboxReceiptStatus(data.checkboxReceiptStatus);
+                setCheckboxReceiptUrl(data.checkboxReceiptUrl);
+            }).catch((): void => {
+                // A temporary network failure is retried by the next polling cycle.
             });
-
-            clearCart();
-            return;
-        }
-
-        if (status !== "PENDING") {
-            return;
-        }
-
-        const interval: ReturnType<typeof setInterval> = setInterval(() => {
-            router.refresh();
         }, 2000);
 
         return () => clearInterval(interval);
-    }, [status, clearCart, id, order.paymentMethod, order.totalAmount, router]);
+    }, [status, isWaitingForReceipt, publicToken]);
 
     if (status === "PENDING") {
         return (
@@ -178,6 +206,23 @@ const SuccessfulClient = ({id, status, order}: Props): ReactElement => {
                     Решту суми ви сплатите у відділенні Нової Пошти під час отримання.
                 </p>
             )}
+
+            {checkboxReceiptStatus === "DONE" && checkboxReceiptUrl ? (
+                <Link
+                    href={checkboxReceiptUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
+                >
+                    <FiFileText className="size-4 shrink-0" aria-hidden="true"/>
+                    Переглянути фіскальний чек
+                </Link>
+            ) : isWaitingForReceipt ? (
+                <p className="mt-4 flex items-center gap-2 text-xs text-gray-500">
+                    <AiOutlineLoading className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true"/>
+                    Фіскальний чек готується
+                </p>
+            ) : null}
 
             <div className="mt-8 w-full max-w-sm">
                 <Link

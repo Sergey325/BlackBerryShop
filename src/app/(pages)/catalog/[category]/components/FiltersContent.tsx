@@ -2,7 +2,7 @@
 
 import FilterSection from "@/app/(pages)/catalog/[category]/components/FilterSection";
 import PriceRange from "@/app/(pages)/catalog/[category]/components/PriceRange";
-import {ICategory} from "@/app/actions/getCategories";
+import type {ICategory} from "@/app/types";
 import CheckBox from "@/app/components/reusable/CheckBox";
 import {useSearchParams} from "next/navigation";
 import ColorFilter from "@/app/(pages)/catalog/[category]/components/ColorFilter";

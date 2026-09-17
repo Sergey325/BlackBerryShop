@@ -26,7 +26,7 @@ const Cart = () => {
                 router.push("/cart")
             }
         }}>
-            <LuShoppingCart className="text-gray-900 group-hover:text-primary text-2xl md:text-3xl" />
+            <LuShoppingCart className="text-gray-900 group-hover:text-primary text-2xl md:text-3xl transition-colors" />
             <span
                 style={{
                     display: amountCart ? "flex" : "none",
@@ -38,6 +38,7 @@ const Cart = () => {
                 rounded-full
                 group-hover:text-primary
                 border
+                transition-colors
                 items-center justify-center
                 tabular-nums leading-none
                 bg-gray-50

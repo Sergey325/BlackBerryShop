@@ -1,139 +1,17 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import {ICategory, IRelatedProductCategory} from "@/app/actions/getCategories";
 import {Prisma} from "@prisma/client";
 import {unstable_cache} from "next/cache";
+import type {
+    IHomeProduct,
+    IProduct,
+    IProductCardColor,
+    IProductSearchResult,
+    IProductsParams,
+} from "@/app/types";
 
 const PRODUCTS_CACHE_SECONDS = 86400;
-
-export interface IRelatedProduct extends IProductCardData {
-    id: number;
-    name: string;
-    slug: string;
-    hasRelatedProducts: boolean;
-    price: number;
-    discount: number;
-    material: IProductMaterial | null;
-    category: IRelatedProductCategory | null;
-    colors: {
-        id: number;
-        color: string;
-        colorName: string;
-        colorCode: string | null;
-        filterColors: IProductColorFilter[];
-        productId: number;
-        isBestSeller: boolean;
-        images: IProductImage[];
-        sizes: IProductSize[];
-    }[];
-}
-export interface IProductSize {
-    id: number;
-    size: string;
-    quantity: number | null;
-    available: boolean;
-    productColorId: number;
-}
-
-export interface IProductImage {
-    id: number;
-    url: string;
-    order: number;
-    productColorId: number;
-}
-
-
-export interface IProductColor {
-    id: number;
-    color: string;
-    colorName: string;
-    colorCode: string | null;
-    filterColors: IProductColorFilter[];
-    isBestSeller: boolean;
-    productId: number;
-    images: IProductImage[];
-    sizes: IProductSize[];
-}
-
-export interface ICatalogColor {
-    id: number;
-    code: string;
-    name: string;
-    hex: string;
-}
-
-export interface IProductColorFilter {
-    productColorId: number;
-    catalogColorId: number;
-    catalogColor: ICatalogColor;
-}
-
-export interface IProductMaterial {
-    id: number;
-    name: string;
-}
-
-export interface IProductCardColor {
-    id: number;
-    color: string;
-    colorName: string;
-    isBestSeller: boolean;
-    filterColors: IProductColorFilter[];
-    images: Pick<IProductImage, "url">[];
-    sizes: IProductSize[];
-}
-
-export interface IProductCardData {
-    id: number;
-    name: string;
-    slug: string;
-    hasRelatedProducts: boolean;
-    price: number;
-    discount: number;
-    material: Pick<IProductMaterial, "name"> | null;
-    category: Pick<IRelatedProductCategory, "slug" | "season" | "isDecoration"> | null;
-    colors: IProductCardColor[];
-}
-
-export type IHomeProduct = IProductCardData;
-
-export interface IProduct extends IProductCardData {
-    id: number;
-    name: string;
-    slug: string;
-    hasRelatedProducts: boolean;
-    description: string | null;
-    hasLining: boolean;
-    price: number;
-    discount: number;
-    material: IProductMaterial | null;
-    createdAt: Date;
-    updatedAt: Date;
-    colors: IProductColor[];
-    category: ICategory | null;
-}
-
-export interface IProductsParams {
-    title?: string;
-    size?: string[];
-    material?: string[];
-    color?: string[];
-    category?: string;
-    sorting?: string;
-    priceMin?: string;
-    priceMax?: string;
-}
-
-export interface IProductSearchResult {
-    id: number;
-    name: string;
-    slug: string;
-    price: number;
-    categorySlug: string | null;
-    imageUrl: string | null;
-    colorCount: number;
-}
 
 interface IProductSearchRow extends IProductSearchResult {
     score: number;

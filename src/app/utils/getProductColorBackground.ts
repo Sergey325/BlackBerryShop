@@ -1,4 +1,4 @@
-import {IProductColor} from "@/app/actions/getProducts";
+import type {IProductColor} from "@/app/types";
 
 type ProductColorSwatch = Pick<IProductColor, "color" | "filterColors">;
 

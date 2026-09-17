@@ -60,12 +60,22 @@ export default function Footer() {
                             Магазин якісних товарів ручної роботи. Працюємо з любов&apos;ю до кожного замовлення.
                         </p>
                         <div className="flex gap-5 mt-2">
-                            <Link href="https://www.instagram.com/blackberry.shop.ua" target="_blank" rel="noopener noreferrer"  aria-label="Instagram Black Berry"
-                               className="hover:text-pink-500 transition">
+                            <Link
+                                href="https://www.instagram.com/blackberry.shop.ua"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram Black Berry"
+                                className="hover:text-pink-500 transition-colors duration-300"
+                            >
                                 <FaInstagram className="size-10" />
                             </Link>
-                            <Link href="https://t.me/blackberryshopua" target="_blank" rel="noopener noreferrer" aria-label="Telegram Black Berry"
-                               className="hover:text-sky-500 transition">
+                            <Link
+                                href="https://t.me/blackberryshopua"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Telegram Black Berry"
+                                className="hover:text-sky-500 transition-colors duration-300"
+                            >
                                 <FaTelegram className="size-[38.5px]" />
                             </Link>
                         </div>

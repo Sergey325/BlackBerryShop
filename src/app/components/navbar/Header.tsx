@@ -90,7 +90,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
 
     return (
         <>
-        <header className={`sticky top-0 z-50 w-full border-b border-gray-200 bg-white px-4 lg:px-6 text-base select-none ${menuOpen ? "shadow-none" : "shadow-sm"}`}>
+            <header className={`sticky top-0 z-50 w-full border-b border-gray-200 bg-white px-4 lg:px-6 text-base select-none ${menuOpen ? "shadow-none" : "shadow-sm"}`}>
                 <div className="max-w-[1366px] mx-auto flex items-center justify-between h-18 bg-white">
                     {/* Логотип */}
                     <div className="flex items-center tablet:gap-2 cursor-pointer bg-white">

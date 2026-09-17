@@ -6,6 +6,7 @@ import {hashSha256} from "@/app/lib/fbHash";
 import * as Sentry from "@sentry/nextjs";
 import {revalidateTag} from "next/cache";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+import {fiscalizeInitialOrder} from "@/app/lib/orderFiscalization";
 
 export async function POST(request: Request) {
     let orderId: number | undefined;
@@ -302,7 +303,6 @@ export async function POST(request: Request) {
                     recipientPhone: order.phone,
                     recipientCityRef: order.cityRef,
                     recipientWarehouseRef: order.warehouseRef,
-                    recipientWarehouseNumber: order.warehouseNumber.toString(),
                     serviceType: order.warehouse.includes("Відділення") ? "WarehouseWarehouse" : "WarehousePostomat",
                     cost: itemsTotal,
                     codAmount: order.paymentMethod === "MONOBANK" ? 0 : codAmount,
@@ -337,9 +337,7 @@ export async function POST(request: Request) {
             }
         }
 
-
-
-        if (newStatus === "PAID") {
+        if (newStatus === "PAID" && transactionResult.inventoryChanged) {
             // Purchase is sent server-side through Meta Conversions API.
             try {
                 const purchaseContents: Array<{id: string; quantity: number}> = order.items.map((item) => {
@@ -422,6 +420,25 @@ export async function POST(request: Request) {
                         Sentry.captureException(telegramError);
                     });
                 }
+            }
+        }
+
+        if (newStatus === "PAID") {
+            try {
+                await fiscalizeInitialOrder(order.id);
+            } catch (checkboxError: unknown) {
+                Sentry.withScope((scope) => {
+                    scope.setContext("order", {
+                        orderId: order.id,
+                        invoiceId: order.invoiceId,
+                        paymentMethod: order.paymentMethod,
+                        ttnNumber: order.ttnNumber,
+                    });
+                    scope.setTag("error_type", "checkbox_fiscalization_failed");
+                    Sentry.captureException(checkboxError);
+                });
+
+                throw checkboxError;
             }
         }
 

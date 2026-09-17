@@ -6,7 +6,7 @@ import "react-multi-carousel/lib/styles.css";
 import { useState } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
-import { IProductColor } from "@/app/actions/getProducts";
+import type {IProductColor} from "@/app/types";
 import { optimizeCloudinaryUrl } from "@/app/utils/optimizeCloudinaryImage";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 

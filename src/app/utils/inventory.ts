@@ -1,5 +1,5 @@
 import type {CartItem} from "@/app/types";
-import type {IProductSize} from "@/app/actions/getProducts";
+import type {IProductSize} from "@/app/types";
 
 export function getSelectedProductSize(item: CartItem): IProductSize | undefined {
     return item.sizes.find((size: IProductSize): boolean => size.size === item.size)

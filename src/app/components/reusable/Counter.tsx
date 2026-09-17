@@ -24,7 +24,7 @@ const Counter = ({onChange, initialNumber, max, disabled = false, onMaxReached}:
 
                     onChange?.(newCount);
                 }}
-                className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
                 −
             </button>
@@ -42,7 +42,7 @@ const Counter = ({onChange, initialNumber, max, disabled = false, onMaxReached}:
 
                     onChange?.(newCount);
                 }}
-                className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3 py-1 lg:px-4 lg:py-2 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
                 +
             </button>

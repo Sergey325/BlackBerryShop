@@ -14,7 +14,7 @@ import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import Accordion from "@/app/components/reusable/Accordion";
 import {FiTrash2} from "react-icons/fi";
-import type {IRelatedProduct} from "@/app/actions/getProducts";
+import type {IRelatedProduct} from "@/app/types";
 import {getCartItemMaximum} from "@/app/utils/inventory";
 import toast from "react-hot-toast";
 import {getProductPath} from "@/app/lib/productUrl";

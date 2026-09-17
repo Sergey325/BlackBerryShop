@@ -1,4 +1,5 @@
-import {getProducts, IProductsParams} from "@/app/actions/getProducts";
+import {getProducts} from "@/app/actions/getProducts";
+import type {IProductsParams} from "@/app/types";
 import {getCategories} from "@/app/actions/getCategories";
 import Image from "next/image";
 import {FiSliders} from "react-icons/fi";

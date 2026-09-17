@@ -7,7 +7,7 @@ import {FaHeart} from "react-icons/fa";
 import Image from "next/image";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import Link from "next/link";
-import {IBanner} from "@/app/actions/getBanners";
+import type {IBanner} from "@/app/types";
 
 
 const responsive = {

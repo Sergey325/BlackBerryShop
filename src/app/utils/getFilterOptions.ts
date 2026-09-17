@@ -1,4 +1,4 @@
-import {ICatalogColor, IProduct, IProductColor, IProductColorFilter} from "@/app/actions/getProducts";
+import type {ICatalogColor, IProduct, IProductColor, IProductColorFilter} from "@/app/types";
 
 export interface IFilterOptions {
     colors: {

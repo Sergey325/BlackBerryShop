@@ -1,11 +1,17 @@
 import Image from "next/image";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
-import {Season} from "@/app/types";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
-import {getSeasonAnchor} from "@/app/lib/seasonCollections";
+import {getSeasonAnchor, type SeasonCollectionConfig} from "@/app/lib/seasonCollections";
+import type {ICategory} from "@/app/types";
+import type {ReactNode} from "react";
+
+type CatalogSeason = SeasonCollectionConfig & {
+    categories: ICategory[];
+    particles: ReactNode;
+};
 
 type Props = {
-    season: Season;
+    season: CatalogSeason;
     eager?: boolean;
 }
 

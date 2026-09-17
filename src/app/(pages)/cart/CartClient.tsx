@@ -2,12 +2,20 @@
 
 import CartItem from "@/app/(pages)/cart/components/CartItem";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
-import CartSummary, {AppliedPromoCode} from "@/app/(pages)/cart/components/CartSummary";
+import CartSummary from "@/app/(pages)/cart/components/CartSummary";
 import axios from "axios";
 import {useCartStore} from "@/app/hooks/useCartStore";
 import NovaPoshtaSelect from "@/app/(pages)/cart/components/NovePoshtaSelect";
 import RadioGroup from "@/app/components/reusable/RadioGroup";
-import {City, Warehouse} from "@/app/types";
+import type {
+    AppliedPromoCode,
+    CartItem as CartItemType,
+    City,
+    InventoryResponse,
+    IProductSize,
+    RelatedProductsByProductId,
+    Warehouse,
+} from "@/app/types";
 import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
@@ -15,20 +23,9 @@ import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTo
 import {isValidUAPhone, validateName} from "@/app/utils/validation";
 import {getCookie} from "@/app/utils/getCookie";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
-import type {IRelatedProduct} from "@/app/actions/getProducts";
-import type {IProductSize} from "@/app/actions/getProducts";
-import type {CartItem as CartItemType} from "@/app/types";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {getSelectedProductSize} from "@/app/utils/inventory";
 import {getCheckoutTrafficSource} from "@/app/lib/analytics/trafficSource";
-
-type RelatedProductsByProductId = Record<number, IRelatedProduct[]>;
-type InventoryResponse = {
-    items: {
-        productColorId: number;
-        sizes: IProductSize[];
-    }[];
-};
 
 const paymentOptions = [
     { value: "MONOBANK", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },
@@ -381,7 +378,7 @@ const CartClient = () => {
                     <RadioGroup
                         value={payment.value}
                         onChange={setPayment}
-                        options={paymentOptions}
+                        options={totalPrice > 150 ? paymentOptions : [paymentOptions[0]]}
                     />
                 </div>
         }

@@ -1,5 +1,6 @@
 import ProductClient from "@/app/(pages)/catalog/[category]/[productId]/components/ProductClient";
-import {getProductById, IProductWithRelated} from "@/app/actions/getProductById";
+import {getProductById} from "@/app/actions/getProductById";
+import type {IProductWithRelated} from "@/app/types";
 import type {Metadata} from "next";
 import {absoluteUrl, createMetadata, SITE_NAME, SITE_URL} from "@/app/lib/seo";
 import {cache} from "react";

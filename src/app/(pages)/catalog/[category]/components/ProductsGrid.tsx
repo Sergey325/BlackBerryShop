@@ -7,8 +7,7 @@ import InputFilter from "@/app/(pages)/catalog/[category]/components/InputFilter
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useState} from "react";
-import {IProduct} from "@/app/actions/getProducts";
-import {ICategory} from "@/app/actions/getCategories";
+import type {ICategory, IProduct} from "@/app/types";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
 import EmptyState from "@/app/components/reusable/EmptyState";

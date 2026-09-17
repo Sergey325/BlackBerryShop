@@ -1,4 +1,44 @@
-import {IOrder, IOrderItem} from "@/app/types";
+import type {OrderStatus, PaymentMethod, TrafficSource} from "@prisma/client";
+
+interface TelegramOrderItem {
+    id: number;
+    orderId: number;
+    productId: number;
+    productSizeId: number | null;
+    name: string;
+    price: number;
+    quantity: number;
+    color: string;
+    colorName: string | null;
+    colorCode: string | null;
+    size: string | null;
+    imageUrl: string;
+}
+
+interface TelegramOrder {
+    id: number;
+    invoiceId: string | null;
+    status: OrderStatus;
+    totalAmount: number;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string | null;
+    comment: string | null;
+    city: string;
+    cityRef: string;
+    warehouse: string;
+    warehouseRef: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    paymentMethod: PaymentMethod;
+    trafficSource: TrafficSource | null;
+    area: string;
+    ttnNumber: string | null;
+    ttnRef: string | null;
+    warehouseNumber: number;
+    items: TelegramOrderItem[];
+}
 
 type TelegramResponse = {
     ok: boolean;
@@ -16,7 +56,7 @@ const escapeHtml = (value: string | number): string => String(value)
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const TRAFFIC_SOURCE_LABELS: Record<NonNullable<IOrder["trafficSource"]>, string> = {
+const TRAFFIC_SOURCE_LABELS: Record<NonNullable<TelegramOrder["trafficSource"]>, string> = {
     FACEBOOK: "Facebook",
     GOOGLE_SEARCH: "Google пошук",
     GOOGLE_FREE_LISTING: "Google безкоштовна картка товару",
@@ -32,7 +72,7 @@ const formatOrderDate = (value: Date | string): string => new Intl.DateTimeForma
     minute: "2-digit",
 }).format(new Date(value));
 
-const formatOrderItem = (item: IOrderItem, index: number): string => {
+const formatOrderItem = (item: TelegramOrderItem, index: number): string => {
     const details: string[] = [
         item.colorName ? `Колір: ${escapeHtml(item.colorName)}` : null,
         item.colorCode ? `<code>${escapeHtml(item.colorCode)}</code>` : null,
@@ -85,9 +125,9 @@ export async function sendTelegramMessage(chatId: string, text: string, id: numb
     }
 }
 
-export function createOrderMessage(order: IOrder): string {
+export function createOrderMessage(order: TelegramOrder): string {
     const productsTotal: number = order.items.reduce(
-        (sum: number, item: IOrderItem): number => sum + item.price * item.quantity,
+        (sum: number, item: TelegramOrderItem): number => sum + item.price * item.quantity,
         0
     );
     const isCashOnDelivery: boolean = order.paymentMethod === "CASH_ON_DELIVERY";

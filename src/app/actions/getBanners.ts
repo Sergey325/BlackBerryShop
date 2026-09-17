@@ -2,16 +2,7 @@
 
 import prisma from "@/app/lib/prisma";
 import {unstable_cache} from "next/cache";
-
-export interface IBanner {
-    image: string;
-    mobileImage: string | null;
-    badge: string | null;
-    title: string;
-    features: string[];
-    ctaHref: string | null;
-    ctaLabel: string | null;
-}
+import type {IBanner} from "@/app/types";
 
 
 const getCachedBanners = unstable_cache(

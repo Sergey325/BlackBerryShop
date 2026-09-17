@@ -289,7 +289,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                     basketOrder,
                     customerEmails,
                 },
-                redirectUrl: `${process.env.BASE_URL}/successfulPayment?id=${order.id}`,//https://suspense-unvocal-tripping.ngrok-free.dev
+                redirectUrl: `${process.env.BASE_URL}/successfulPayment?token=${encodeURIComponent(order.publicToken)}`,// https://suspense-unvocal-tripping.ngrok-free.dev ${process.env.BASE_URL}
                 webHookUrl: `${process.env.BASE_URL}/api/webhook/monobank`,
             }),
         });

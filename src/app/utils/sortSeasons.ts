@@ -1,6 +1,6 @@
-import {Season} from "@/app/types";
+import type {SeasonCollectionId} from "@/app/lib/seasonCollections";
 
-export function getActiveSeasonType(): Season["id"] {
+export function getActiveSeasonType(): SeasonCollectionId {
     const month = new Date().getMonth();
 
     // август → февраль = осень/зима
@@ -11,7 +11,7 @@ export function getActiveSeasonType(): Season["id"] {
         : "SUMMER";
 }
 
-export function sortSeasonsByCurrent<T extends Pick<Season, "id">>(seasons: T[]): T[] {
+export function sortSeasonsByCurrent<T extends {id: SeasonCollectionId}>(seasons: T[]): T[] {
     const active = getActiveSeasonType();
 
     return [...seasons].sort((a, b) => {

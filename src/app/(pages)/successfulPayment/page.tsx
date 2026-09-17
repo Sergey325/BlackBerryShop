@@ -10,20 +10,24 @@ import SuccessfulClient from "./SuccessfulClient";
 export const metadata: Metadata = createNoIndexMetadata("Статус замовлення", "/successfulPayment");
 
 type Props = {
-    searchParams: Promise<{ id?: string }>;
+    searchParams: Promise<{token?: string}>;
 };
 
-export default async function SuccessfulPayment({ searchParams }: Props) {
-    const { id } = await searchParams;
-    const orderId: number = Number(id);
-    const hasValidOrderId: boolean = Number.isInteger(orderId) && orderId > 0;
+export default async function SuccessfulPayment({searchParams}: Props) {
+    const {token} = await searchParams;
+    const publicToken: string = token?.trim() ?? "";
 
-    const order = hasValidOrderId
+    const order = publicToken.length > 0
         ? await prisma.order.findUnique({
-            where: {
-                id: orderId,
+            where: {publicToken},
+            select: {
+                id: true,
+                status: true,
+                totalAmount: true,
+                paymentMethod: true,
+                checkboxReceiptStatus: true,
+                checkboxReceiptUrl: true,
             },
-            include: { items: true }
         })
         : null;
 
@@ -82,6 +86,7 @@ export default async function SuccessfulPayment({ searchParams }: Props) {
     return (
         <SuccessfulClient
             id={String(order.id)}
+            publicToken={publicToken}
             status={order.status}
             order={order}
         />

@@ -2,13 +2,7 @@ import Button from "@/app/components/reusable/Button";
 import axios from "axios";
 import {FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {AiOutlineLoading} from "react-icons/ai";
-
-export type AppliedPromoCode = {
-    code: string;
-    discountPercent: number;
-    eligibleProductIds: number[];
-    discountAmount: number;
-};
+import type {AppliedPromoCode} from "@/app/types";
 
 type PromoCodeResponse = {
     promoCode: {

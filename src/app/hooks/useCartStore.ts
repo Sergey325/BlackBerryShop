@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartItem, ProductSelection } from "@/app/types";
-import type {IProductCardData} from "@/app/actions/getProducts";
+import type {CartItem, IProductCardData, ProductSelection} from "@/app/types";
 
 type CartStore = {
     items: CartItem[];

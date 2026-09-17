@@ -1,11 +1,12 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
+import type {InventoryResponse} from "@/app/types";
 
 type InventoryRequest = {
     productColorIds?: unknown;
 };
 
-export async function POST(request: Request): Promise<NextResponse> {
+export async function POST(request: Request): Promise<NextResponse<InventoryResponse | {error: string}>> {
     try {
         const body: InventoryRequest = await request.json() as InventoryRequest;
         const productColorIds: number[] = Array.isArray(body.productColorIds)
