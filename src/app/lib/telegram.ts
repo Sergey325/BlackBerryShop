@@ -61,6 +61,8 @@ const TRAFFIC_SOURCE_LABELS: Record<NonNullable<TelegramOrder["trafficSource"]>,
     GOOGLE_SEARCH: "Google пошук",
     GOOGLE_FREE_LISTING: "Google безкоштовна картка товару",
     INSTAGRAM: "Instagram",
+    TELEGRAM: "Telegram",
+    PROM: "Prom",
 };
 
 const formatOrderDate = (value: Date | string): string => new Intl.DateTimeFormat("uk-UA", {
