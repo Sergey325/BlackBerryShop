@@ -402,7 +402,7 @@ export async function POST(request: Request) {
 
                 const telegramMessage: string = createOrderMessage(
                     order,
-                    getCheckboxPaymentReceiptUrl(order.id),
+                    getCheckboxPaymentReceiptUrl(order.publicToken),
                 );
 
                 try {

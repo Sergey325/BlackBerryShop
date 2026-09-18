@@ -11,6 +11,7 @@ import {
 
 const checkboxOrderSelect = {
     id: true,
+    publicToken: true,
     status: true,
     invoiceId: true,
     paymentMethod: true,
@@ -43,6 +44,10 @@ const checkboxOrderSelect = {
 
 type FiscalizationOrder = Prisma.OrderGetPayload<{select: typeof checkboxOrderSelect}>;
 
+function isTestFiscalCode(fiscalCode: string | null): boolean {
+    return fiscalCode?.toUpperCase().startsWith("TEST") === true;
+}
+
 async function getOrder(orderId: number): Promise<FiscalizationOrder> {
     const order: FiscalizationOrder | null = await prisma.order.findUnique({
         where: {id: orderId},
@@ -62,7 +67,11 @@ export async function fiscalizeInitialOrder(
 ): Promise<CheckboxFiscalizationResult> {
     const order: FiscalizationOrder = await getOrder(orderId);
 
-    if (order.checkboxReceiptId && order.checkboxReceiptStatus === "DONE") {
+    if (
+        order.checkboxReceiptId &&
+        order.checkboxReceiptStatus === "DONE" &&
+        !isTestFiscalCode(order.checkboxReceiptFiscalCode)
+    ) {
         return {
             receiptId: order.checkboxReceiptId,
             status: "DONE",
@@ -101,7 +110,11 @@ export async function fiscalizeInitialOrder(
 export async function fiscalizeAfterpaymentOrder(orderId: number): Promise<CheckboxFiscalizationResult> {
     const order: FiscalizationOrder = await getOrder(orderId);
 
-    if (order.checkboxAfterpaymentReceiptId && order.checkboxAfterpaymentStatus === "DONE") {
+    if (
+        order.checkboxAfterpaymentReceiptId &&
+        order.checkboxAfterpaymentStatus === "DONE" &&
+        !isTestFiscalCode(order.checkboxAfterpaymentFiscalCode)
+    ) {
         return {
             receiptId: order.checkboxAfterpaymentReceiptId,
             status: "DONE",

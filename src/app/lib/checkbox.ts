@@ -51,6 +51,7 @@ const CHECKBOX_PAYMENT_LABELS: Record<CheckboxPaymentSource, string> = {
 
 export type CheckboxOrder = {
     id: number;
+    publicToken: string;
     invoiceId: string | null;
     paymentMethod: PaymentMethod;
     phone: string | null;
@@ -66,6 +67,15 @@ type CheckboxAccessTokenResponse = {
 type CheckboxShiftResponse = {
     id: string;
     status: CheckboxShiftStatus;
+    initial_transaction?: {
+        response_id?: string | null;
+    } | null;
+    cash_register?: {
+        fiscal_number?: string | null;
+    } | null;
+    cashier?: {
+        signature_type?: string | null;
+    } | null;
 };
 
 type CheckboxReceiptResponse = {
@@ -76,7 +86,14 @@ type CheckboxReceiptResponse = {
     pre_payment_relation_id?: string | null;
     tax_url?: string | null;
     transaction?: {
+        response_id?: string | null;
         response_error_message?: string | null;
+    } | null;
+    cash_register?: {
+        fiscal_number?: string | null;
+    } | null;
+    cashier?: {
+        signature_type?: string | null;
     } | null;
 };
 
@@ -187,6 +204,27 @@ function delay(milliseconds: number): Promise<void> {
     });
 }
 
+function hasTestMarker(values: Array<string | null | undefined>): boolean {
+    return values.some(
+        (value: string | null | undefined): boolean => value?.toUpperCase().startsWith("TEST") === true,
+    );
+}
+
+function assertProductionShift(shift: CheckboxShiftResponse): void {
+    if (
+        process.env.NODE_ENV === "production" &&
+        hasTestMarker([
+            shift.initial_transaction?.response_id,
+            shift.cash_register?.fiscal_number,
+            shift.cashier?.signature_type,
+        ])
+    ) {
+        throw new Error(
+            `Checkbox returned test shift ${shift.id}. Check production license key and cashier PIN code`,
+        );
+    }
+}
+
 async function waitForOpenedShift(token: string, shiftId: string): Promise<void> {
     for (let attempt: number = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
         const shift: CheckboxShiftResponse | null = await checkboxRequest<CheckboxShiftResponse>(
@@ -195,6 +233,7 @@ async function waitForOpenedShift(token: string, shiftId: string): Promise<void>
         );
 
         if (shift?.status === "OPENED") {
+            assertProductionShift(shift);
             return;
         }
 
@@ -223,6 +262,7 @@ async function ensureOpenShift(token: string): Promise<void> {
     }
 
     if (activeShift?.status === "OPENED") {
+        assertProductionShift(activeShift);
         return;
     }
 
@@ -263,12 +303,14 @@ async function ensureOpenShift(token: string): Promise<void> {
 
     if (createdShift.status !== "OPENED") {
         await waitForOpenedShift(token, createdShift.id);
+    } else {
+        assertProductionShift(createdShift);
     }
 }
 
-function createStableUuid(orderId: number, kind: "payment" | "afterpayment"): string {
+function createStableUuid(orderToken: string, kind: "payment" | "afterpayment"): string {
     const hex: string = createHash("sha256")
-        .update(`blackberry-shop:${orderId}:${kind}`)
+        .update(`blackberry-shop:${orderToken}:${kind}`)
         .digest("hex")
         .slice(0, 32);
     const versioned: string = `${hex.slice(0, 12)}5${hex.slice(13)}`;
@@ -278,8 +320,8 @@ function createStableUuid(orderId: number, kind: "payment" | "afterpayment"): st
     return `${uuidHex.slice(0, 8)}-${uuidHex.slice(8, 12)}-${uuidHex.slice(12, 16)}-${uuidHex.slice(16, 20)}-${uuidHex.slice(20)}`;
 }
 
-export function getCheckboxPaymentReceiptUrl(orderId: number): string {
-    return `${CHECKBOX_RECEIPT_URL}/${createStableUuid(orderId, "payment")}`;
+export function getCheckboxPaymentReceiptUrl(orderToken: string): string {
+    return `${CHECKBOX_RECEIPT_URL}/${createStableUuid(orderToken, "payment")}`;
 }
 
 function toKopecks(value: number): number {
@@ -422,10 +464,29 @@ async function waitForFiscalizedReceipt(
     throw new Error(`Checkbox receipt ${receipt.id} was not fiscalized in time`);
 }
 
+function assertProductionReceipt(receipt: CheckboxReceiptResponse): void {
+    if (process.env.NODE_ENV !== "production") {
+        return;
+    }
+
+    if (hasTestMarker([
+        receipt.fiscal_code,
+        receipt.transaction?.response_id,
+        receipt.cash_register?.fiscal_number,
+        receipt.cashier?.signature_type,
+    ])) {
+        throw new Error(
+            `Checkbox returned test receipt ${receipt.id}. Check production license key and cashier PIN code`,
+        );
+    }
+}
+
 function toFiscalizationResult(
     receipt: CheckboxReceiptResponse,
     relationId: string | null,
 ): CheckboxFiscalizationResult {
+    assertProductionReceipt(receipt);
+
     return {
         receiptId: receipt.id,
         status: receipt.status,
@@ -441,9 +502,9 @@ export async function createCheckboxPaymentReceipt(
     paymentSource: CheckboxInitialPaymentSource = "MONOBANK",
 ): Promise<CheckboxFiscalizationResult> {
     const token: string = await signInCashier();
-    const receiptId: string = createStableUuid(order.id, "payment");
+    const receiptId: string = createStableUuid(order.publicToken, "payment");
     const relationId: string | null = order.paymentMethod === PaymentMethod.CASH_ON_DELIVERY
-        ? `blackberry-order-${order.id}`
+        ? `blackberry-order-${order.publicToken}`
         : null;
     const existingReceipt: CheckboxReceiptResponse | null = await getExistingReceipt(token, receiptId);
 
@@ -513,7 +574,7 @@ export async function createCheckboxAfterpaymentReceipt(
     relationId: string,
 ): Promise<CheckboxFiscalizationResult> {
     const token: string = await signInCashier();
-    const receiptId: string = createStableUuid(order.id, "afterpayment");
+    const receiptId: string = createStableUuid(order.publicToken, "afterpayment");
     const existingReceipt: CheckboxReceiptResponse | null = await getExistingReceipt(token, receiptId);
 
     if (existingReceipt) {
