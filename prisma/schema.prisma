@@ -332,6 +332,8 @@ enum PaymentMethod {
 
 enum TrafficSource {
   FACEBOOK
+  TELEGRAM
+  PROM
   GOOGLE_SEARCH
   GOOGLE_FREE_LISTING
   INSTAGRAM
