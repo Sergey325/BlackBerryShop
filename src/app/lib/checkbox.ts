@@ -4,6 +4,7 @@ import {createHash} from "node:crypto";
 import {PaymentMethod} from "@prisma/client";
 
 const CHECKBOX_API_URL = "https://api.checkbox.ua/api/v1";
+const CHECKBOX_RECEIPT_URL = "https://check.checkbox.ua";
 const COD_PREPAYMENT_KOPECKS = 15_000;
 const POLL_INTERVAL_MS = 1_000;
 const MAX_POLL_ATTEMPTS = 20;
@@ -277,6 +278,10 @@ function createStableUuid(orderId: number, kind: "payment" | "afterpayment"): st
     return `${uuidHex.slice(0, 8)}-${uuidHex.slice(8, 12)}-${uuidHex.slice(12, 16)}-${uuidHex.slice(16, 20)}-${uuidHex.slice(20)}`;
 }
 
+export function getCheckboxPaymentReceiptUrl(orderId: number): string {
+    return `${CHECKBOX_RECEIPT_URL}/${createStableUuid(orderId, "payment")}`;
+}
+
 function toKopecks(value: number): number {
     if (!Number.isFinite(value) || value <= 0) {
         throw new Error(`Invalid monetary value for Checkbox: ${value}`);
@@ -426,7 +431,7 @@ function toFiscalizationResult(
         status: receipt.status,
         fiscalCode: receipt.fiscal_code ?? null,
         fiscalDate: receipt.fiscal_date ? new Date(receipt.fiscal_date) : null,
-        taxUrl: receipt.tax_url ?? null,
+        taxUrl: `${CHECKBOX_RECEIPT_URL}/${receipt.id}`,
         relationId: receipt.pre_payment_relation_id ?? relationId,
     };
 }

@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 import {revalidateTag} from "next/cache";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {fiscalizeInitialOrder} from "@/app/lib/orderFiscalization";
+import {getCheckboxPaymentReceiptUrl} from "@/app/lib/checkbox";
 
 export async function POST(request: Request) {
     let orderId: number | undefined;
@@ -399,7 +400,10 @@ export async function POST(request: Request) {
                     },
                 });
 
-                const telegramMessage = createOrderMessage(order)
+                const telegramMessage: string = createOrderMessage(
+                    order,
+                    getCheckboxPaymentReceiptUrl(order.id),
+                );
 
                 try {
                     for (const admin of admins) {

@@ -125,7 +125,7 @@ export async function sendTelegramMessage(chatId: string, text: string, id: numb
     }
 }
 
-export function createOrderMessage(order: TelegramOrder): string {
+export function createOrderMessage(order: TelegramOrder, receiptUrl?: string): string {
     const productsTotal: number = order.items.reduce(
         (sum: number, item: TelegramOrderItem): number => sum + item.price * item.quantity,
         0
@@ -171,6 +171,9 @@ export function createOrderMessage(order: TelegramOrder): string {
         "━━━━━━━━━━━━━━",
         `📦 Сума товарів: <b>${formatPrice(productsTotal)} грн</b>`,
         ...paymentLines,
+        ...(receiptUrl
+            ? [`🧾 <a href="${escapeHtml(receiptUrl)}">Переглянути фіскальний чек</a>`]
+            : []),
         ...(order.comment
             ? ["", "💬 <b>Коментар покупця</b>", `<blockquote>${escapeHtml(order.comment)}</blockquote>`]
             : []),
