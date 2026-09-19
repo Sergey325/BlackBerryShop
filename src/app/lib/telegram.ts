@@ -1,42 +1,32 @@
-import type {OrderStatus, PaymentMethod, TrafficSource} from "@prisma/client";
+import "server-only";
+
+import type {PaymentMethod, TrafficSource} from "@prisma/client";
+import prisma from "@/app/lib/prisma";
 
 interface TelegramOrderItem {
-    id: number;
-    orderId: number;
-    productId: number;
-    productSizeId: number | null;
     name: string;
     price: number;
     quantity: number;
-    color: string;
     colorName: string | null;
     colorCode: string | null;
     size: string | null;
-    imageUrl: string;
 }
 
 interface TelegramOrder {
     id: number;
-    invoiceId: string | null;
-    status: OrderStatus;
     totalAmount: number;
-    firstName: string;
-    lastName: string;
-    phone: string;
+    firstName: string | null;
+    lastName: string | null;
+    phone: string | null;
     email: string | null;
     comment: string | null;
-    city: string;
-    cityRef: string;
-    warehouse: string;
-    warehouseRef: string;
+    city: string | null;
+    warehouse: string | null;
     createdAt: Date | string;
-    updatedAt: Date | string;
     paymentMethod: PaymentMethod;
     trafficSource: TrafficSource | null;
-    area: string;
+    area: string | null;
     ttnNumber: string | null;
-    ttnRef: string | null;
-    warehouseNumber: number;
     items: TelegramOrderItem[];
 }
 
@@ -127,28 +117,54 @@ export async function sendTelegramMessage(chatId: string, text: string, id: numb
     }
 }
 
+export async function notifyTelegramAdmins(order: TelegramOrder, receiptUrl?: string): Promise<void> {
+    const admins: Array<{chatId: string}> = await prisma.telegramUser.findMany({
+        where: {
+            role: "ADMIN",
+        },
+        select: {
+            chatId: true,
+        },
+    });
+    const message: string = createOrderMessage(order, receiptUrl);
+
+    await Promise.all(
+        admins.map((admin: {chatId: string}): Promise<void> => sendTelegramMessage(
+            admin.chatId,
+            message,
+            order.id,
+        )),
+    );
+}
+
 export function createOrderMessage(order: TelegramOrder, receiptUrl?: string): string {
     const productsTotal: number = order.items.reduce(
         (sum: number, item: TelegramOrderItem): number => sum + item.price * item.quantity,
         0
     );
     const isCashOnDelivery: boolean = order.paymentMethod === "CASH_ON_DELIVERY";
-    const remainingAmount: number = Math.max(productsTotal - order.totalAmount, 0);
+    const paidAmount: number = isCashOnDelivery
+        ? Math.min(150, productsTotal)
+        : order.totalAmount;
+    const remainingAmount: number = Math.max(productsTotal - paidAmount, 0);
+    const customerName: string = [order.firstName, order.lastName]
+        .filter((value): value is string => Boolean(value))
+        .join(" ");
     const customerLines: string[] = [
-        `👤 <b>${escapeHtml(`${order.firstName} ${order.lastName}`)}</b>`,
-        `📞 <code>${escapeHtml(order.phone)}</code>`,
+        customerName ? `👤 <b>${escapeHtml(customerName)}</b>` : null,
+        order.phone ? `📞 <code>${escapeHtml(order.phone)}</code>` : null,
         order.email ? `✉️ ${escapeHtml(order.email)}` : null,
         order.trafficSource ? `🔗 Джерело: ${TRAFFIC_SOURCE_LABELS[order.trafficSource]}` : null,
     ].filter((line): line is string => line !== null);
     const deliveryLines: string[] = [
-        `📍 ${escapeHtml(order.city)}${order.area ? `, ${escapeHtml(order.area)} обл.` : ""}`,
+        order.city ? `📍 ${escapeHtml(order.city)}${order.area ? `, ${escapeHtml(order.area)} обл.` : ""}` : null,
         order.warehouse ? `🏢 ${escapeHtml(order.warehouse)}` : null,
         order.ttnNumber ? `📮 ТТН: <code>${escapeHtml(order.ttnNumber)}</code>` : null,
     ].filter((line): line is string => line !== null);
     const paymentLines: string[] = isCashOnDelivery
         ? [
             "💳 Накладений платіж",
-            `✅ Передплата: <b>${formatPrice(order.totalAmount)} грн</b>`,
+            `✅ Передплата: <b>${formatPrice(paidAmount)} грн</b>`,
             `💵 До сплати при отриманні: <b>${formatPrice(remainingAmount)} грн</b>`,
         ]
         : [

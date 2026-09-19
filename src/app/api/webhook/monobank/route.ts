@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {createTTN} from "@/app/lib/novaposhta";
-import {createOrderMessage, sendTelegramMessage} from "@/app/lib/telegram";
+import {notifyTelegramAdmins} from "@/app/lib/telegram";
 import {hashSha256} from "@/app/lib/fbHash";
 import * as Sentry from "@sentry/nextjs";
 import {revalidateTag} from "next/cache";
@@ -393,26 +393,11 @@ export async function POST(request: Request) {
             }
 
             if (order.email !== process.env.EMAIL && order.email !== process.env.EMAIL2) {
-                // Отправляем сообщение о заказе в бота
-                const admins = await prisma.telegramUser.findMany({
-                    where: {
-                        role: "ADMIN",
-                    },
-                });
-
-                const telegramMessage: string = createOrderMessage(
-                    order,
-                    getCheckboxPaymentReceiptUrl(order.publicToken),
-                );
-
                 try {
-                    for (const admin of admins) {
-                        await sendTelegramMessage(
-                            admin.chatId,
-                            telegramMessage,
-                            order.id
-                        );
-                    }
+                    await notifyTelegramAdmins(
+                        order,
+                        getCheckboxPaymentReceiptUrl(order.publicToken),
+                    );
                 } catch (telegramError) {
                     Sentry.withScope((scope) => {
                         scope.setContext("order", {

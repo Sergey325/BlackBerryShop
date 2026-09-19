@@ -115,6 +115,15 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
 
     }, [cart, item]);
 
+    const handleAddRelatedProduct = useCallback((relatedProduct: IRelatedProduct, isDecoration: boolean): void => {
+        cart.addItem({
+            ...createProductSelection(relatedProduct, 0),
+            quantity: 1,
+            isDecoration,
+        });
+        toast.success(`Товар «${relatedProduct.name}» додано до кошика`);
+    }, [cart]);
+
     const sizeOptions = useMemo(() => {
         if (!item.sizes) return []
         return item.sizes
@@ -176,35 +185,29 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         >
                             {item.productName}
                         </span>
-                        {
-                            item.sizes.length > 1 &&
-                            <div className="flex  items-center gap-2 sm:gap-8 text-base flex-wrap lg:flex-nowrap">
-                                {
-                                    item.size ?
-                                        // <p className="text-nowrap text-sm">Розмір: <span className="text-base font-semibold">{item.size}</span></p>
-
-                                        <Dropdown
-                                            placeholder="Виберіть розмір"
-                                            options={sizeOptions}
-                                            value={item.size}
-                                            textCenter
-                                            className="max-w-min"
-                                            buttonClassName={"pl-2! pr-1.5! py-1! rounded-md!"}
-                                        />
-                                        :
-                                        <Dropdown
-                                            placeholder="Виберіть розмір"
-                                            options={sizeOptions}
-                                            className="max-w-min"
-                                            buttonClassName={"pl-2! pr-1.5! py-1.5! rounded-md!"}
-                                        />
-                                }
-                                <div className="flex items-center gap-2">
-                                    <span className="text-nowrap text-sm">Колір:</span>
-                                    <div className="size-4 rounded-sm border border-gray-500" style={{ backgroundColor: item.color }} />
-                                </div>
+                        <div className="flex items-center gap-2 text-base flex-wrap sm:gap-8 lg:flex-nowrap">
+                            {item.sizes.length > 1 ? (
+                                <Dropdown
+                                    placeholder="Виберіть розмір"
+                                    options={sizeOptions}
+                                    value={item.size}
+                                    textCenter={Boolean(item.size)}
+                                    className="max-w-min"
+                                    buttonClassName={`pl-2! pr-1.5! ${item.size ? "py-1!" : "py-1.5!"} rounded-md!`}
+                                />
+                            ) : (
+                                <span className="text-sm">
+                                    Розмір: <span className="font-medium">{item.sizes[0]?.size}</span>
+                                </span>
+                            )}
+                            <div className="flex items-center gap-2">
+                                <span className="text-nowrap text-sm">Колір:</span>
+                                <div
+                                    className="size-4 rounded-sm border border-gray-500"
+                                    style={{backgroundColor: item.color}}
+                                />
                             </div>
-                        }
+                        </div>
                     </div>
                 </div>
 
@@ -288,14 +291,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                             <span className="text-xs text-gray-500">{related.price.toFixed(2)} грн</span>
                                         </div>
                                         <button
-                                            onClick={() => cart.addItem({
-                                                ...createProductSelection(
-                                                    related,
-                                                    0
-                                                ),
-                                                quantity: 1,
-                                                isDecoration: false
-                                            })}
+                                            onClick={() => handleAddRelatedProduct(related, false)}
                                             className="text-xs font-medium px-3 py-1.5 rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-300 shrink-0 cursor-pointer"
                                         >
                                             Додати
@@ -343,14 +339,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                             +{variant.price.toFixed(2)} грн
                                         </span>
                                         <button
-                                            onClick={() => cart.addItem({
-                                                ...createProductSelection(
-                                                    variant,
-                                                    0
-                                                ),
-                                                quantity: 1,
-                                                isDecoration: true
-                                            })}
+                                            onClick={() => handleAddRelatedProduct(variant, true)}
                                             className="text-xs font-medium w-full px-2 py-1.5 rounded-md bg-primary text-white hover:bg-primary/80 transition-colors duration-300 cursor-pointer"
                                         >
                                             Додати
