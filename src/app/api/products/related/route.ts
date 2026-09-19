@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
-import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
+import {availableRelatedProductWhere, relatedProductSelect} from "@/app/lib/relatedProductSelect";
 import type {IRelatedProduct, RelatedProductsByProductId} from "@/app/types";
 
 interface RelatedProductsRequest {
@@ -77,23 +77,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             select: {
                 id: true,
                 relatedTo: {
-                    where: {
-                        toProduct: {
-                            colors: {
-                                some: {
-                                    sizes: {
-                                        some: {
-                                            available: true,
-                                            OR: [
-                                                {quantity: null},
-                                                {quantity: {gt: 0}},
-                                            ],
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    where: availableRelatedProductWhere,
                     orderBy: {order: "asc"},
                     select: {
                         toProduct: {

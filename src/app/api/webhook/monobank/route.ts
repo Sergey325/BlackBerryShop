@@ -8,14 +8,32 @@ import {revalidateTag} from "next/cache";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {fiscalizeInitialOrder} from "@/app/lib/orderFiscalization";
 import {getCheckboxPaymentReceiptUrl} from "@/app/lib/checkbox";
+import {verifyMonobankWebhook} from "@/app/lib/monobankWebhook";
+
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
     let orderId: number | undefined;
     let invoiceId: string | undefined;
 
     try {
-        const body = await request.json();
-        // console.log("Webhook received:", body);
+        const rawBody: Buffer = Buffer.from(await request.arrayBuffer());
+        if (!await verifyMonobankWebhook(rawBody, request.headers.get("x-sign"))) {
+            return NextResponse.json({error: "Invalid webhook signature"}, {status: 401});
+        }
+
+        let body: unknown;
+        try {
+            body = JSON.parse(rawBody.toString("utf8"));
+        } catch {
+            return NextResponse.json({error: "Invalid JSON body"}, {status: 400});
+        }
+
+        if (!body || typeof body !== "object"
+            || !("status" in body) || typeof body.status !== "string"
+            || !("invoiceId" in body) || typeof body.invoiceId !== "string" || !body.invoiceId) {
+            return NextResponse.json({error: "Invalid webhook body"}, {status: 400});
+        }
 
         const { status } = body;
 

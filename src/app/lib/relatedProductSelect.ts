@@ -1,5 +1,18 @@
 import type {Prisma} from "@prisma/client";
 
+const availableSizeWhere = {
+    available: true,
+    OR: [{quantity: null}, {quantity: {gt: 0}}],
+} satisfies Prisma.ProductSizeWhereInput;
+
+const availableColorWhere = {
+    sizes: {some: availableSizeWhere},
+} satisfies Prisma.ProductColorWhereInput;
+
+export const availableRelatedProductWhere = {
+    toProduct: {colors: {some: availableColorWhere}},
+} satisfies Prisma.ProductRelationWhereInput;
+
 export const relatedProductSelect = {
     id: true,
     name: true,
@@ -18,6 +31,7 @@ export const relatedProductSelect = {
         },
     },
     colors: {
+        where: availableColorWhere,
         include: {
             filterColors: {
                 include: {
@@ -28,7 +42,7 @@ export const relatedProductSelect = {
                 take: 1,
                 orderBy: {order: "asc"},
             },
-            sizes: true,
+            sizes: {where: availableSizeWhere},
         },
     },
     _count: {

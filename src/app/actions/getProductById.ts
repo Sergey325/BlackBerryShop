@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
-import {relatedProductSelect} from "@/app/lib/relatedProductSelect";
+import {availableRelatedProductWhere, relatedProductSelect} from "@/app/lib/relatedProductSelect";
 import {unstable_cache} from "next/cache";
 import type {IProductWithRelated, IRelatedProduct} from "@/app/types";
 
@@ -42,6 +42,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
                 },
             },
             relatedTo: {
+                where: availableRelatedProductWhere,
                 orderBy: { order: "asc" },
                 include: {
                     toProduct: {
@@ -77,7 +78,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
 
 const getCachedProductById = unstable_cache(
     queryProductById,
-    ["storefront-product-by-id-v2"],
+    ["storefront-product-by-id-v3"],
     {
         revalidate: 86400,
         tags: ["products"],
