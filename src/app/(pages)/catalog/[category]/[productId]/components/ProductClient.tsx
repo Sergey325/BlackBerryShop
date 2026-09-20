@@ -20,6 +20,7 @@ type Props = {
 
 const ProductClient = ({ product, category }: Props) => {
     const params = useSearchParams();
+    const filterColorCodes = useMemo(() => params.getAll("color"), [params]);
 
     useLayoutEffect((): void => {
         window.scrollTo({top: 0, left: 0, behavior: "auto"});
@@ -163,6 +164,7 @@ const ProductClient = ({ product, category }: Props) => {
 
             <RelatedAndCustomization
                 related={product.relatedTo}
+                filterColorCodes={filterColorCodes}
                 selectedCatalogColorCodes={selectedProductColor.filterColors.map(
                     (filterColor): string => filterColor.catalogColor.code
                 )}

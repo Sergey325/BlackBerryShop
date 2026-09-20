@@ -6,9 +6,10 @@ import type {IRelatedProduct} from "@/app/types";
 type Props = {
     related: IRelatedProduct[];
     selectedCatalogColorCodes: string[];
+    filterColorCodes: string[];
 };
 
-const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) => {
+const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColorCodes}: Props) => {
     const { relatedProducts, customizationOptions } = related.reduce(
         (acc, product) => {
             if (product.category?.isDecoration) {
@@ -49,6 +50,7 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) =>
                                 <ProductCard
                                     product={p}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}
+                                    filterColorCodes={filterColorCodes}
                                 />
                             </div>
                         ))}
@@ -75,6 +77,7 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes}: Props) =>
                                 <ProductCard
                                     product={p}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}
+                                    filterColorCodes={filterColorCodes}
                                 />
                             </div>
                         ))}

@@ -54,6 +54,8 @@ const ProductImages = ({ productName, productColor }: Props) => {
                 <div className="block w-full lg:hidden">
                 <Carousel
                     responsive={responsive}
+                    ssr
+                    deviceType="mobile"
                     swipeable
                     draggable
                     arrows

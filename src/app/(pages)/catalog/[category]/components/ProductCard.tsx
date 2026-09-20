@@ -5,7 +5,6 @@ import type {IProductCardData} from "@/app/types";
 import Image from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
-import {useSearchParams} from "next/navigation";
 import useCartModal from "@/app/hooks/useCartModal";
 import {createProductSelection, useCartStore} from "@/app/hooks/useCartStore";
 import Link from "next/link";
@@ -24,15 +23,18 @@ type Props = {
     list?: boolean;
     colors?: boolean;
     preferredCatalogColorCodes?: string[];
+    filterColorCodes?: string[];
 };
+
+const EMPTY_COLOR_CODES: string[] = [];
 
 const ProductCard = ({
     product,
     list = false,
     colors = false,
-    preferredCatalogColorCodes = [],
+    preferredCatalogColorCodes = EMPTY_COLOR_CODES,
+    filterColorCodes = EMPTY_COLOR_CODES,
 }: Props) => {
-    const searchParams = useSearchParams();
 
     const sortedProduct: IProductCardData = useMemo(
         (): IProductCardData => ({
@@ -83,7 +85,7 @@ const ProductCard = ({
             if (bestIndex !== -1) return bestIndex;
         }
 
-        const colors = searchParams.getAll('color');          // все color-параметры
+        const colors = filterColorCodes;
         if (!colors.length) return 0;
 
         for (let i = colors.length - 1; i >= 0; i--) {
@@ -96,7 +98,7 @@ const ProductCard = ({
         }
 
         return 0;
-    }, [preferredCatalogColorCodes, searchParams, sortedProduct.colors]);
+    }, [preferredCatalogColorCodes, filterColorCodes, sortedProduct.colors]);
 
     const [activeSelection, setActiveSelection] = useState<{
         productId: number;

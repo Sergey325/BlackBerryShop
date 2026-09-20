@@ -6,7 +6,7 @@ import {BiSearch} from "react-icons/bi";
 import InputFilter from "@/app/(pages)/catalog/[category]/components/InputFilter";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import type {ICategory, IProduct} from "@/app/types";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
@@ -34,12 +34,13 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
 
     const currentSort = params.get("sorting") ?? "Featured";
     const view = params.get("view") ?? "grid";
+    const filterColorCodes = useMemo(() => params.getAll("color"), [params]);
 
     // The URL is updated before the new RSC payload with `products` arrives.
     // While that navigation is pending, do not render products from the previous
     // color combination that no longer match the current URL.
     const selectedColors: Set<string> = new Set(
-        params.getAll("color").map((color: string) => color.toLowerCase())
+        filterColorCodes.map((color) => color.toLowerCase())
     );
     const visibleProducts: IProduct[] = (products ?? []).filter((product: IProduct) => {
         if (selectedColors.size === 0) return true;
@@ -144,7 +145,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
                                 : 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                         }`}>
                             {visibleProducts.map(p =>
-                                <ProductCard key={p.id} product={p} list={view === 'list'} colors/>
+                                <ProductCard key={p.id} product={p} list={view === 'list'} colors filterColorCodes={filterColorCodes}/>
                             )}
                         </div>
                         {/*<Pagination />*/}
