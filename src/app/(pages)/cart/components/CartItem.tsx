@@ -133,6 +133,9 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
             label: s.size,
             onClick: function () {
                 cart.changeSize(item, this.value);
+                // Complete the deferred AddToCart only when choosing the first size.
+                if (item.size) return;
+
                 trackMetaEvent("AddToCart", {
                     content_ids: [buildCatalogItemId(item.productId, item.productColorId, s.id)],
                     content_name: item.productName,
