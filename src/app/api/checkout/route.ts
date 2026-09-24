@@ -120,8 +120,10 @@ export async function POST(request: Request): Promise<NextResponse> {
             ? forwardedFor.split(",")[0].trim()
             : request.headers.get("x-real-ip") ?? null;
         const userAgent: string | null = request.headers.get("user-agent") ?? null;
-        const resolvedTrafficSource: TrafficSource | null = trafficSource
-            ?? (typeof fbc === "string" && fbc.length > 0 ? TrafficSource.FACEBOOK : null);
+        // FACEBOOK groups advertising traffic, including Instagram ad clicks.
+        const resolvedTrafficSource = typeof fbc === "string" && fbc.trim()
+            ? TrafficSource.FACEBOOK
+            : trafficSource ?? null;
 
         const order = await prisma.$transaction(async (tx) => {
             const productColorIds: number[] = [...new Set(
