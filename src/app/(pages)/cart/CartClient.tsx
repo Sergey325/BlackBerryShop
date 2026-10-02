@@ -65,7 +65,7 @@ const CartClient = () => {
                 productColorIds: [...new Set(currentItems.map((item: CartItemType): number => item.productColorId))],
             });
             const inventoryByColorId = new Map(
-                response.data.items.map((item) => [item.productColorId, item.sizes] as const)
+                response.data.items.map((item) => [item.productColorId, item] as const)
             );
             const updatedItems: CartItemType[] = [];
             let adjustedCount = 0;
@@ -73,7 +73,11 @@ const CartClient = () => {
             let inventoryChanged = false;
 
             for (const item of currentItems) {
-                const sizes: IProductSize[] | undefined = inventoryByColorId.get(item.productColorId);
+                const inventoryItem = inventoryByColorId.get(item.productColorId);
+                const sizes: IProductSize[] | undefined = inventoryItem?.sizes;
+                const price = inventoryItem ? inventoryItem.price + (item.lining ? inventoryItem.liningPrice : 0) : item.price;
+                const discount = inventoryItem?.discount ?? item.discount;
+                if (price !== item.price || discount !== item.discount) inventoryChanged = true;
                 const selectedSize: IProductSize | undefined = sizes?.find(
                     (size: IProductSize): boolean => size.size === item.size
                 ) ?? (sizes?.length === 1 ? sizes[0] : undefined);
@@ -90,7 +94,7 @@ const CartClient = () => {
                     }
 
                     if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
-                    updatedItems.push({...item, sizes});
+                    updatedItems.push({...item, sizes, price, discount});
                     continue;
                 }
 
@@ -110,7 +114,7 @@ const CartClient = () => {
                 if (quantity !== item.quantity) adjustedCount += 1;
                 if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
 
-                updatedItems.push({...item, sizes: sizes ?? item.sizes, quantity});
+                updatedItems.push({...item, sizes: sizes ?? item.sizes, quantity, price, discount});
             }
 
             if (adjustedCount > 0 || removedCount > 0 || inventoryChanged) {

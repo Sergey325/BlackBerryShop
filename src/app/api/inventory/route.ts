@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
 import type {InventoryResponse} from "@/app/types";
+import {getLiningPrice} from "@/app/lib/liningPrice";
 
 type InventoryRequest = {
     productColorIds?: unknown;
@@ -23,6 +24,7 @@ export async function POST(request: Request): Promise<NextResponse<InventoryResp
             where: {id: {in: productColorIds}},
             select: {
                 id: true,
+                product: {select: {price: true, discount: true}},
                 sizes: {
                     orderBy: {id: "asc"},
                     select: {
@@ -36,10 +38,15 @@ export async function POST(request: Request): Promise<NextResponse<InventoryResp
             },
         });
 
+        const liningPrice = getLiningPrice();
+
         return NextResponse.json({
             items: items.map((item) => ({
                 productColorId: item.id,
                 sizes: item.sizes,
+                price: item.product.price,
+                discount: item.product.discount,
+                liningPrice,
             })),
         });
     } catch (error: unknown) {

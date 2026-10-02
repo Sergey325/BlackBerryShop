@@ -1,6 +1,7 @@
 import "server-only";
 
 import prisma from "@/app/lib/prisma";
+import {getLiningPrice} from "@/app/lib/liningPrice";
 
 export type PromoCartItemInput = {
     productId: number;
@@ -144,7 +145,7 @@ export async function calculateCartPricing(
             throw new CartPricingError("Підкладка недоступна для одного з товарів");
         }
 
-        const priceWithOptions: number = product.price + (item.lining ? 150 : 0);
+        const priceWithOptions: number = product.price + (item.lining ? getLiningPrice() : 0);
         const unitPriceCents: number = calculateDiscountedCents(priceWithOptions, product.discount);
         const isEligible: boolean = Boolean(promoCode) && (
             promoCode!.scopeType === "ALL"

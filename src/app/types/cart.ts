@@ -30,5 +30,8 @@ export type InventoryResponse = {
     items: {
         productColorId: number;
         sizes: IProductSize[];
+        price: number;
+        discount: number;
+        liningPrice: number;
     }[];
 };

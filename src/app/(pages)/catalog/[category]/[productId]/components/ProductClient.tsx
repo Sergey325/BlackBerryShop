@@ -15,10 +15,11 @@ import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 type Props = {
     product: IProductWithRelated
     category: ICategory;
+    liningPrice: number;
 }
 
 
-const ProductClient = ({ product, category }: Props) => {
+const ProductClient = ({ product, category, liningPrice }: Props) => {
     const params = useSearchParams();
     const filterColorCodes = useMemo(() => params.getAll("color"), [params]);
 
@@ -139,6 +140,7 @@ const ProductClient = ({ product, category }: Props) => {
                             selectedProductColor={selectedProductColor}
                             hasLining={product.hasLining}
                             isAvailable={isAvailable}
+                            liningPrice={liningPrice}
                         />
                     </div>
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">

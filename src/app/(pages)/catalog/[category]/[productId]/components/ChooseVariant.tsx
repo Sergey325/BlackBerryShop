@@ -24,9 +24,10 @@ type Props = {
     selectedProductColor: IProductColor;
     hasLining: boolean;
     isAvailable: boolean;
+    liningPrice: number;
 };
 
-const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }: Props) => {
+const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, liningPrice }: Props) => {
     const params = useSearchParams();
     const router = useRouter();
 
@@ -34,7 +35,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable }
 
     const includeLining: boolean = hasLining && params.get("lining") === "true";
 
-    const basePrice: number = product.price + (includeLining ? 150 : 0);
+    const basePrice: number = product.price + (includeLining ? liningPrice : 0);
     const discountedPrice: number = calculatePriceWithDiscount(basePrice, product.discount ?? 0);
 
     // Размер зависит от выбранного цвета

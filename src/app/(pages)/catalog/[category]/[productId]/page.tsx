@@ -17,6 +17,7 @@ import {notFound, permanentRedirect} from "next/navigation";
 import {extractProductId, getProductPath, getProductRouteSegment} from "@/app/lib/productUrl";
 import {getProductDescription} from "@/app/lib/productDescription";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
+import {getLiningPrice} from "@/app/lib/liningPrice";
 import {
     buildCatalogItemId,
     buildCatalogMpn,
@@ -291,7 +292,7 @@ const ProductPage = async ({ params, searchParams }: Props) => {
         <>
             <JsonLd data={productJsonLd}/>
             <JsonLd data={breadcrumbJsonLd}/>
-            <ProductClient product={product} category={product.category}/>
+            <ProductClient product={product} category={product.category} liningPrice={getLiningPrice()}/>
         </>
     );
 };
