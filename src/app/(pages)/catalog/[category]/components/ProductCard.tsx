@@ -2,7 +2,7 @@
 
 import {useEffect, useMemo, useRef, useState} from "react";
 import type {IProductCardData} from "@/app/types";
-import Image from "next/image";
+import Image, {type ImageLoaderProps} from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
 import { pluralizeUk } from "@/app/utils/pluralizeUk";
 import useCartModal from "@/app/hooks/useCartModal";
@@ -17,6 +17,17 @@ import {
     sortColorsByAvailability,
 } from "@/app/utils/productColorAvailability";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+
+const CARD_IMAGE_WIDTHS = [192, 384, 640, 960];
+
+const productCardImageLoader = ({src, width}: ImageLoaderProps) => {
+    const targetWidth = CARD_IMAGE_WIDTHS.find(candidate => candidate >= width) ?? 960;
+
+    return src.replace(
+        "/upload/",
+        `/upload/c_limit,w_${targetWidth}/f_auto/q_auto:good:sensitive/`,
+    );
+};
 
 type Props = {
     product: IProductCardData;
@@ -116,7 +127,7 @@ const ProductCard = ({
     };
     const isAvailable: boolean = isProductColorAvailable(sortedProduct.colors[activeIdx]);
 
-    const activeImageSrc = sortedProduct.colors[activeIdx].images[0].url
+    const activeImageSrc = sortedProduct.colors[activeIdx].images[0].url;
     const [loadedImageSrcs, setLoadedImageSrcs] = useState<Set<string>>(() => new Set<string>());
     const isImageLoading: boolean = !loadedImageSrcs.has(activeImageSrc);
 
@@ -192,6 +203,7 @@ const ProductCard = ({
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 112px, 144px"
+                        loader={productCardImageLoader}
                         draggable={false}
                         onLoad={() => handleImageLoad(activeImageSrc)}
                         className={`select-none object-cover transition-[opacity,transform] duration-500 ${
@@ -331,7 +343,7 @@ const ProductCard = ({
                         alt={product.name}
                         fill
                         sizes="(max-width: 640px) 50vw, 300px"
-                        quality={75}
+                        loader={productCardImageLoader}
                         draggable={false}
                         onLoad={() => handleImageLoad(activeImageSrc)}
                         className={`object-cover transition-all duration-500 ease-out ${
