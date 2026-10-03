@@ -365,7 +365,7 @@ function buildDelivery(order: Pick<CheckboxOrder, "email" | "phone">): CheckboxD
     const phone: string | undefined = normalizePhone(order.phone);
 
     if (email) {
-        delivery.emails = [email, process.env.EMAIL!];
+        delivery.emails = [email];
     }
 
     if (phone) {

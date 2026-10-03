@@ -29,5 +29,5 @@ export function isValidUAPhone(phone: string) {
 }
 
 export const validateName = (value: string) => {
-    return /^[А-Яа-яІіЇїЄєҐґ' -]+$/.test(value);
+    return /^[А-Яа-яІіЇїЄєҐґ'’ʼ -]+$/.test(value);
 };
