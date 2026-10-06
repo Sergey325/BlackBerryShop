@@ -105,7 +105,7 @@ const HandmadeFeatures = (): JSX.Element => {
                                         alt={feature.alt}
                                         fill
                                         draggable={false}
-                                        sizes="(max-width: 1023px) 100vw, 33vw"
+                                        sizes="(max-width: 767px) 100vw, (max-width: 1413px) 33vw, 420px"
                                         className={feature.imageClassName ?? "object-cover object-center select-none"}
                                     />
                                 </div>

@@ -17,16 +17,14 @@ import {
     sortColorsByAvailability,
 } from "@/app/utils/productColorAvailability";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
+import {getResponsiveCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 const CARD_IMAGE_WIDTHS = [192, 384, 640, 960];
 
 const productCardImageLoader = ({src, width}: ImageLoaderProps) => {
     const targetWidth = CARD_IMAGE_WIDTHS.find(candidate => candidate >= width) ?? 960;
 
-    return src.replace(
-        "/upload/",
-        `/upload/c_limit,w_${targetWidth}/f_auto/q_auto:good:sensitive/`,
-    );
+    return getResponsiveCloudinaryUrl(src, targetWidth);
 };
 
 type Props = {

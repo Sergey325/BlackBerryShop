@@ -4,12 +4,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     allowedDevOrigins: ['suspense-unvocal-tripping.ngrok-free.dev'],
     images: {
-        remotePatterns: [
-            {
-                protocol: "https",
-                hostname: "res.cloudinary.com",
-            },
-        ],
+        loader: "custom",
+        loaderFile: "./src/app/utils/cloudinaryImageLoader.ts",
         qualities: [25, 50, 75, 100],
     },
 };
