@@ -370,7 +370,7 @@ export async function POST(request: Request) {
                     };
                 });
 
-                await fetch(`https://graph.facebook.com/v20.0/${process.env.PIXEL_ID}/events`, {
+                const fbResponse = await fetch(`https://graph.facebook.com/v20.0/${process.env.PIXEL_ID}/events`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -398,6 +398,30 @@ export async function POST(request: Request) {
                         access_token: process.env.FB_CAPI_ACCESS_TOKEN,
                     }),
                 });
+
+                const fbResponseBody: unknown = await fbResponse.json().catch(() => null);
+                const fbResult = fbResponseBody && typeof fbResponseBody === "object"
+                    ? fbResponseBody as Record<string, unknown>
+                    : null;
+
+                if (!fbResponse.ok || fbResult?.events_received !== 1) {
+                    const fbApiError = fbResult?.error && typeof fbResult.error === "object"
+                        ? fbResult.error as Record<string, unknown>
+                        : null;
+                    const details = [
+                        `HTTP ${fbResponse.status}`,
+                        typeof fbResult?.events_received === "number"
+                            ? `events_received=${fbResult.events_received}` : null,
+                        typeof fbApiError?.code === "number" ? `code=${fbApiError.code}` : null,
+                        typeof fbApiError?.message === "string" ? fbApiError.message : null,
+                        typeof fbApiError?.fbtrace_id === "string"
+                            ? `fbtrace_id=${fbApiError.fbtrace_id}`
+                            : typeof fbResult?.fbtrace_id === "string"
+                                ? `fbtrace_id=${fbResult.fbtrace_id}` : null,
+                    ].filter(Boolean).join(", ");
+
+                    throw new Error(`Meta CAPI Purchase failed: ${details}`);
+                }
             } catch (fbError) {
                 Sentry.withScope((scope) => {
                     scope.setContext("order", {
