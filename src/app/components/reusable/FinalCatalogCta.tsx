@@ -29,10 +29,11 @@ const FinalCatalogCta = ({className = ""}: Props): JSX.Element => {
                     <div className="max-w-3xl">
                         <div className="mb-4 flex items-center gap-2 text-sm font-medium text-primary">
                             <Image
-                                src="/header-logo.png"
+                                src="/header-logo-small.webp"
                                 alt=""
                                 width={24}
                                 height={24}
+                                unoptimized
                                 className="size-6 object-contain"
                             />
                             Авторські речі ручної роботи

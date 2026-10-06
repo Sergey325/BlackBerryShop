@@ -356,7 +356,7 @@ export async function POST(request: Request) {
             }
         }
 
-        if (newStatus === "PAID" && transactionResult.inventoryChanged) {
+        if (newStatus === "PAID" && transactionResult.inventoryChanged && process.env.VERCEL_ENV === "production") {
             // Purchase is sent server-side through Meta Conversions API.
             try {
                 const purchaseContents: Array<{id: string; quantity: number}> = order.items.map((item) => {
@@ -433,7 +433,9 @@ export async function POST(request: Request) {
                     Sentry.captureException(fbError);
                 });
             }
+        }
 
+        if (newStatus === "PAID" && transactionResult.inventoryChanged) {
             if (order.email !== process.env.EMAIL && order.email !== process.env.EMAIL2) {
                 try {
                     await notifyTelegramAdmins(
