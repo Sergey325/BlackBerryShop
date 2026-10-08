@@ -18,6 +18,8 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
 
     const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
     const [warehouseQuery, setWarehouseQuery] = useState("");
+    const [warehouseError, setWarehouseError] = useState<string | null>(null);
+    const [warehouseRetry, setWarehouseRetry] = useState(0);
 
     const filteredWarehouses = useMemo(() => {
         return warehouses.filter((w) =>
@@ -83,7 +85,10 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                 }
             })
             .catch((error: unknown) => {
-                console.error(error);
+                if (isCurrent) {
+                    console.error(error);
+                    setWarehouseError("Нова пошта тимчасово не відповідає. Спробуйте ще раз або зв’яжіться з нами — ми допоможемо оформити замовлення.");
+                }
             })
             .finally(() => {
                 if (isCurrent) {
@@ -94,7 +99,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
         return () => {
             isCurrent = false;
         };
-    }, [selectedCity]);
+    }, [selectedCity, warehouseRetry]);
 
     return (
         <div className="flex flex-col text-base gap-4 border border-primary/30 rounded-2xl p-6 bg-white shadow-xs">
@@ -140,6 +145,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                                         setIsWarehousesOpen(true);
                                         setCities([]);
                                         setWarehouses([]);
+                                        setWarehouseError(null);
                                         setSelectedWarehouse(null);
                                         setWarehouseQuery("");
                                     }}
@@ -213,7 +219,34 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
                             </div>
                         ))}
 
-                        {filteredWarehouses.length === 0 && selectedCity && !isWarehouseLoading && (
+                        {warehouseError && selectedCity && !isWarehouseLoading && (
+                            <div className="px-4 py-2 text-sm text-red-600" role="alert">
+                                <p>{warehouseError}</p>
+                                <div className="flex flex-col md:flex-row items-center justify-between">
+                                    <button
+                                        type="button"
+                                        className="mt-2 text-primary underline cursor-pointer"
+                                        onClick={() => {
+                                            setWarehouseError(null);
+                                            setIsWarehouseLoading(true);
+                                            setWarehouseRetry((retry) => retry + 1);
+                                        }}
+                                    >
+                                        Спробувати ще раз
+                                    </button>
+                                    <a
+                                        href="https://www.instagram.com/blackberry.shop.ua"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-2 block text-primary underline"
+                                    >
+                                        Написати нам в Instagram
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+
+                        {filteredWarehouses.length === 0 && selectedCity && !isWarehouseLoading && !warehouseError && (
                             <div className="px-4 py-2 text-gray-400">
                                 Нічого не знайдено
                             </div>
