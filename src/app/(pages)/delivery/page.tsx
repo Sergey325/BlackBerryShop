@@ -5,7 +5,7 @@ import {createMetadata} from "@/app/lib/seo";
 
 export const metadata: Metadata = createMetadata({
     title: "Доставка та оплата",
-    description: "Умови доставки та оплати замовлень Black Berry. Доставка Новою Поштою по Україні, онлайн-оплата карткою та накладений платіж.",
+    description: "Умови доставки та оплати замовлень Black Berry. Доставка Новою Поштою по Україні, Укрпоштою та кур'єром за домовленістю через соцмережі. Онлайн-оплата карткою та накладений платіж.",
     path: "/delivery",
 });
 
@@ -23,8 +23,9 @@ export default function DeliveryPage() {
                 </div>
 
                 <p className="text-gray-700 leading-relaxed">
-                    Доставку товарів ми здійснюємо по всій Україні службою Нова Пошта.
-                    Наразі доступні наступні способи отримання:
+                    Доставку товарів ми здійснюємо по всій Україні Новою Поштою.
+                    Доставка Укрпоштою та адресна доставка кур&apos;єром також доступні
+                    за попередньою домовленістю — напишіть нам в Instagram або Telegram.
                 </p>
 
                 <div className="flex flex-col gap-3">
@@ -43,20 +44,29 @@ export default function DeliveryPage() {
                         </p>
                     </div>
 
-                    <div className="border border-gray-300 rounded-md p-4 opacity-60">
+                    <div className="border border-gray-400 rounded-md p-4">
+                        <p className="font-medium">Доставка Укрпоштою</p>
+                        <p className="text-sm text-gray-600 mt-1">
+                            Щоб узгодити доставку Укрпоштою, зверніться до нас в Instagram або Telegram
+                            перед оформленням замовлення.
+                        </p>
+                    </div>
+
+                    <div className="border border-gray-400 rounded-md p-4">
                         <p className="font-medium">Адресна доставка кур&apos;єром</p>
                         <p className="text-sm text-gray-600 mt-1">
-                            Незабаром — наразі цей спосіб доставки знаходиться у розробці.
+                            Щоб узгодити доставку кур&apos;єром на вашу адресу, зверніться до нас
+                            в Instagram або Telegram перед оформленням замовлення.
                         </p>
                     </div>
                 </div>
 
                 <p className="text-sm text-gray-500">
-                    Вартість доставки оплачується окремо відповідно до тарифів Нової Пошти
+                    Вартість доставки оплачується окремо відповідно до тарифів обраного перевізника
                     та не входить у вартість товару.
                 </p>
                 <p className="text-sm text-gray-500 -mt-3">
-                    Приблизна вартість доставки в місто <span className="font-medium">90 грн</span>, в село/селище <span className="font-medium">120 грн</span>
+                    Приблизна вартість доставки Новою Поштою в місто <span className="font-medium">90 грн</span>, в село/селище <span className="font-medium">120 грн</span>
                 </p>
             </section>
 

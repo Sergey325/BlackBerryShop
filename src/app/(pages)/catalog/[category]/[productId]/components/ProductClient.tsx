@@ -146,7 +146,10 @@ const ProductClient = ({ product, category, liningPrice }: Props) => {
                     <div className="bg-white border border-y-2 border-gray-200 flex flex-col gap-2 w-full p-4">
                         <Accordion
                             title={"Способи доставки"}
-                            content={["Доставка у відділення або поштомат - Нова Пошта"]}
+                            content={[
+                                "Доставка у відділення або поштомат - Нова Пошта",
+                                "Доставка Укрпоштою або кур'єром — за попередньою домовленістю. Напишіть нам в Instagram або Telegram перед оформленням замовлення.",
+                            ]}
                             initialState={product.category?.isDecoration || false}
                         />
                     </div>

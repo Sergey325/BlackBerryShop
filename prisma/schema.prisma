@@ -214,6 +214,7 @@ model Order {
   fbp                    String?
   trafficSource          TrafficSource?
   userAgent              String?
+  isWholesale            Boolean        @default(false)
   paidAt                 DateTime?
   discountAmount         Float?
   discountPercentApplied Float?
