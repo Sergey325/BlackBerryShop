@@ -60,6 +60,7 @@ export async function POST(request: Request) {
                 select: {
                     id: true,
                     promoCodeId: true,
+                    isWholesale: true,
                     items: {
                         select: {
                             id: true,
@@ -436,7 +437,7 @@ export async function POST(request: Request) {
         }
 
         if (newStatus === "PAID" && transactionResult.inventoryChanged) {
-            if (order.email !== process.env.EMAIL && order.email !== process.env.EMAIL2) {
+            if (order.email !== process.env.EMAIL && order.email !== process.env.EMAIL2 && process.env.VERCEL_ENV === "production") {
                 try {
                     await notifyTelegramAdmins(
                         order,

@@ -27,6 +27,7 @@ interface TelegramOrder {
     trafficSource: TrafficSource | null;
     area: string | null;
     ttnNumber: string | null;
+    isWholesale: boolean;
     items: TelegramOrderItem[];
 }
 
@@ -174,7 +175,7 @@ export function createOrderMessage(order: TelegramOrder, receiptUrl?: string): s
     const items: string = order.items.map(formatOrderItem).join("\n\n");
 
     return [
-        `🛍 <b>НОВЕ ЗАМОВЛЕННЯ #${escapeHtml(order.id)}</b>`,
+        `🛍 <b>${order.isWholesale ? "ОПТОВЕ" : "НОВЕ"} ЗАМОВЛЕННЯ #${escapeHtml(order.id)}</b>`,
         `🕒 ${formatOrderDate(order.createdAt)}`,
         "",
         "<b>ПОКУПЕЦЬ</b>",
