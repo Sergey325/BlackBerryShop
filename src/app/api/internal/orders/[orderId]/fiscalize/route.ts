@@ -4,7 +4,11 @@ import {
     fiscalizeAfterpaymentOrder,
     fiscalizeInitialOrder,
 } from "@/app/lib/orderFiscalization";
-import {CheckboxFiscalizationResult, CheckboxInitialPaymentSource} from "@/app/lib/checkbox";
+import {
+    CheckboxFiscalizationResult,
+    CheckboxInitialPaymentSource,
+    closeCheckboxShiftAfterLateReceipt,
+} from "@/app/lib/checkbox";
 
 type FiscalizationType = "initial" | "afterpayment";
 
@@ -78,6 +82,19 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
             ? await fiscalizeInitialOrder(orderId, paymentSource)
             : await fiscalizeAfterpaymentOrder(orderId);
 
+        let shiftCloseError: string | undefined;
+
+        try {
+            await closeCheckboxShiftAfterLateReceipt(result);
+        } catch (error: unknown) {
+            shiftCloseError = error instanceof Error ? error.message : "Shift closure failed";
+            Sentry.withScope((scope) => {
+                scope.setContext("fiscalization", {orderId, type, receiptId: result.receiptId});
+                scope.setTag("error_type", "checkbox_shift_close_failed");
+                Sentry.captureException(error);
+            });
+        }
+
         return NextResponse.json({
             receiptId: result.receiptId,
             status: result.status,
@@ -85,6 +102,7 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
             fiscalDate: result.fiscalDate,
             receiptUrl: result.taxUrl,
             relationId: result.relationId,
+            ...(shiftCloseError ? {shiftCloseError} : {}),
         });
     } catch (error: unknown) {
         Sentry.withScope((scope) => {
