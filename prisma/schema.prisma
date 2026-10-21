@@ -190,6 +190,7 @@ model Order {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   paymentMethod   PaymentMethod
+  paymentSource   PaymentSource
 
   ttnNumber          String?
   ttnRef             String?
@@ -329,6 +330,11 @@ enum OrderStatus {
 enum PaymentMethod {
   MONOBANK
   CASH_ON_DELIVERY
+}
+
+enum PaymentSource {
+  MONOBANK
+  CURRENT_ACCOUNT
 }
 
 enum TrafficSource {
