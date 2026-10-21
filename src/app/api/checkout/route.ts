@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
-import {PaymentMethod, TrafficSource} from "@prisma/client";
+import {PaymentMethod, PaymentSource, TrafficSource} from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
     calculateCartPricing,
@@ -224,6 +224,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                     warehouseNumber: Number(delivery.warehouseNumber),
                     warehouseRef: delivery.warehouseRef,
                     paymentMethod,
+                    paymentSource: PaymentSource.MONOBANK,
                     fbp: fbp ?? null,
                     fbc: fbc ?? null,
                     trafficSource: resolvedTrafficSource,
