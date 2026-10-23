@@ -320,16 +320,16 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                                 {customizationOptions.map((variant) => (
                                     <div
                                         key={variant.id}
-                                        className="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300 h-full select-none"
+                                        className="flex flex-col items-center gap-2 p-1.5 sm:p-3 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors duration-300 h-full select-none"
                                     >
                                         <Image
                                             src={optimizeCloudinaryUrl(variant.colors[0].images[0].url, 200)}
                                             alt={variant.name}
-                                            width={100}
-                                            height={100}
+                                            width={115}
+                                            height={115}
                                             draggable={false}
                                             unoptimized
-                                            className="object-contain rounded-md select-none"
+                                            className="w-[115px] h-[115px] sm:w-[100px] sm:h-[100px] object-contain rounded-md select-none"
                                         />
                                         <span
                                             //router.push(`/catalog/${item.categorySlug}/${item.productId}?size=${item.size}&colorId=${item.productColorId}`)
