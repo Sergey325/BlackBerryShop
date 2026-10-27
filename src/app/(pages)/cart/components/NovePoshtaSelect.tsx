@@ -87,7 +87,7 @@ export default function NovaPoshtaSelect({ selectedCity, setSelectedCity, select
             .catch((error: unknown) => {
                 if (isCurrent) {
                     console.error(error);
-                    setWarehouseError("Нова пошта тимчасово не відповідає. Спробуйте ще раз або зв’яжіться з нами — ми допоможемо оформити замовлення.");
+                    setWarehouseError("Не вдалося завантажити відділення. Спробуйте ще раз або зв’яжіться з нами — ми допоможемо оформити замовлення.");
                 }
             })
             .finally(() => {

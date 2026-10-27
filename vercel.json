@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/sync-cities",
       "schedule": "0 2 * * 0"
+    },
+    {
+      "path": "/api/cron/sync-warehouses",
+      "schedule": "0 3 * * 0"
     }
   ]
 }

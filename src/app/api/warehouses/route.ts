@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import prisma from "@/app/lib/prisma";
 
 export async function POST(request: Request) {
     let payload: unknown;
@@ -14,71 +15,28 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Некоректний cityRef" }, { status: 400 });
     }
 
-    const apiKey = process.env.NOVA_POSHTA_API_KEY;
-    if (!apiKey) {
-        console.error("[warehouses] NOVA_POSHTA_API_KEY is not configured");
-        return NextResponse.json({ error: "Сервіс доставки не налаштований" }, { status: 500 });
-    }
-
     try {
-        const res = await fetch("https://api.novaposhta.ua/v2.0/json/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            signal: AbortSignal.timeout(15_000),
-            body: JSON.stringify({
-                apiKey,
-                modelName: "AddressGeneral",
-                calledMethod: "getWarehouses",
-                methodProperties: { CityRef: payload.cityRef },
-            }),
+        const sync = await prisma.novaPoshtaWarehouseSync.findUnique({
+            where: { id: "warehouses" },
+            select: { completedAt: true },
         });
-
-        if (!res.ok) {
-            console.error("[warehouses] Nova Poshta HTTP status:", res.status);
-            return NextResponse.json({ error: "Нова пошта тимчасово недоступна" }, { status: 502 });
+        // Do not offer a partially populated directory during the first import.
+        if (!sync?.completedAt) {
+            return NextResponse.json({ error: "Довідник відділень оновлюється. Спробуйте пізніше." }, { status: 503 });
         }
 
-        const data: unknown = await res.json();
-        if (!data || typeof data !== "object" || !("success" in data)) {
-            throw new Error("Invalid Nova Poshta response");
-        }
-
-        if (data.success !== true) {
-            console.error("[warehouses] Nova Poshta rejected the request");
-            return NextResponse.json(
-                { error: "Не вдалося отримати відділення Нової пошти" },
-                { status: 502 }
-            );
-        }
-
-        if (!("data" in data) || !Array.isArray(data.data)) {
-            throw new Error("Invalid Nova Poshta warehouse list");
-        }
-        const warehouses = data.data.map((warehouse: unknown) => {
-            if (!warehouse || typeof warehouse !== "object"
-                || !("Ref" in warehouse) || typeof warehouse.Ref !== "string"
-                || !("Number" in warehouse) || typeof warehouse.Number !== "string"
-                || !("Description" in warehouse) || typeof warehouse.Description !== "string") {
-                throw new Error("Invalid Nova Poshta warehouse");
-            }
-            return { ref: warehouse.Ref, number: warehouse.Number, description: warehouse.Description };
+        const warehouses = await prisma.novaPoshtaWarehouse.findMany({
+            where: { cityRef: payload.cityRef, available: true },
+            select: { ref: true, number: true, description: true },
+            orderBy: { number: "asc" },
         });
-
-        return NextResponse.json(warehouses, { status: 200 });
+        // Preserve the existing checkout response contract.
+        return NextResponse.json(warehouses.map(warehouse => ({ ...warehouse, number: String(warehouse.number) })));
     } catch (error) {
-        const cause = error instanceof Error ? error.cause : undefined;
-        const causeCode = cause && typeof cause === "object" && "code" in cause ? cause.code : undefined;
-        const isTimeout = (error instanceof Error && error.name === "TimeoutError")
-            || causeCode === "UND_ERR_CONNECT_TIMEOUT";
-        console.error("[warehouses] Nova Poshta request failed:", {
-            message: error instanceof Error ? error.message : "Unknown error",
-            causeCode,
-        });
+        console.error("[warehouses] Directory lookup failed:", error instanceof Error ? error.message : "Unknown error");
         return NextResponse.json(
-            { error: isTimeout
-                ? "Нова пошта не відповідає. Спробуйте ще раз."
-                : "Не вдалося завантажити відділення. Спробуйте ще раз." },
-            { status: isTimeout ? 504 : 502 }
+            { error: "Не вдалося завантажити відділення. Спробуйте ще раз." },
+            { status: 500 }
         );
     }
 

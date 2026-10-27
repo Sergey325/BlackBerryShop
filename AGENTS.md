@@ -42,6 +42,16 @@ The admin panel is a separate project and is not part of this repository.
 
 ### Shipping
 - `NovaPoshtaCity` — fuzzy city search via `pg_trgm`
+  City sync validates the complete `getCities` snapshot, updates changed rows, and deletes missing refs
+  atomically; empty/incomplete responses and changes removing over 20% of existing refs are rejected.
+- `NovaPoshtaWarehouse` — compact local branch/parcel-locker directory; `(cityRef, number)` index.
+  `/api/cron/sync-warehouses` refreshes it in pages/batches weekly on Sunday at 03:00 UTC via Vercel;
+  `/api/warehouses` reads only the DB.
+  `NovaPoshtaWarehouseSync` tracks the sync lease and last completed import. See `docs/nova-poshta-warehouses.md`.
+  Warehouse upserts change rows only when selected data differs; `updatedAt` tracks data changes.
+  Missing refs are pruned only after a validated full import, using the collected ref set.
+  Both syncs use `novaPoshtaSyncMonitoring` to report failures with stage/page context and flush Sentry.
+  Production Cron Monitors use schedules from `vercel.json`; stats requests do not produce cron check-ins.
 - Orders store `warehouseRef`, warehouse display text and number. TTN creation uses the reference.
 
 ## TypeScript
@@ -102,6 +112,7 @@ const payload: unknown = await request.json(); // Validate before use.
 
 ## Code Style Preferences
 
+- Keep local tests in the root `tests/` directory. It is gitignored; do not include tests in commits.
 - Keep axios calls **inline**, don't extract them into separate hooks/services unless explicitly requested
 - Follow the TypeScript inference guidelines above; explicit annotations should add useful information or enforce a contract.
 - Before major schema refactors (like the size-first → color-first switch) — explicitly discuss the trade-offs
