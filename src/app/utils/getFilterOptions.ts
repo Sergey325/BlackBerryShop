@@ -24,7 +24,7 @@ export function getFilterOptions(products: IProduct[] | undefined): IFilterOptio
         materials: []
     }
 
-    const sizes = new Map<string, number>();
+    const sizes = new Map<string, {id: number; count: number}>();
     const materials = new Map<string, number>();
     const colors = new Map<string, {
         code: string;
@@ -53,10 +53,12 @@ export function getFilterOptions(products: IProduct[] | undefined): IFilterOptio
             pc.sizes.forEach(size => {
                 if (!size.available) return;
 
-                sizes.set(
-                    size.size,
-                    (sizes.get(size.size) ?? 0) + 1
-                );
+                const currentSize = sizes.get(size.size);
+
+                sizes.set(size.size, {
+                    id: Math.min(currentSize?.id ?? size.id, size.id),
+                    count: (currentSize?.count ?? 0) + 1,
+                });
             });
         });
 
@@ -75,10 +77,9 @@ export function getFilterOptions(products: IProduct[] | undefined): IFilterOptio
     });
 
     return {
-        sizes: Array.from(sizes, ([size, count]) => ({
-            size,
-            count,
-        })),
+        sizes: Array.from(sizes, ([size, {id, count}]) => ({size, id, count}))
+            .sort((a, b) => a.id - b.id)
+            .map(({size, count}) => ({size, count})),
 
         materials: Array.from(materials, ([name, count]) => ({
             name,

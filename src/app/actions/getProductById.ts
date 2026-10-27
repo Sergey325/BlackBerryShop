@@ -17,7 +17,9 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
                         },
                     },
                     images: true,
-                    sizes: true,
+                    sizes: {
+                        orderBy: {id: "asc"}
+                    },
                 },
             },
             material: true,
