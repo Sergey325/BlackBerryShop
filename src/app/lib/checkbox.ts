@@ -126,7 +126,7 @@ export async function closeCheckboxShiftAfterLateReceipt(result: CheckboxFiscali
         hourCycle: "h23",
     }).format(result.fiscalDate);
 
-    if (time < "23:56") {
+    if (time < "23:49") {
         return;
     }
 
@@ -138,11 +138,50 @@ export async function closeCheckboxShiftAfterLateReceipt(result: CheckboxFiscali
     }
 
     // A retry for an old receipt must never close a newer shift.
-    let shift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${receipt.shift.id}`, {token});
+    const shift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${receipt.shift.id}`, {token});
 
     if (!shift) {
         throw new Error(`Checkbox did not return shift ${receipt.shift.id}`);
     }
+
+    await closeShift(token, shift);
+}
+
+export async function closeCheckboxShift(): Promise<{
+    status: "closed" | "no_open_shift";
+    shiftId: string | null;
+}> {
+    const token = await signInCashier();
+    let shift: CheckboxShiftResponse | null;
+
+    try {
+        shift = await checkboxRequest<CheckboxShiftResponse>("/cashier/shift", {
+            token,
+            allowNotFound: true,
+        });
+    } catch (error: unknown) {
+        // Checkbox also returns 400 when the cashier has no active shift.
+        if (!(error instanceof CheckboxApiError) || error.status !== 400) {
+            throw error;
+        }
+        shift = null;
+    }
+
+    if (!shift || shift.status === "CLOSED") {
+        return {status: "no_open_shift", shiftId: shift?.id ?? null};
+    }
+
+    if (shift.status === "CREATED" || shift.status === "OPENING") {
+        await waitForOpenedShift(token, shift.id);
+        shift = {...shift, status: "OPENED"};
+    }
+
+    await closeShift(token, shift);
+    return {status: "closed", shiftId: shift.id};
+}
+
+async function closeShift(token: string, shift: CheckboxShiftResponse): Promise<void> {
+    const shiftId = shift.id;
 
     if (shift.status === "CLOSED") {
         return;
@@ -152,7 +191,7 @@ export async function closeCheckboxShiftAfterLateReceipt(result: CheckboxFiscali
         const activeShift = await checkboxRequest<CheckboxShiftResponse>("/cashier/shift", {token});
 
         if (activeShift?.id !== shift.id) {
-            throw new Error(`Checkbox receipt ${receipt.id} does not belong to the active shift`);
+            throw new Error(`Checkbox shift ${shift.id} is no longer the active shift`);
         }
 
         try {
@@ -163,8 +202,8 @@ export async function closeCheckboxShiftAfterLateReceipt(result: CheckboxFiscali
             }
 
             // Another request or Checkbox's scheduled closure may have closed it.
-            shift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${receipt.shift.id}`, {token});
-            if (shift?.status !== "CLOSING" && shift?.status !== "CLOSED") {
+            const updatedShift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${shiftId}`, {token});
+            if (updatedShift?.status !== "CLOSING" && updatedShift?.status !== "CLOSED") {
                 throw error;
             }
         }
@@ -173,16 +212,16 @@ export async function closeCheckboxShiftAfterLateReceipt(result: CheckboxFiscali
     }
 
     for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
-        shift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${receipt.shift.id}`, {token});
+        const updatedShift = await checkboxRequest<CheckboxShiftResponse>(`/shifts/${shiftId}`, {token});
 
-        if (shift?.status === "CLOSED") {
+        if (updatedShift?.status === "CLOSED") {
             return;
         }
 
         await delay(POLL_INTERVAL_MS);
     }
 
-    throw new Error(`Checkbox shift ${receipt.shift.id} did not close in time`);
+    throw new Error(`Checkbox shift ${shiftId} did not close in time`);
 }
 
 class CheckboxApiError extends Error {

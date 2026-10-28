@@ -7,7 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 import {revalidateTag} from "next/cache";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {fiscalizeInitialOrder} from "@/app/lib/orderFiscalization";
-import {getCheckboxPaymentReceiptUrl} from "@/app/lib/checkbox";
+import {closeCheckboxShiftAfterLateReceipt, getCheckboxPaymentReceiptUrl} from "@/app/lib/checkbox";
 import {verifyMonobankWebhook} from "@/app/lib/monobankWebhook";
 
 export const runtime = "nodejs";
@@ -459,7 +459,16 @@ export async function POST(request: Request) {
 
         if (newStatus === "PAID") {
             try {
-                await fiscalizeInitialOrder(order.id);
+                const result = await fiscalizeInitialOrder(order.id);
+
+                try {
+                    await closeCheckboxShiftAfterLateReceipt(result);
+                } catch (error: unknown) {
+                    Sentry.captureException(error, {
+                        tags: {error_type: "checkbox_shift_close_failed"},
+                        extra: {orderId: order.id, receiptId: result.receiptId},
+                    });
+                }
             } catch (checkboxError: unknown) {
                 Sentry.withScope((scope) => {
                     scope.setContext("order", {
