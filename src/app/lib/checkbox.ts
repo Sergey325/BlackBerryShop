@@ -81,6 +81,7 @@ type CheckboxShiftResponse = {
 type CheckboxReceiptResponse = {
     id: string;
     status: CheckboxReceiptStatus;
+    payments?: {value: number}[];
     shift?: {id: string} | null;
     fiscal_code?: string | null;
     fiscal_date?: string | null;
@@ -684,6 +685,7 @@ export async function createCheckboxPaymentReceipt(
 export async function createCheckboxAfterpaymentReceipt(
     order: CheckboxOrder,
     relationId: string,
+    prepaymentReceiptId: string,
 ): Promise<CheckboxFiscalizationResult> {
     const token: string = await signInCashier();
     const receiptId: string = createStableUuid(order.publicToken, "afterpayment");
@@ -698,10 +700,22 @@ export async function createCheckboxAfterpaymentReceipt(
         (total: number, item: CheckboxOrderItem): number => total + toKopecks(item.price) * item.quantity,
         0,
     );
-    const prepaymentKopecks = toKopecks(order.totalAmount);
-    if (prepaymentKopecks <= 0) {
-        throw new Error(`Order ${order.id} has an invalid prepayment amount`);
+    // Order totals can change after payment. Use the amount actually fiscalized.
+    const prepaymentReceipt = await getExistingReceipt(token, prepaymentReceiptId);
+    if (
+        prepaymentReceipt?.status !== "DONE" ||
+        prepaymentReceipt.pre_payment_relation_id !== relationId
+    ) {
+        throw new Error(`Order ${order.id} does not have a matching fiscalized prepayment receipt`);
     }
+    assertProductionReceipt(prepaymentReceipt);
+    const payments = prepaymentReceipt.payments;
+    if (!Array.isArray(payments) || payments.length === 0 || payments.some(
+        payment => !Number.isSafeInteger(payment?.value) || payment.value <= 0,
+    )) {
+        throw new Error(`Order ${order.id} has invalid fiscalized prepayment payments`);
+    }
+    const prepaymentKopecks = payments.reduce((total, payment) => total + payment.value, 0);
     const afterpaymentKopecks = goodsTotalKopecks - prepaymentKopecks;
 
     if (afterpaymentKopecks <= 0) {

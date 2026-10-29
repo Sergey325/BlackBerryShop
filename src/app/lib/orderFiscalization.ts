@@ -134,13 +134,14 @@ export async function fiscalizeAfterpaymentOrder(orderId: number): Promise<Check
         throw new Error(`Order ${order.id} does not use cash on delivery`);
     }
 
-    if (order.checkboxReceiptStatus !== "DONE" || !order.checkboxPrepaymentRelationId) {
+    if (order.checkboxReceiptStatus !== "DONE" || !order.checkboxPrepaymentRelationId || !order.checkboxReceiptId) {
         throw new Error(`Order ${order.id} does not have a fiscalized prepayment receipt`);
     }
 
     const result: CheckboxFiscalizationResult = await createCheckboxAfterpaymentReceipt(
         order,
         order.checkboxPrepaymentRelationId,
+        order.checkboxReceiptId,
     );
 
     await prisma.order.update({
