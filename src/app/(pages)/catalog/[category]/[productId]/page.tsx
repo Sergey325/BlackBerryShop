@@ -18,6 +18,7 @@ import {extractProductId, getProductPath, getProductRouteSegment} from "@/app/li
 import {getProductDescription} from "@/app/lib/productDescription";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
 import {getLiningPrice} from "@/app/lib/liningPrice";
+import {getCodPrepaymentPercent} from "@/app/lib/codPrepaymentConfig";
 import {
     buildCatalogItemId,
     buildCatalogMpn,
@@ -292,7 +293,7 @@ const ProductPage = async ({ params, searchParams }: Props) => {
         <>
             <JsonLd data={productJsonLd}/>
             <JsonLd data={breadcrumbJsonLd}/>
-            <ProductClient product={product} category={product.category} liningPrice={getLiningPrice()}/>
+            <ProductClient product={product} category={product.category} liningPrice={getLiningPrice()} prepaymentPercent={getCodPrepaymentPercent()}/>
         </>
     );
 };

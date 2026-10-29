@@ -11,15 +11,17 @@ import Link from "next/link";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
+import {getCodPrepaymentDescription} from "@/app/lib/codPrepayment";
 
 type Props = {
+    prepaymentPercent: number;
     product: IProductWithRelated
     category: ICategory;
     liningPrice: number;
 }
 
 
-const ProductClient = ({ product, category, liningPrice }: Props) => {
+const ProductClient = ({ product, category, liningPrice, prepaymentPercent }: Props) => {
     const params = useSearchParams();
     const filterColorCodes = useMemo(() => params.getAll("color"), [params]);
 
@@ -159,7 +161,7 @@ const ProductClient = ({ product, category, liningPrice }: Props) => {
                             content={[
                                 "Оплата карткою через Monopay",
                                 "Apple pay, Google pay",
-                                "Оплата післяплатою (Передплата 150 грн)",
+                                `Оплата післяплатою (передоплата ${getCodPrepaymentDescription(prepaymentPercent)})`,
                             ]}
                             initialState={product.category?.isDecoration || false}
                         />

@@ -144,10 +144,8 @@ export function createOrderMessage(order: TelegramOrder, receiptUrl?: string): s
         0
     );
     const isCashOnDelivery: boolean = order.paymentMethod === "CASH_ON_DELIVERY";
-    const paidAmount: number = isCashOnDelivery
-        ? Math.min(150, productsTotal)
-        : order.totalAmount;
-    const remainingAmount: number = Math.max(productsTotal - paidAmount, 0);
+    const paidAmount = order.totalAmount;
+    const remainingAmount = Math.max(Math.round((productsTotal - paidAmount) * 100) / 100, 0);
     const customerName: string = [order.firstName, order.lastName]
         .filter((value): value is string => Boolean(value))
         .join(" ");

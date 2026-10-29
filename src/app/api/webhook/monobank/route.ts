@@ -304,14 +304,14 @@ export async function POST(request: Request) {
 
         orderId = order.id;
 
-        const prepaidAmount = 150; // или из order.paymentData
+        const prepaidAmount = order.totalAmount;
 
         const itemsTotal = order.items.reduce(
             (acc, item) => acc + item.price * item.quantity,
             0
         );
 
-        const codAmount = itemsTotal - prepaidAmount;
+        const codAmount = Math.max(0, Math.round((itemsTotal - prepaidAmount) * 100) / 100);
 
 
         // Создаём ТТН только при успешной оплате

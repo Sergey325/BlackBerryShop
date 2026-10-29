@@ -26,17 +26,18 @@ import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {getSelectedProductSize} from "@/app/utils/inventory";
 import {getCheckoutTrafficSource} from "@/app/lib/analytics/trafficSource";
+import {calculateCodPrepayment, getCodPrepaymentDescription} from "@/app/lib/codPrepayment";
 
 const paymentOptions = [
     { value: "MONOBANK", label: "Оплата картою, Monopay, Google Pay або Apple Pay", shortTitle: "Оплата карткою" },
-    { value: "CASH_ON_DELIVERY", label: "Оплата при отриманні (передоплата 150 грн, решта при отриманні)", shortTitle: `Оплата при отриманні\n(Передплата 150 грн)` },
+    { value: "CASH_ON_DELIVERY", label: "Оплата при отриманні", shortTitle: "Оплата при отриманні" },
 ]
 
-const CartClient = () => {
+const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const cart = useCartStore();
     const cartItemsRef = useRef<CartItemType[]>(cart.items);
     const replaceCartItems = cart.replaceItems;
-    const [payment, setPayment] = useState(paymentOptions[0]);
+    const [selectedPayment, setPayment] = useState(paymentOptions[0]);
     const [appliedPromoCode, setAppliedPromoCode] = useState<AppliedPromoCode | null>(null);
     const handlePromoCodeChange = useCallback((promoCode: AppliedPromoCode | null): void => {
         setAppliedPromoCode(promoCode);
@@ -219,6 +220,17 @@ const CartClient = () => {
 
         return Math.round(total * 100) / 100;
     }, [cart.items]);
+    const discountedTotal = Math.max(0, Math.round((totalPrice - (appliedPromoCode?.discountAmount ?? 0)) * 100) / 100);
+    const prepaymentAmount = calculateCodPrepayment(discountedTotal, prepaymentPercent);
+    const codOption = {
+        ...paymentOptions[1],
+        label: `Оплата при отриманні (передоплата ${getCodPrepaymentDescription(prepaymentPercent)}; решта при отриманні)`,
+        shortTitle: `Оплата при отриманні (передоплата ${prepaymentAmount} грн)`,
+    };
+    const availablePaymentOptions = prepaymentAmount < discountedTotal
+        ? [paymentOptions[0], codOption]
+        : [paymentOptions[0]];
+    const payment = availablePaymentOptions.find(option => option.value === selectedPayment.value) ?? paymentOptions[0];
     const promoCartItems = useMemo(() => cart.items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -382,7 +394,7 @@ const CartClient = () => {
                     <RadioGroup
                         value={payment.value}
                         onChange={setPayment}
-                        options={totalPrice > 150 ? paymentOptions : [paymentOptions[0]]}
+                        options={availablePaymentOptions}
                     />
                 </div>
         }
@@ -435,6 +447,7 @@ const CartClient = () => {
                 </div>
                 <div className="xl:sticky w-full min-w-0 xl:flex-1 xl:top-20">
                     <CartSummary
+                        prepaymentAmount={prepaymentAmount}
                         totalPrice={totalPrice}
                         items={promoCartItems}
                         appliedPromoCode={appliedPromoCode}

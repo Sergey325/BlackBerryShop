@@ -10,6 +10,7 @@ import {
 } from "@/app/lib/checkbox";
 
 const checkboxOrderSelect = {
+    totalAmount: true,
     id: true,
     publicToken: true,
     status: true,

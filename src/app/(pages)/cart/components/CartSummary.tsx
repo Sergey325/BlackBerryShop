@@ -20,6 +20,7 @@ type PromoCartItem = {
 };
 
 type Props = {
+    prepaymentAmount: number
     totalPrice: number
     payment: {
         value: string
@@ -49,6 +50,7 @@ const formatPrice = (price: number): string => new Intl.NumberFormat("uk-UA", {
 }).format(price);
 
 const CartSummary = ({
+    prepaymentAmount,
     totalPrice,
     payment,
     address,
@@ -247,10 +249,16 @@ const CartSummary = ({
                 <div className="flex items-center justify-between border-t border-gray-700 pt-4 text-base sm:text-lg">
                     <div className="text-sm sm:text-base font-medium">Сума до cплати</div>
                     <span className="text-xl sm:text-2xl text-gray-800 whitespace-nowrap">
-                        {payment.value === "CASH_ON_DELIVERY" ? 150 : formatPrice(discountedTotal)} грн
+                        {formatPrice(payment.value === "CASH_ON_DELIVERY" ? prepaymentAmount : discountedTotal)} грн
                     </span>
                 </div>
             </div>
+            {payment.value === "CASH_ON_DELIVERY" && (
+                <div className="mt-3 flex justify-between gap-3 text-sm text-gray-700">
+                    <span>Залишок при отриманні</span>
+                    <span>{formatPrice(Math.max(0, Math.round((discountedTotal - prepaymentAmount) * 100) / 100))} грн</span>
+                </div>
+            )}
             <div className="text-sm sm:text-base pt-5">
                 <Button label="Сплатити" onClick={onCheckout}/>
             </div>

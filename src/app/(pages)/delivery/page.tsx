@@ -2,6 +2,8 @@ import {FaTruck, FaCreditCard, FaMobileAlt, FaInstagram, FaTelegram} from "react
 import Link from "next/link";
 import type {Metadata} from "next";
 import {createMetadata} from "@/app/lib/seo";
+import {getCodPrepaymentDescription} from "@/app/lib/codPrepayment";
+import {getCodPrepaymentPercent} from "@/app/lib/codPrepaymentConfig";
 
 export const metadata: Metadata = createMetadata({
     title: "Доставка та оплата",
@@ -105,8 +107,9 @@ export default function DeliveryPage() {
                     <div className="border border-gray-300 rounded-md p-4">
                         <p className="font-medium">Накладений платіж</p>
                         <p className="text-sm text-gray-600 mt-1">
-                            Часткова попередня оплата у розмірі 150 грн при оформленні замовлення,
+                            Передоплата — {getCodPrepaymentDescription(getCodPrepaymentPercent())} при оформленні замовлення;
                             решту суми ви сплачуєте під час отримання товару на відділенні Нової Пошти.
+                            {" "}Якщо передоплата дорівнює або перевищує вартість замовлення, доступна лише повна оплата карткою.
                         </p>
                     </div>
                 </div>

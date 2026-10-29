@@ -1,5 +1,7 @@
 import {NextResponse} from "next/server";
 import prisma from "@/app/lib/prisma";
+import {calculateCodPrepayment} from "@/app/lib/codPrepayment";
+import {getCodPrepaymentPercent} from "@/app/lib/codPrepaymentConfig";
 import {PaymentMethod, PaymentSource, TrafficSource} from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
@@ -114,7 +116,10 @@ export async function POST(request: Request): Promise<NextResponse> {
             price: pricing.items[index].finalUnitPrice,
         }));
         const isCod: boolean = paymentMethod === PaymentMethod.CASH_ON_DELIVERY;
-        const amountDue: number = isCod ? 150 : pricing.total;
+        const amountDue = isCod ? calculateCodPrepayment(pricing.total, getCodPrepaymentPercent()) : pricing.total;
+        if (isCod && amountDue >= pricing.total) {
+            return NextResponse.json({error: "Для цієї суми замовлення доступна лише повна оплата карткою"}, {status: 400});
+        }
         const forwardedFor: string | null = request.headers.get("x-forwarded-for");
         const clientIp: string | null = forwardedFor
             ? forwardedFor.split(",")[0].trim()
@@ -264,7 +269,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             {
                 name: "Передоплата за замовлення",
                 qty: 1,
-                sum: 15000,
+                sum: Math.round(order.totalAmount * 100),
                 unit: "шт",
                 code: `prepayment-${order.id}`,
             },

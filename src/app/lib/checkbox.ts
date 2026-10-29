@@ -5,7 +5,6 @@ import {PaymentMethod} from "@prisma/client";
 
 const CHECKBOX_API_URL = "https://api.checkbox.ua/api/v1";
 const CHECKBOX_RECEIPT_URL = "https://check.checkbox.ua";
-const COD_PREPAYMENT_KOPECKS = 15_000;
 const POLL_INTERVAL_MS = 1_000;
 const MAX_POLL_ATTEMPTS = 20;
 
@@ -50,6 +49,7 @@ const CHECKBOX_PAYMENT_LABELS: Record<CheckboxPaymentSource, string> = {
 };
 
 export type CheckboxOrder = {
+    totalAmount: number;
     id: number;
     publicToken: string;
     invoiceId: string | null;
@@ -646,8 +646,9 @@ export async function createCheckboxPaymentReceipt(
     let payload: unknown;
 
     if (order.paymentMethod === PaymentMethod.CASH_ON_DELIVERY) {
-        if (goodsTotalKopecks < COD_PREPAYMENT_KOPECKS) {
-            throw new Error(`Order ${order.id} total is less than the 150 UAH prepayment`);
+        const prepaymentKopecks = toKopecks(order.totalAmount);
+        if (prepaymentKopecks <= 0 || goodsTotalKopecks < prepaymentKopecks) {
+            throw new Error(`Order ${order.id} has an invalid prepayment amount`);
         }
 
         if (!order.ttnNumber) {
@@ -659,7 +660,7 @@ export async function createCheckboxPaymentReceipt(
             ...commonPayload,
             custom_relation_id: relationId,
             ettn: order.ttnNumber,
-            payments: [buildCashlessPayment(COD_PREPAYMENT_KOPECKS, paymentSource)],
+            payments: [buildCashlessPayment(prepaymentKopecks, paymentSource)],
         };
     } else {
         endpoint = "/receipts/sell";
@@ -697,7 +698,11 @@ export async function createCheckboxAfterpaymentReceipt(
         (total: number, item: CheckboxOrderItem): number => total + toKopecks(item.price) * item.quantity,
         0,
     );
-    const afterpaymentKopecks: number = goodsTotalKopecks - COD_PREPAYMENT_KOPECKS;
+    const prepaymentKopecks = toKopecks(order.totalAmount);
+    if (prepaymentKopecks <= 0) {
+        throw new Error(`Order ${order.id} has an invalid prepayment amount`);
+    }
+    const afterpaymentKopecks = goodsTotalKopecks - prepaymentKopecks;
 
     if (afterpaymentKopecks <= 0) {
         throw new Error(`Order ${order.id} has no amount left for an afterpayment receipt`);

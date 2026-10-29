@@ -196,6 +196,7 @@ model Order {
   publicToken     String        @unique @default(uuid())
   invoiceId       String?       @unique
   status          OrderStatus   @default(PENDING)
+  /// Initial payment amount in UAH: COD prepayment or full card payment, fixed at creation.
   totalAmount     Float
   firstName       String?
   lastName        String?
