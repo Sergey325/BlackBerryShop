@@ -35,6 +35,8 @@ const paymentOptions = [
 
 const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const cart = useCartStore();
+    const checkoutInProgress = useRef(false);
+    const [isCheckingOut, setIsCheckingOut] = useState(false);
     const cartItemsRef = useRef<CartItemType[]>(cart.items);
     const replaceCartItems = cart.replaceItems;
     const [selectedPayment, setPayment] = useState(paymentOptions[0]);
@@ -55,6 +57,18 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     useEffect((): void => {
         cartItemsRef.current = cart.items;
     }, [cart.items]);
+
+    useEffect(() => {
+        const handlePageShow = (event: PageTransitionEvent) => {
+            if (event.persisted) {
+                checkoutInProgress.current = false;
+                setIsCheckingOut(false);
+            }
+        };
+
+        window.addEventListener("pageshow", handlePageShow);
+        return () => window.removeEventListener("pageshow", handlePageShow);
+    }, []);
 
     const syncCartInventory = useCallback(async (blockOnError: boolean): Promise<boolean> => {
         const currentItems: CartItemType[] = cartItemsRef.current;
@@ -241,6 +255,8 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const deliveryRef = useRef<HTMLDivElement | null>(null);
 
     const onCheckout = async () => {
+        if (checkoutInProgress.current) return;
+
         if (cart.items.find(item => !item.size && !item.isDecoration)) {
             toast.error("Виберіть розмір")
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -282,77 +298,85 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
             return;
         }
         else {
-            const inventoryIsCurrent: boolean = await syncCartInventory(true);
-            if (!inventoryIsCurrent) return;
-
-            const fbp = getCookie('_fbp');
-            const fbc = getCookie('_fbc');
-            const trafficSource = getCheckoutTrafficSource(fbc);
-
-            const data = {
-                contact: {
-                    ...contactData,
-                    firstName: contactData.firstName.trim(),
-                    lastName: contactData.lastName.trim(),
-                    phone: contactData.phone.replace(/\D/g, ""),
-                },
-                delivery: {
-                    city: selectedCity.name,
-                    cityRef: selectedCity.ref,
-                    area: selectedCity.area,
-                    warehouse: selectedWarehouse.description,
-                    warehouseNumber: selectedWarehouse.number,
-                    warehouseRef: selectedWarehouse.ref,
-                },
-                paymentMethod: payment.value,
-                promoCode: appliedPromoCode?.code ?? null,
-                items: cart.items.map(item => ({
-                    productId: Number(item.productId),
-                    name: item.productName,
-                    price: calculatePriceWithDiscount(item.price, item.discount),
-                    quantity: item.quantity,
-                    color: item.color,
-                    colorName: item.colorName,
-                    size: item.size,
-                    imageUrl: item.photoUrl,
-                    colorId: item.productColorId,
-                    lining: Boolean(item.lining)
-                })),
-                fbp,
-                fbc,
-                trafficSource,
-            }
-
-            const checkoutContents: Array<{
-                id: string;
-                quantity: number;
-                color: string;
-                size: string;
-            }> = cart.items.flatMap((item: CartItemType) => {
-                const productSize: IProductSize | undefined = getSelectedProductSize(item);
-
-                return productSize ? [{
-                    id: buildCatalogItemId(item.productId, item.productColorId, productSize.id),
-                    quantity: item.quantity,
-                    color: item.colorName,
-                    size: productSize.size,
-                }] : [];
-            });
-
-            trackMetaEvent("InitiateCheckout", {
-                content_ids: checkoutContents.map((item): string => item.id),
-                content_type: "product",
-                value: totalPrice,
-                currency: "UAH",
-                contents: checkoutContents,
-            });
+            // Lock synchronously: a second click can arrive before React renders disabled.
+            checkoutInProgress.current = true;
+            setIsCheckingOut(true);
+            let isRedirecting = false;
 
             try {
+                const inventoryIsCurrent: boolean = await syncCartInventory(true);
+                if (!inventoryIsCurrent) return;
+
+                const fbp = getCookie('_fbp');
+                const fbc = getCookie('_fbc');
+                const trafficSource = getCheckoutTrafficSource(fbc);
+
+                const data = {
+                    contact: {
+                        ...contactData,
+                        firstName: contactData.firstName.trim(),
+                        lastName: contactData.lastName.trim(),
+                        phone: contactData.phone.replace(/\D/g, ""),
+                    },
+                    delivery: {
+                        city: selectedCity.name,
+                        cityRef: selectedCity.ref,
+                        area: selectedCity.area,
+                        warehouse: selectedWarehouse.description,
+                        warehouseNumber: selectedWarehouse.number,
+                        warehouseRef: selectedWarehouse.ref,
+                    },
+                    paymentMethod: payment.value,
+                    promoCode: appliedPromoCode?.code ?? null,
+                    items: cart.items.map(item => ({
+                        productId: Number(item.productId),
+                        name: item.productName,
+                        price: calculatePriceWithDiscount(item.price, item.discount),
+                        quantity: item.quantity,
+                        color: item.color,
+                        colorName: item.colorName,
+                        size: item.size,
+                        imageUrl: item.photoUrl,
+                        colorId: item.productColorId,
+                        lining: Boolean(item.lining)
+                    })),
+                    fbp,
+                    fbc,
+                    trafficSource,
+                }
+
+                const checkoutContents: Array<{
+                    id: string;
+                    quantity: number;
+                    color: string;
+                    size: string;
+                }> = cart.items.flatMap((item: CartItemType) => {
+                    const productSize: IProductSize | undefined = getSelectedProductSize(item);
+
+                    return productSize ? [{
+                        id: buildCatalogItemId(item.productId, item.productColorId, productSize.id),
+                        quantity: item.quantity,
+                        color: item.colorName,
+                        size: productSize.size,
+                    }] : [];
+                });
+
+                trackMetaEvent("InitiateCheckout", {
+                    content_ids: checkoutContents.map((item): string => item.id),
+                    content_type: "product",
+                    value: totalPrice,
+                    currency: "UAH",
+                    contents: checkoutContents,
+                });
+
                 const res = await axios.post("/api/checkout", data);
 
-                if (res.data.redirectUrl) {
-                    window.location.href = res.data.redirectUrl; // редирект на оплату
+                if (!res.data.redirectUrl) {
+                    throw new Error("Checkout response is missing redirectUrl");
                 }
+
+                window.location.href = res.data.redirectUrl;
+                isRedirecting = true;
             } catch (error: unknown) {
                 if (axios.isAxiosError(error) && error.response?.status === 409) {
                     await syncCartInventory(false);
@@ -362,6 +386,11 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                     : "Не вдалося оформити замовлення";
 
                 toast.error(message);
+            } finally {
+                if (!isRedirecting) {
+                    checkoutInProgress.current = false;
+                    setIsCheckingOut(false);
+                }
             }
         }
     }
@@ -462,6 +491,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                         }
                         contactData={contactData}
                         onCheckout={onCheckout}
+                        isCheckingOut={isCheckingOut}
                     />
                 </div>
             </div>

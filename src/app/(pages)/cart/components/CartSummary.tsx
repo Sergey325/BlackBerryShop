@@ -43,6 +43,7 @@ type Props = {
     appliedPromoCode: AppliedPromoCode | null
     onPromoCodeChange: (promoCode: AppliedPromoCode | null) => void
     onCheckout: () => void
+    isCheckingOut: boolean
 };
 
 const formatPrice = (price: number): string => new Intl.NumberFormat("uk-UA", {
@@ -59,6 +60,7 @@ const CartSummary = ({
     appliedPromoCode,
     onPromoCodeChange,
     onCheckout,
+    isCheckingOut,
 }: Props) => {
     const [promoCodeInput, setPromoCodeInput] = useState<string>("");
     const [promoCodeError, setPromoCodeError] = useState<string>("");
@@ -260,7 +262,11 @@ const CartSummary = ({
                 </div>
             )}
             <div className="text-sm sm:text-base pt-5">
-                <Button label="Сплатити" onClick={onCheckout}/>
+                <Button
+                    label={isCheckingOut ? "Переходимо до оплати…" : "Сплатити"}
+                    onClick={onCheckout}
+                    disabled={isCheckingOut}
+                />
             </div>
         </div>
     );
