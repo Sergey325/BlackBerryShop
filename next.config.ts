@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     allowedDevOrigins: ['suspense-unvocal-tripping.ngrok-free.dev'],
+    // Resolve metadata before streaming so canonical links are in the initial <head>.
+    htmlLimitedBots: /.*/,
     images: {
         loader: "custom",
         loaderFile: "./src/app/utils/cloudinaryImageLoader.ts",
