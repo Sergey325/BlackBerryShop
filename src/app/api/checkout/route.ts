@@ -3,6 +3,7 @@ import prisma from "@/app/lib/prisma";
 import {calculateCodPrepayment} from "@/app/lib/codPrepayment";
 import {getCodPrepaymentPercent} from "@/app/lib/codPrepaymentConfig";
 import {PaymentMethod, PaymentSource, TrafficSource} from "@prisma/client";
+import {resolveCheckoutTrafficSource} from "@/app/lib/analytics/trafficSource";
 import * as Sentry from "@sentry/nextjs";
 import {
     calculateCartPricing,
@@ -125,10 +126,11 @@ export async function POST(request: Request): Promise<NextResponse> {
             ? forwardedFor.split(",")[0].trim()
             : request.headers.get("x-real-ip") ?? null;
         const userAgent: string | null = request.headers.get("user-agent") ?? null;
-        // FACEBOOK groups advertising traffic, including Instagram ad clicks.
-        const resolvedTrafficSource = typeof fbc === "string" && fbc.trim()
-            ? TrafficSource.FACEBOOK
-            : trafficSource ?? null;
+        const resolvedTrafficSource = resolveCheckoutTrafficSource(
+            trafficSource ?? null,
+            fbc,
+            request.headers.get("cookie") ?? "",
+        );
 
         const order = await prisma.$transaction(async (tx) => {
             const productColorIds: number[] = [...new Set(

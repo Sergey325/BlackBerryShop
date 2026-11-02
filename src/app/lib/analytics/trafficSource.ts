@@ -1,3 +1,5 @@
+import type {TrafficSource} from "@prisma/client";
+
 export const TRAFFIC_SOURCES = [
     "FACEBOOK",
     "GOOGLE_SEARCH",
@@ -7,10 +9,15 @@ export const TRAFFIC_SOURCES = [
 
 export type TrafficSourceValue = typeof TRAFFIC_SOURCES[number];
 
-export const PENDING_TRAFFIC_SOURCE_COOKIE = "blackberry_pending_traffic_source";
+export const TRAFFIC_SOURCE_COOKIE = "blackberry_traffic_source";
+export const INSTAGRAM_ROUTE_PARAMETER = "bb_source";
+export const INSTAGRAM_ROUTE_SOURCE = "INSTAGRAM_ROUTE";
+export const TRAFFIC_SOURCE_MAX_AGE = 30 * 24 * 60 * 60;
+
+// Fallback for the current page when cookies are blocked.
+let capturedSource: TrafficSourceValue | typeof INSTAGRAM_ROUTE_SOURCE | null = null;
 
 // FACEBOOK is the shop's advertising bucket, including ads shown on Instagram.
-const STORAGE_KEY = "blackberry-shop:traffic-source:v3";
 const PAID_MEDIA: ReadonlySet<string> = new Set([
     "paid_social", "paid-social", "paidsocial", "paid", "cpc", "ppc", "cpm",
 ]);
@@ -32,23 +39,26 @@ function isTrafficSource(value: string | null): value is TrafficSourceValue {
     return TRAFFIC_SOURCES.some(source => source === value);
 }
 
-function consumePendingTrafficSource(): TrafficSourceValue | null {
-    const encodedValue = document.cookie
+function readTrafficSourceCookie(cookies: string) {
+    const value = cookies
         .split(";")
         .map(cookie => cookie.trim())
-        .find(cookie => cookie.startsWith(`${PENDING_TRAFFIC_SOURCE_COOKIE}=`))
-        ?.slice(PENDING_TRAFFIC_SOURCE_COOKIE.length + 1);
+        .find(cookie => cookie.startsWith(`${TRAFFIC_SOURCE_COOKIE}=`))
+        ?.slice(TRAFFIC_SOURCE_COOKIE.length + 1) ?? null;
+    return value === INSTAGRAM_ROUTE_SOURCE || isTrafficSource(value) ? value : null;
+}
 
-    if (!encodedValue) return null;
-
-    document.cookie = `${PENDING_TRAFFIC_SOURCE_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax`;
-
-    try {
-        const value = decodeURIComponent(encodedValue);
-        return isTrafficSource(value) ? value : null;
-    } catch {
-        return null;
-    }
+export function resolveCheckoutTrafficSource(
+    source: TrafficSource | null,
+    fbc: unknown,
+    cookies: string,
+): TrafficSource | null {
+    // The client has already applied the route override, even if cookies are blocked.
+    if (source === "INSTAGRAM") return source;
+    const storedSource = readTrafficSourceCookie(cookies);
+    if (storedSource === INSTAGRAM_ROUTE_SOURCE) return "INSTAGRAM";
+    if (typeof fbc === "string" && fbc.trim()) return "FACEBOOK";
+    return source ?? storedSource;
 }
 
 function getReferrerHostname(referrer: string): string | null {
@@ -62,19 +72,13 @@ function getReferrerHostname(referrer: string): string | null {
 }
 
 function getUrlTrafficSource(url: URL): TrafficSourceValue | null {
+    if (url.searchParams.get(INSTAGRAM_ROUTE_PARAMETER) === "instagram") return "INSTAGRAM";
+
     const source = normalizeParameter(url.searchParams.get("utm_source"))
         || normalizeParameter(url.searchParams.get("source"));
     const medium = normalizeParameter(url.searchParams.get("utm_medium"));
 
-    if (PAID_MEDIA.has(medium) || url.searchParams.get("fbclid")?.trim()) {
-        return "FACEBOOK";
-    }
-
-    if (source === "instagram" || source === "ig") {
-        return "INSTAGRAM";
-    }
-
-    if (source === "facebook" || source === "fb" || source === "meta") {
+    if (url.searchParams.get("fbclid")?.trim()) {
         return "FACEBOOK";
     }
 
@@ -82,6 +86,17 @@ function getUrlTrafficSource(url: URL): TrafficSourceValue | null {
         return GOOGLE_FREE_LISTING_MEDIA.has(medium) || url.searchParams.has("srsltid")
             ? "GOOGLE_FREE_LISTING"
             : "GOOGLE_SEARCH";
+    }
+
+    const isMetaSource = ["instagram", "ig", "facebook", "fb", "meta"].includes(source);
+    if (PAID_MEDIA.has(medium) && (!source || isMetaSource)) return "FACEBOOK";
+
+    if (source === "instagram" || source === "ig") {
+        return "INSTAGRAM";
+    }
+
+    if (source === "facebook" || source === "fb" || source === "meta") {
+        return "FACEBOOK";
     }
 
     if (url.searchParams.has("srsltid")) return "GOOGLE_FREE_LISTING";
@@ -93,9 +108,8 @@ function getUrlTrafficSource(url: URL): TrafficSourceValue | null {
 export function detectTrafficSource(
     url: URL,
     referrer: string,
-    pendingSource: TrafficSourceValue | null = null,
 ): TrafficSourceValue | null {
-    const source = getUrlTrafficSource(url) ?? pendingSource;
+    const source = getUrlTrafficSource(url);
     if (source) return source;
 
     const referrerHostname = getReferrerHostname(referrer);
@@ -110,30 +124,27 @@ export function detectTrafficSource(
 
 export function captureTrafficSource(): void {
     const url = new URL(window.location.href);
-    // Consume the redirect marker even when URL parameters override it.
-    const pendingSource = consumePendingTrafficSource();
-    const source = detectTrafficSource(url, document.referrer, pendingSource);
-
-    if (!source) return;
+    capturedSource = url.searchParams.get(INSTAGRAM_ROUTE_PARAMETER) === "instagram"
+        ? INSTAGRAM_ROUTE_SOURCE
+        : detectTrafficSource(url, document.referrer);
+    if (!capturedSource) return;
 
     try {
-        window.sessionStorage.setItem(STORAGE_KEY, source);
+        const secure = url.protocol === "https:" ? "; Secure" : "";
+        document.cookie = `${TRAFFIC_SOURCE_COOKIE}=${capturedSource}; Max-Age=${TRAFFIC_SOURCE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
     } catch {
-        // Storage may be unavailable in privacy modes.
+        // The current page still has capturedSource when cookies are blocked.
     }
 }
 
 export function getCheckoutTrafficSource(fbc: string | null = null): TrafficSourceValue | null {
-    // Business rule: a Meta click cookie takes priority over an organic source.
-    if (fbc?.trim()) return "FACEBOOK";
-
+    let source = capturedSource;
     try {
-        const storedSource = window.sessionStorage.getItem(STORAGE_KEY);
-
-        if (isTrafficSource(storedSource)) return storedSource;
+        source ??= readTrafficSourceCookie(document.cookie);
     } catch {
-        // Storage may be unavailable in privacy modes.
+        // Use the source captured on this page if cookies are blocked.
     }
 
-    return null;
+    if (source === INSTAGRAM_ROUTE_SOURCE) return "INSTAGRAM";
+    return fbc?.trim() ? "FACEBOOK" : source;
 }
