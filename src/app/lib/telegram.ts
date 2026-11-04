@@ -87,7 +87,7 @@ export async function sendTelegramMessage(chatId: string, text: string, id: numb
         throw new Error("TELEGRAM_BOT_TOKEN is not configured");
     }
 
-    const response: Response = await fetch(
+    const send = () => fetch(
         `https://api.telegram.org/bot${token}/sendMessage`,
         {
             method: "POST",
@@ -111,6 +111,20 @@ export async function sendTelegramMessage(chatId: string, text: string, id: numb
             }),
         }
     );
+    let response: Response;
+    try {
+        response = await send();
+    } catch (error: unknown) {
+        const cause = error instanceof Error ? error.cause : undefined;
+        if (!cause || typeof cause !== "object" || !("code" in cause)
+            || cause.code !== "UND_ERR_CONNECT_TIMEOUT") {
+            throw error;
+        }
+
+        // Connection was not established, so retry only this recipient once.
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        response = await send();
+    }
     const data: TelegramResponse = await response.json() as TelegramResponse;
 
     if (!response.ok || !data.ok) {
