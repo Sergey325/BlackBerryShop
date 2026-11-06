@@ -26,6 +26,7 @@ type Props = {
     defaultExpanded: boolean,
     related: IRelatedProduct[],
     isLoading: boolean,
+    sizeError?: boolean,
 };
 
 function RelatedAndCustomizationSkeleton(): React.JSX.Element {
@@ -69,7 +70,7 @@ function RelatedAndCustomizationSkeleton(): React.JSX.Element {
     );
 }
 
-const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) => {
+const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError = false}: Props) => {
     const router = useRouter()
     const cart = useCartStore()
     const productUrl: string = `${getProductPath(item.categorySlug, item.productId, item.slug)}?size=${item.size ?? ""}&colorId=${item.productColorId}${item.lining ? "&lining=true" : ""}`;
@@ -191,6 +192,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading}: Props) =>
                         <div className="flex items-center gap-2 text-base flex-wrap sm:gap-8 lg:flex-nowrap">
                             {item.sizes.length > 1 ? (
                                 <Dropdown
+                                    error={sizeError ? "Виберіть розмір" : undefined}
                                     placeholder="Виберіть розмір"
                                     options={sizeOptions}
                                     value={item.size}

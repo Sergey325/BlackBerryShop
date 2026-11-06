@@ -37,6 +37,8 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const cart = useCartStore();
     const checkoutInProgress = useRef(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
+    const [showSizeErrors, setShowSizeErrors] = useState(false);
+    const itemRefs = useRef(new Map<string, HTMLDivElement>());
     const cartItemsRef = useRef<CartItemType[]>(cart.items);
     const replaceCartItems = cart.replaceItems;
     const [selectedPayment, setPayment] = useState(paymentOptions[0]);
@@ -257,9 +259,14 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const onCheckout = async () => {
         if (checkoutInProgress.current) return;
 
-        if (cart.items.find(item => !item.size && !item.isDecoration)) {
-            toast.error("Виберіть розмір")
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        const itemWithoutSize = cart.items.find(item => !item.size && item.sizes.length > 1);
+        if (itemWithoutSize) {
+            setShowSizeErrors(true);
+            toast.error(`Виберіть розмір для товару «${itemWithoutSize.productName}» (${itemWithoutSize.colorName})`);
+            itemRefs.current.get(`${itemWithoutSize.productColorId}-${itemWithoutSize.size ?? ""}-${Boolean(itemWithoutSize.lining)}`)?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
         }
         else if (!contactData.firstName || !contactData.lastName || contactData.phone.length !== 19) {
             toast.error("Введіть ім'я, призвище, та номер телефону")
@@ -449,11 +456,17 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                         {/* Список товаров */}
                         {cart.items.map((item, i) => (
                             <div
-                                key={`${item.productColorId}-${item.size ?? ""}`}
-                                className="flex flex-col gap-4"
+                                key={`${item.productColorId}-${item.size ?? ""}-${Boolean(item.lining)}`}
+                                ref={node => {
+                                    const key = `${item.productColorId}-${item.size ?? ""}-${Boolean(item.lining)}`;
+                                    if (node) itemRefs.current.set(key, node);
+                                    else itemRefs.current.delete(key);
+                                }}
+                                className="flex flex-col gap-4 scroll-mt-24"
                             >
                                 <CartItem
                                     item={item}
+                                    sizeError={showSizeErrors && !item.size && item.sizes.length > 1}
                                     related={relatedByProductId[item.productId] ?? []}
                                     defaultExpanded={i === firstItemWithRelatedIndex}
                                     isLoading={isRelatedLoading && i === firstItemWithRelatedIndex}
