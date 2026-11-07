@@ -3,6 +3,7 @@
 import prisma from "@/app/lib/prisma";
 import {Prisma} from "@prisma/client";
 import {unstable_cache} from "next/cache";
+import {isProductColorAvailable} from "@/app/utils/productColorAvailability";
 import type {
     IHomeProduct,
     IProduct,
@@ -238,14 +239,14 @@ async function queryProducts(
                 ])
             );
 
-            return productsWithRelationFlags.sort(
+            productsWithRelationFlags.sort(
                 (a, b) =>
                     (orderMap.get(a.id) ?? 999) -
                     (orderMap.get(b.id) ?? 999)
             );
         }
 
-        if (!sorting) {
+        else if (!sorting) {
             const defaultOrderByProductId: Map<number, number> = new Map(
                 productsWithRelationFlags.map((product, index): [number, number] => [
                     product.id,
@@ -253,7 +254,7 @@ async function queryProducts(
                 ])
             );
 
-            return productsWithRelationFlags.sort((a, b): number => {
+            productsWithRelationFlags.sort((a, b): number => {
                 const aRank = bestSellerRankByProductId.get(a.id)!;
                 const bRank = bestSellerRankByProductId.get(b.id)!;
                 const percentageComparison: number =
@@ -271,12 +272,15 @@ async function queryProducts(
             });
         }
 
-        return productsWithRelationFlags;
+        return productsWithRelationFlags.sort((a, b) =>
+            Number(b.colors.some(isProductColorAvailable)) -
+            Number(a.colors.some(isProductColorAvailable))
+        );
 }
 
 const getCachedProducts = unstable_cache(
     queryProducts,
-    ["storefront-products-v2"],
+    ["storefront-products-v3"],
     {
         revalidate: PRODUCTS_CACHE_SECONDS,
         tags: ["products"],
@@ -385,6 +389,12 @@ async function queryHomeBestSellerProducts(): Promise<IHomeProduct[]> {
     }));
 
     return products.sort((a: IHomeProduct, b: IHomeProduct): number => {
+        const availabilityComparison =
+            Number(b.colors.some(isProductColorAvailable)) -
+            Number(a.colors.some(isProductColorAvailable));
+
+        if (availabilityComparison !== 0) return availabilityComparison;
+
         const aRank = rankByProductId.get(a.id)!;
         const bRank = rankByProductId.get(b.id)!;
         const percentageComparison: number =
@@ -404,7 +414,7 @@ async function queryHomeBestSellerProducts(): Promise<IHomeProduct[]> {
 
 const getCachedHomeBestSellerProducts = unstable_cache(
     queryHomeBestSellerProducts,
-    ["storefront-home-best-sellers-v1"],
+    ["storefront-home-best-sellers-v2"],
     {
         revalidate: PRODUCTS_CACHE_SECONDS,
         tags: ["products"],
