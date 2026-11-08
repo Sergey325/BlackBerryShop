@@ -22,7 +22,6 @@ const PAID_MEDIA: ReadonlySet<string> = new Set([
     "paid_social", "paid-social", "paidsocial", "paid", "cpc", "ppc", "cpm",
 ]);
 const GOOGLE_HOSTNAME_PATTERN = /(^|\.)google\.[a-z.]+$/i;
-const INSTAGRAM_HOSTNAMES: ReadonlySet<string> = new Set(["instagram.com", "www.instagram.com", "l.instagram.com"]);
 const FACEBOOK_HOSTNAMES: ReadonlySet<string> = new Set(["facebook.com", "www.facebook.com", "l.facebook.com", "lm.facebook.com"]);
 const GOOGLE_FREE_LISTING_MEDIA: ReadonlySet<string> = new Set([
     "free-listing",
@@ -45,7 +44,8 @@ function readTrafficSourceCookie(cookies: string) {
         .map(cookie => cookie.trim())
         .find(cookie => cookie.startsWith(`${TRAFFIC_SOURCE_COOKIE}=`))
         ?.slice(TRAFFIC_SOURCE_COOKIE.length + 1) ?? null;
-    return value === INSTAGRAM_ROUTE_SOURCE || isTrafficSource(value) ? value : null;
+    // Old plain INSTAGRAM cookies could come from UTM/referrer, not /instagram.
+    return value === INSTAGRAM_ROUTE_SOURCE || (value !== "INSTAGRAM" && isTrafficSource(value)) ? value : null;
 }
 
 export function resolveCheckoutTrafficSource(
@@ -91,10 +91,6 @@ function getUrlTrafficSource(url: URL): TrafficSourceValue | null {
     const isMetaSource = ["instagram", "ig", "facebook", "fb", "meta"].includes(source);
     if (PAID_MEDIA.has(medium) && (!source || isMetaSource)) return "FACEBOOK";
 
-    if (source === "instagram" || source === "ig") {
-        return "INSTAGRAM";
-    }
-
     if (source === "facebook" || source === "fb" || source === "meta") {
         return "FACEBOOK";
     }
@@ -115,7 +111,6 @@ export function detectTrafficSource(
     const referrerHostname = getReferrerHostname(referrer);
 
     if (!referrerHostname) return null;
-    if (INSTAGRAM_HOSTNAMES.has(referrerHostname)) return "INSTAGRAM";
     if (FACEBOOK_HOSTNAMES.has(referrerHostname)) return "FACEBOOK";
     if (GOOGLE_HOSTNAME_PATTERN.test(referrerHostname)) return "GOOGLE_SEARCH";
 

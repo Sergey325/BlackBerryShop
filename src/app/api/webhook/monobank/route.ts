@@ -9,6 +9,7 @@ import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {fiscalizeInitialOrder} from "@/app/lib/orderFiscalization";
 import {closeCheckboxShiftAfterLateReceipt, getCheckboxPaymentReceiptUrl} from "@/app/lib/checkbox";
 import {verifyMonobankWebhook} from "@/app/lib/monobankWebhook";
+import type {OrderStatus} from "@prisma/client";
 
 export const runtime = "nodejs";
 
@@ -40,9 +41,9 @@ export async function POST(request: Request) {
         invoiceId = body.invoiceId;
 
         // Маппинг статусов Monobank → наши статусы
-        const statusMap: Record<string, string> = {
+        const statusMap: Partial<Record<string, OrderStatus>> = {
             success: "PAID",
-            failure: "CANCELLED",
+            failure: "FAILED",
             reversed: "REFUNDED",
         };
 
@@ -165,7 +166,7 @@ export async function POST(request: Request) {
             } else {
                 await tx.order.update({
                     where: {id: existingOrder.id},
-                    data: {status: newStatus as "CANCELLED" | "REFUNDED"},
+                    data: {status: newStatus},
                 });
             }
 

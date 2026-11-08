@@ -340,6 +340,7 @@ enum PromoScopeType {
 
 enum OrderStatus {
   PENDING
+  FAILED // Помилка оплати
   PAID
   PROCESSING
   SHIPPED

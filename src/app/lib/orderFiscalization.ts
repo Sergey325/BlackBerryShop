@@ -85,6 +85,7 @@ export async function fiscalizeInitialOrder(
 
     if (
         order.status === OrderStatus.PENDING ||
+        order.status === OrderStatus.FAILED ||
         order.status === OrderStatus.CANCELLED ||
         order.status === OrderStatus.REFUNDED
     ) {

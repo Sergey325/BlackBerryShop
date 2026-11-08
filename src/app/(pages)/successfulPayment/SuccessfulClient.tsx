@@ -126,8 +126,9 @@ const SuccessfulClient = ({id, publicToken, status: initialStatus, order}: Props
         );
     }
 
-    if (status === "CANCELLED" || status === "REFUNDED") {
+    if (status === "FAILED" || status === "CANCELLED" || status === "REFUNDED") {
         const isRefunded: boolean = status === "REFUNDED";
+        const isFailed = status === "FAILED";
 
         return (
             <StatusCard tone="error">
@@ -140,17 +141,19 @@ const SuccessfulClient = ({id, publicToken, status: initialStatus, order}: Props
                         Замовлення №{id}
                     </p>
                     <h1 className="mt-3 text-2xl font-semibold text-gray-950 sm:text-3xl">
-                        {isRefunded ? "Оплату повернено" : "Оплата не пройшла"}
+                        {isRefunded ? "Оплату повернено" : isFailed ? "Помилка оплати" : "Замовлення скасовано"}
                     </h1>
                     <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-600 sm:text-base">
                         {isRefunded
                             ? "Кошти повернено на картку, з якої була здійснена оплата. Термін зарахування залежить від банку."
-                            : "Можна спробувати оплатити ще раз або обрати інший спосіб оплати під час оформлення."}
+                            : isFailed
+                                ? "Можна спробувати оплатити ще раз або обрати інший спосіб оплати під час оформлення."
+                                : "Якщо у вас є питання щодо замовлення, зв’яжіться з нами."}
                     </p>
                 </div>
 
                 <div className="mt-8 grid w-full max-w-md gap-3 sm:grid-cols-2">
-                    {!isRefunded && (
+                    {isFailed && (
                         <Link
                             href="/cart"
                             className="group flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition hover:bg-[#6e3382]"
@@ -159,7 +162,7 @@ const SuccessfulClient = ({id, publicToken, status: initialStatus, order}: Props
                             <FiArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true"/>
                         </Link>
                     )}
-                    <HomeLink className={isRefunded ? "sm:col-span-2" : ""}/>
+                    <HomeLink className={isFailed ? "" : "sm:col-span-2"}/>
                 </div>
 
                 <SocialLinks/>
