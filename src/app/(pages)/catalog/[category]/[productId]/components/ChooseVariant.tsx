@@ -270,33 +270,36 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
                                 ? "8px"
                                 : "24px",
                 }}
-                className="flex flex-col md:flex-row gap-4 md:gap-8 md:items-center">
-                <div className="flex gap-5 items-end">
+                className="flex min-w-0 flex-col gap-4">
+                <div className="flex flex-wrap items-center justify-between sm:justify-normal gap-2 sm:gap-5">
 
-                    <div className="flex gap-1.5 items-center">
-                    <span className="text-2xl lg:text-[36px] font-medium">
-                    {discountedPrice.toFixed()}
-                    </span>
-                        <span className="text-[13px] lg:text-base lg:pt-1 self-start font-medium">грн</span>
-                    </div>
-                    {product.discount && product.discount > 0 ? (
-                        <div className="flex flex-col items-start pb-1">
-                            <span className="text-lg md:text-xl text-red-500 font-semibold">-{product.discount}%</span>
-                            <span className="text-sm md:text-base text-gray-400 line-through">
-                            {basePrice.toFixed()} грн
-                        </span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <div className="flex gap-1.5 items-center whitespace-nowrap">
+                            <span className="text-2xl lg:text-[36px] font-medium">
+                                {discountedPrice}
+                            </span>
+                            <span className="text-[13px] lg:text-base lg:pt-1 self-start font-medium">грн</span>
                         </div>
-                    ) : null}
-                    <Counter
-                        initialNumber={count}
-                        max={maximumToAdd === 0 ? 1 : maximumToAdd}
-                        disabled={!selectedSizeAvailable || maximumToAdd === 0}
-                        onChange={setCount}
-                        onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
-                    />
-
+                        {product.discount > 0 && (
+                            <div className="flex flex-col items-start whitespace-nowrap">
+                                <span className="text-lg md:text-xl text-red-500 font-semibold">-{product.discount}%</span>
+                                <span className="text-sm md:text-base text-gray-400 line-through">
+                                    {basePrice} грн
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="shrink-0">
+                        <Counter
+                            initialNumber={count}
+                            max={maximumToAdd === 0 ? 1 : maximumToAdd}
+                            disabled={!selectedSizeAvailable || maximumToAdd === 0}
+                            onChange={setCount}
+                            onMaxReached={() => toast.error("Більше товару зараз немає в наявності")}
+                        />
+                    </div>
                 </div>
-                <div className="flex justify-between w-full mt-1">
+                <div className="flex w-full">
                     <Button
                         label="Додати до кошика"
                         disabled={!isAvailable || maximumToAdd === 0}

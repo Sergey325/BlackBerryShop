@@ -19,6 +19,8 @@ import {
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 import {getResponsiveCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
+import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
+
 const CARD_IMAGE_WIDTHS = [192, 384, 640, 960];
 
 const productCardImageLoader = ({src, width}: ImageLoaderProps) => {
@@ -52,6 +54,9 @@ const ProductCard = ({
         }),
         [product],
     );
+
+    const hasDiscount = product.discount > 0;
+    const discountedPrice = calculatePriceWithDiscount(product.price, product.discount);
 
     const cartModal = useCartModal();
     const cart = useCartStore();
@@ -179,7 +184,7 @@ const ProductCard = ({
                 content_ids: [buildCatalogItemId(product.id, productColor.id, productSize.id)],
                 content_name: product.name,
                 content_type: "product",
-                value: product.price,
+                value: discountedPrice,
                 currency: "UAH",
                 color: productColor.colorName,
                 size: productSize.size,
@@ -216,6 +221,11 @@ const ProductCard = ({
                             }}
                             aria-hidden="true"
                         />
+                    )}
+                    {hasDiscount && (
+                        <span className="absolute right-1 top-1 z-10 rounded-full bg-red-600 px-2 py-1 text-[10px] font-semibold leading-none text-white shadow-sm sm:text-xs">
+                            -{product.discount}%
+                        </span>
                     )}
                     {colors && sortedProduct.colors[activeIdx].isBestSeller && (
                         <span
@@ -276,9 +286,12 @@ const ProductCard = ({
                     )}
 
                     <div className="mt-auto flex items-end justify-between gap-2 sm:pt-2">
-                        <div>
+                        <div className="min-w-0">
+                            {hasDiscount && (
+                                <p className="mb-1 text-xs text-slate-500 line-through">{product.price} грн</p>
+                            )}
                             <p className="text-base font-semibold leading-none text-slate-950 sm:text-lg">
-                                {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
+                                {discountedPrice} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
                             </p>
                             {colors && sortedProduct.colors.length > 1 && (
                                 <p className="mt-1 hidden text-[11px] text-slate-500 md:block">
@@ -357,6 +370,11 @@ const ProductCard = ({
                             aria-hidden="true"
                         />
                     )}
+                    {hasDiscount && (
+                        <span className="absolute right-1 top-1 z-10 rounded-full bg-red-600 px-2 py-1 text-[10px] font-semibold leading-none text-white shadow-sm sm:text-xs">
+                            -{product.discount}%
+                        </span>
+                    )}
                     {colors && sortedProduct.colors[activeIdx].isBestSeller && (
                         <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-orange-700 shadow-sm backdrop-blur-sm sm:left-2 sm:top-2 sm:px-2.5 sm:text-xs">
                             <FaFire
@@ -420,9 +438,14 @@ const ProductCard = ({
                 )}
 
                 <div className={`${sortedProduct.colors.length > 1 ? "mt-1" : "mt-auto"} flex w-full items-end justify-between gap-2 `}>
-                    <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
-                        {product.price} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
-                    </p>
+                    <div className="min-w-0">
+                        {hasDiscount && (
+                            <p className="mb-1 text-xs text-slate-500 line-through">{product.price} грн</p>
+                        )}
+                        <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
+                            {discountedPrice} <span className="text-xs font-medium text-slate-600 sm:text-sm">грн</span>
+                        </p>
+                    </div>
                     <button
                         type="button"
                         onClick={(e) => {
