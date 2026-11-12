@@ -1,6 +1,6 @@
 'use client'
 
-import React from "react";
+import React, {useEffect} from "react";
 import Modal from "@/app/components/modals/Modal";
 import useCartModal from "@/app/hooks/useCartModal";
 import {useCartStore} from "@/app/hooks/useCartStore";
@@ -16,10 +16,21 @@ import ToolTip from "@/app/components/reusable/ToolTip";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 
 
-const CartModal = () => {
+const CartModal = ({liningPrice}: {liningPrice: number}) => {
     const router = useRouter()
     const cartModal = useCartModal();
     const cart = useCartStore()
+    const {items, replaceItems} = cart;
+
+    // Older persisted carts contain the full price but no separate lining amount.
+    useEffect(() => {
+        if (items.some(item => item.lining && item.liningPrice === undefined)) {
+            replaceItems(items.map(item => item.lining && item.liningPrice === undefined
+                ? {...item, liningPrice}
+                : item));
+        }
+    }, [items, replaceItems, liningPrice]);
+
     const bodyContent =
         (<div className="flex flex-col gap-4 -mx-2">
             <div className="flex flex-col gap-4 divide-y divide-gray-300">
@@ -80,7 +91,7 @@ const CartModal = () => {
                                     {/* Цена за 1шт — скрыта на мобайле */}
                                     <div className="hidden min-w-0 sm:block">
                                         <span className="whitespace-nowrap text-sm font-medium tabular-nums md:text-base">
-                                            {calculatePriceWithDiscount(item.price, item.discount)} <span className="text-xs font-normal text-gray-700">грн / шт.</span>
+                                            {calculatePriceWithDiscount(item.price, item.discount, item.liningPrice ?? (item.lining ? liningPrice : 0))} <span className="text-xs font-normal text-gray-700">грн / шт.</span>
                                         </span>
                                     </div>
 
@@ -98,7 +109,7 @@ const CartModal = () => {
                                     {/* Сумма */}
                                     <div className="min-w-0 text-right">
                                         <span className="whitespace-nowrap text-base font-semibold text-green-600 tabular-nums md:text-lg">
-                                            {calculateTotalPrice(item.price, item.quantity, item.discount)} <span className="text-xs font-normal text-gray-700 md:text-sm">грн</span>
+                                            {calculateTotalPrice(item.price, item.quantity, item.discount, item.liningPrice ?? (item.lining ? liningPrice : 0))} <span className="text-xs font-normal text-gray-700 md:text-sm">грн</span>
                                         </span>
                                     </div>
                                 </div>

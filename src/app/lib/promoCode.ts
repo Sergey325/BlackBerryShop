@@ -145,8 +145,9 @@ export async function calculateCartPricing(
             throw new CartPricingError("Підкладка недоступна для одного з товарів");
         }
 
-        const priceWithOptions: number = product.price + (item.lining ? getLiningPrice() : 0);
-        const unitPriceCents: number = calculateDiscountedCents(priceWithOptions, product.discount);
+        const liningPriceCents = item.lining ? toCents(getLiningPrice()) : 0;
+        const productPriceCents = calculateDiscountedCents(product.price, product.discount);
+        const unitPriceCents = productPriceCents + liningPriceCents;
         const isEligible: boolean = Boolean(promoCode) && (
             promoCode!.scopeType === "ALL"
             || (promoCode!.scopeType === "CATEGORY"
@@ -155,7 +156,7 @@ export async function calculateCartPricing(
             || (promoCode!.scopeType === "PRODUCT" && promoProductIds.has(product.id))
         );
         const finalUnitPriceCents: number = isEligible
-            ? Math.round(unitPriceCents * (1 - promoCode!.discountPercent / 100))
+            ? Math.round(productPriceCents * (1 - promoCode!.discountPercent / 100)) + liningPriceCents
             : unitPriceCents;
 
         if (isEligible) {

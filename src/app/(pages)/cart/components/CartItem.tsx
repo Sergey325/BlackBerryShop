@@ -107,8 +107,8 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError 
     );
 
     const totalAmount = useMemo(() => {
-        return calculateTotalPrice(cartItem?.price ?? 1, cartItem?.quantity ?? 1, cartItem?.discount ?? 0)
-    }, [cartItem?.price, cartItem?.quantity, cartItem?.discount]);
+        return calculateTotalPrice(cartItem?.price ?? 1, cartItem?.quantity ?? 1, cartItem?.discount ?? 0, cartItem?.liningPrice)
+    }, [cartItem?.price, cartItem?.quantity, cartItem?.discount, cartItem?.liningPrice]);
     const maximumQuantity: number | null | undefined = getCartItemMaximum(item, cart.items);
 
     const handleChangeQuantity = useCallback((quantity: number) => {
@@ -141,7 +141,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError 
                     content_ids: [buildCatalogItemId(item.productId, item.productColorId, s.id)],
                     content_name: item.productName,
                     content_type: "product",
-                    value: calculatePriceWithDiscount(item.price, item.discount),
+                    value: calculatePriceWithDiscount(item.price, item.discount, item.liningPrice),
                     currency: "UAH",
                     color: item.colorName,
                     size: s.size,
@@ -219,7 +219,7 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError 
 
                 {/* Цена */}
                 <span className="hidden lg:inline text-center w-fit justify-self-center">
-                    {calculatePriceWithDiscount(item.price, item.discount).toFixed(2)} грн
+                    {calculatePriceWithDiscount(item.price, item.discount, item.liningPrice).toFixed(2)} грн
                 </span>
 
                 {/* Счётчик + удаление + цена (мобайл) */}
@@ -293,7 +293,17 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError 
                                                     onClick={() => router.push(`${getProductPath(related.category?.slug ?? "", related.id, related.slug)}?colorId=${related.colors[0].id}`)}
                                                     className="text-sm font-medium truncate transition-colors hover:text-primary cursor-pointer">{related.name}
                                                 </span>
-                                            <span className="text-xs text-gray-500">{related.price.toFixed(2)} грн</span>
+                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                                                {related.discount > 0 && (
+                                                    <>
+                                                        <span className="rounded-full bg-red-600 px-1.5 py-0.5 font-semibold text-white">-{related.discount}%</span>
+                                                        <span className="text-gray-500 line-through">{related.price.toFixed(2)} грн</span>
+                                                    </>
+                                                )}
+                                                <span className="font-medium text-gray-900">
+                                                    {calculatePriceWithDiscount(related.price, related.discount).toFixed(2)} грн
+                                                </span>
+                                            </div>
                                         </div>
                                         <button
                                             onClick={() => handleAddRelatedProduct(related, false)}
@@ -340,9 +350,17 @@ const CartItem = ({item, related, defaultExpanded = false, isLoading, sizeError 
                                         >
                                             {variant.name}
                                         </span>
-                                        <span className="text-xs text-gray-500 mt-auto">
-                                            +{variant.price.toFixed(2)} грн
-                                        </span>
+                                        <div className="mt-auto flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs">
+                                            {variant.discount > 0 && (
+                                                <>
+                                                    <span className="rounded-full bg-red-600 px-1.5 py-0.5 font-semibold text-white">-{variant.discount}%</span>
+                                                    <span className="text-gray-500 line-through">{variant.price.toFixed(2)} грн</span>
+                                                </>
+                                            )}
+                                            <span className="font-medium text-gray-900">
+                                                +{calculatePriceWithDiscount(variant.price, variant.discount).toFixed(2)} грн
+                                            </span>
+                                        </div>
                                         <button
                                             onClick={() => handleAddRelatedProduct(variant, true)}
                                             className="text-xs font-medium w-full px-2 py-1.5 rounded-md bg-primary text-white hover:bg-primary/80 transition-colors duration-300 cursor-pointer"

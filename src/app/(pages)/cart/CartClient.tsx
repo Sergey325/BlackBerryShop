@@ -94,7 +94,8 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                 const sizes: IProductSize[] | undefined = inventoryItem?.sizes;
                 const price = inventoryItem ? inventoryItem.price + (item.lining ? inventoryItem.liningPrice : 0) : item.price;
                 const discount = inventoryItem?.discount ?? item.discount;
-                if (price !== item.price || discount !== item.discount) inventoryChanged = true;
+                const liningPrice = item.lining ? inventoryItem?.liningPrice ?? item.liningPrice : 0;
+                if (price !== item.price || discount !== item.discount || liningPrice !== item.liningPrice) inventoryChanged = true;
                 const selectedSize: IProductSize | undefined = sizes?.find(
                     (size: IProductSize): boolean => size.size === item.size
                 ) ?? (sizes?.length === 1 ? sizes[0] : undefined);
@@ -111,7 +112,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                     }
 
                     if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
-                    updatedItems.push({...item, sizes, price, discount});
+                    updatedItems.push({...item, sizes, price, discount, liningPrice});
                     continue;
                 }
 
@@ -131,7 +132,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                 if (quantity !== item.quantity) adjustedCount += 1;
                 if (JSON.stringify(item.sizes) !== JSON.stringify(sizes)) inventoryChanged = true;
 
-                updatedItems.push({...item, sizes: sizes ?? item.sizes, quantity, price, discount});
+                updatedItems.push({...item, sizes: sizes ?? item.sizes, quantity, price, discount, liningPrice});
             }
 
             if (adjustedCount > 0 || removedCount > 0 || inventoryChanged) {
@@ -231,7 +232,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
 
     const totalPrice = useMemo(() => {
         const total = cart.items.reduce((sum, item) => {
-            return sum + calculateTotalPrice(item.price, item.quantity, item.discount);
+            return sum + calculateTotalPrice(item.price, item.quantity, item.discount, item.liningPrice);
         }, 0);
 
         return Math.round(total * 100) / 100;
@@ -338,7 +339,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                     items: cart.items.map(item => ({
                         productId: Number(item.productId),
                         name: item.productName,
-                        price: calculatePriceWithDiscount(item.price, item.discount),
+                        price: calculatePriceWithDiscount(item.price, item.discount, item.liningPrice),
                         quantity: item.quantity,
                         color: item.color,
                         colorName: item.colorName,

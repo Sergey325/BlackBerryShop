@@ -5,6 +5,7 @@ import Header from "@/app/components/navbar/Header";
 import ToasterProvider from "@/app/Providers/ToasterProvider";
 import BackToTop from "@/app/components/reusable/BackToTop";
 import Container from "@/app/components/reusable/Container";
+import {getLiningPrice} from "@/app/lib/liningPrice";
 import CartModal from "@/app/components/modals/CartModal";
 import Footer from "@/app/components/Footer";
 import SizesModal from "@/app/components/modals/SizesModal";
@@ -68,7 +69,7 @@ export default function RootLayout({
                 <RouteAnnouncerTranslationGuard/>
                 <ToasterProvider/>
                 <BackToTop/>
-                <CartModal/>
+                <CartModal liningPrice={getLiningPrice()}/>
                 <SizesModal/>
                 {/*<ClientOnly>*/}
                 {/*    */}

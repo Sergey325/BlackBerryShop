@@ -36,7 +36,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
     const includeLining: boolean = hasLining && params.get("lining") === "true";
 
     const basePrice: number = product.price + (includeLining ? liningPrice : 0);
-    const discountedPrice: number = calculatePriceWithDiscount(basePrice, product.discount ?? 0);
+    const discountedPrice: number = calculatePriceWithDiscount(basePrice, product.discount ?? 0, includeLining ? liningPrice : 0);
 
     // Размер зависит от выбранного цвета
     const selectedSize = params.get("size") ?? "";
@@ -124,6 +124,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
             ),
             productName: includeLining ? `${product.name} з підкладкою` : product.name,
             price: basePrice,
+            liningPrice: includeLining ? liningPrice : 0,
             quantity: count,
             size: !selectedSize && selectedProductColor.sizes.length === 1 ? selectedProductColor.sizes[0].size : selectedSize,
             isDecoration: product.category?.isDecoration || false,

@@ -17,6 +17,7 @@ export type CartItem = {
     categorySlug: string;
     isDecoration: boolean;
     lining: boolean;
+    liningPrice?: number;
 };
 
 export type ProductSelection = Omit<
