@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import type {IProductColor, IProductWithRelated} from "@/app/types";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import Counter from "@/app/components/reusable/Counter";
@@ -29,7 +29,6 @@ type Props = {
 
 const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, liningPrice }: Props) => {
     const params = useSearchParams();
-    const router = useRouter();
 
     const sizesModal = useSizesModal()
 
@@ -76,26 +75,34 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
     useEffect(() => {
         if (colorIdFromUrl === String(selectedProductColor.id) && !params.has("color")) return;
 
-        const qs = new URLSearchParams(searchParamsString);
+        const qs = new URLSearchParams(window.location.search);
         qs.set("colorId", String(selectedProductColor.id));
         qs.delete("color");
-        router.replace(`?${qs.toString()}`, {scroll: false});
-    }, [colorIdFromUrl, params, router, searchParamsString, selectedProductColor.id]);
+        // Selection is computed on the client from product.colors; no RSC navigation is needed.
+        window.history.replaceState(null, "", `?${qs.toString()}${window.location.hash}`);
+    }, [colorIdFromUrl, params, searchParamsString, selectedProductColor.id]);
 
     const handleColorChange = (colorItem: IProductColor) => {
         setCount(1);
-        const qs = new URLSearchParams(params);
+        const qs = new URLSearchParams(window.location.search);
         qs.set("colorId", String(colorItem.id));
         qs.delete("color");
         qs.delete("size");
-        router.replace(`?${qs.toString()}`, {scroll: false});
+        window.history.replaceState(null, "", `?${qs.toString()}${window.location.hash}`);
     };
 
     const handleSizeChange = (size: string) => {
         setCount(1);
-        const qs = new URLSearchParams(params);
+        const qs = new URLSearchParams(window.location.search);
         qs.set("size", size);
-        router.replace(`?${qs.toString()}`, {scroll: false});
+        window.history.replaceState(null, "", `?${qs.toString()}${window.location.hash}`);
+    };
+
+    const handleLiningChange = (checked: boolean) => {
+        const qs = new URLSearchParams(window.location.search);
+        if (checked) qs.set("lining", "true");
+        else qs.delete("lining");
+        window.history.replaceState(null, "", `?${qs.toString()}${window.location.hash}`);
     };
 
     const handleAddToCart = () => {
@@ -250,9 +257,8 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
                         <CheckBox
                             label="Додати підкладку"
                             colorOnChecked={"text-primary"}
-                            urlParameter="lining"
-                            urlValue="true"
-                            multiplyParameter={false}
+                            checked={includeLining}
+                            onChange={handleLiningChange}
                         />
                         <ToolTip label="М’яка підкладка з мікрофлісу добре зігріває в холодну погоду. Вона легка, ніжна до шкіри та допомагає зберігати тепло, не обтяжуючи виріб.">
                             <BsQuestionCircle  className="size-5 text-neutral-700 cursor-pointer hover:text-primary transition-colors"/>

@@ -1,9 +1,9 @@
 "use client"
 
-import Image from "next/image";
+import BreakpointImage from "@/app/components/reusable/BreakpointImage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
 import type {IProductColor} from "@/app/types";
@@ -67,15 +67,14 @@ const ProductImages = ({ productName, productColor }: Props) => {
                     itemClass="carousel-item-padding-40-px">
                     {productColor.images.map((slide, index) => (
                         <PhotoView key={slide.url} src={optimizeCloudinaryUrl(slide.url, 2000)}>
-                            <Image
+                            <BreakpointImage
+                                media="(width < 1024px)"
                                 src={optimizeCloudinaryUrl(slide.url, 500, 18)}
                                 width={250}
                                 height={250}
-                                unoptimized
                                 draggable={false}
                                 fetchPriority={index === 0 ? "high" : "auto"}
                                 loading={index === 0 ? "eager" : "lazy"}
-                                sizes="(max-width: 1023px) 500px, 1px"
                                 className="object-contain h-full mx-auto select-none cursor-zoom-in rounded-lg"
                                 alt={`${productName}, колір ${productColor.colorName} — фото ${index + 1}`}
                             />
@@ -103,6 +102,9 @@ const ProductImages = ({ productName, productColor }: Props) => {
                     <div className="flex flex-col gap-2">
                         {visibleImages.map((image) => {
                             const imageIndex: number = productColor.images.findIndex((item) => item.id === image.id);
+                            const thumbnailStyle: CSSProperties & {"--thumbnail-image": string} = {
+                                "--thumbnail-image": `url("${optimizeCloudinaryUrl(image.url, 120)}")`,
+                            };
 
                             return (
                             <button
@@ -116,10 +118,11 @@ const ProductImages = ({ productName, productColor }: Props) => {
                                         : "border-gray-200 hover:border-primary"
                                 }`}
                             >
+                                {/* Keep previews as CSS backgrounds so Google cannot pick the 120px images. */}
                                 <span
                                     aria-hidden="true"
-                                    className="block size-[60px] bg-cover bg-center transition hover:scale-105 hover:opacity-80"
-                                    style={{backgroundImage: `url("${optimizeCloudinaryUrl(image.url, 120)}")`}}
+                                    className="block size-[60px] bg-cover bg-center lg:[background-image:var(--thumbnail-image)] transition hover:scale-105 hover:opacity-80"
+                                    style={thumbnailStyle}
                                 />
                             </button>
                             );
@@ -142,17 +145,16 @@ const ProductImages = ({ productName, productColor }: Props) => {
                     {selectedImage && (
                         <div className="flex min-w-0 flex-1 items-center justify-center py-2">
                             <PhotoView src={optimizeCloudinaryUrl(selectedImage, 2000)}>
-                                <Image
+                                <BreakpointImage
+                                    media="(min-width: 1024px)"
                                     src={optimizeCloudinaryUrl(selectedImage, 1000, 18)}
                                     width={550}
                                     height={550}
                                     draggable={false}
                                     fetchPriority={selectedImage === productColor.images[0]?.url ? "high" : "auto"}
                                     loading={selectedImage === productColor.images[0]?.url ? "eager" : "lazy"}
-                                    sizes="(min-width: 1024px) 500px, 1px"
                                     className="mx-auto aspect-square w-full max-w-[500px] cursor-zoom-in select-none rounded-lg object-contain"
                                     alt={`${productName}, колір ${productColor.colorName} — фото ${productColor.images.findIndex((image) => image.url === selectedImage) + 1}`}
-                                    unoptimized
                                 />
                             </PhotoView>
                         </div>

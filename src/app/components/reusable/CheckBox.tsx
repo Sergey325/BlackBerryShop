@@ -13,20 +13,39 @@ type Props = {
     colorOnChecked?: string
     onChange?: (isChecked: boolean) => void
     initialValue?: boolean
+    checked?: boolean
     baseUrl?: string
     labelStyle?: string
 };
 
-const CheckBox = ({label, urlParameter = "", urlValue = "", colorOnChecked, multiplyParameter = true, initialValue = false, onChange, baseUrl = '', labelStyle}: Props) => {
-    const [isChecked, setIsChecked] = useState(initialValue)
-    const {changeUrl} = useUrlParams({urlValue, urlParameter, multiplyParameter, setIsChecked, baseUrl})
+const CheckBox = ({
+    label,
+    urlParameter = "",
+    urlValue = "",
+    colorOnChecked,
+    multiplyParameter = true,
+    initialValue = false,
+    checked,
+    onChange,
+    baseUrl = '',
+    labelStyle,
+}: Props) => {
+    const [checkedState, setIsChecked] = useState(initialValue)
+    const isChecked = checked ?? checkedState;
+    const {changeUrl} = useUrlParams({
+        urlValue,
+        urlParameter,
+        multiplyParameter,
+        setIsChecked: checked === undefined ? setIsChecked : undefined,
+        baseUrl,
+    })
 
     const handleClick = () => {
         if (urlParameter) {
             changeUrl()
         } else {
             onChange?.(!isChecked)
-            setIsChecked(!isChecked)
+            if (checked === undefined) setIsChecked(!isChecked)
         }
     }
 

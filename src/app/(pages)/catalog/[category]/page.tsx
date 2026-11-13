@@ -1,7 +1,6 @@
 import {getProducts} from "@/app/actions/getProducts";
 import type {IProductsParams} from "@/app/types";
 import {getCategories} from "@/app/actions/getCategories";
-import Image from "next/image";
 import {FiSliders} from "react-icons/fi";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
 import ProductsGrid from "@/app/(pages)/catalog/[category]/components/ProductsGrid";
@@ -101,9 +100,21 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* ── Banner ────────────────────────────────────────────── */}
 
-                {/* Desktop */}
-                <div className={`hidden sm:flex items-stretch rounded-3xl overflow-hidden mb-8 min-h-[220px] shadow-sm select-none ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
-                    <div className="flex-1 px-10 py-8 flex flex-col justify-center">
+                <div className={`relative h-56 sm:h-auto sm:flex items-stretch rounded-2xl sm:rounded-3xl overflow-hidden mb-4 sm:mb-8 sm:min-h-[220px] sm:shadow-sm sm:select-none ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
+                    {/* One image: CSS-hidden eager images would still download both variants. */}
+                    <picture className="absolute inset-0 sm:left-auto sm:w-[42%]">
+                        <source media="(min-width: 640px)" srcSet={optimizeCloudinaryUrl(selectedCategory.coverImage, 600)} />
+                        <img
+                            src={optimizeCloudinaryUrl(selectedCategory.coverImage, 500)}
+                            alt={`Категорія ${selectedCategory.name}`}
+                            fetchPriority="high"
+                            loading="eager"
+                            decoding="async"
+                            className="absolute inset-0 h-full w-full object-scale-down object-top-right"
+                        />
+                    </picture>
+                    {/* Desktop */}
+                    <div className="hidden sm:flex w-[58%] shrink-0 px-10 py-8 flex-col justify-center">
                         <div className="text-3xl font-bold text-gray-900 flex items-center gap-3 mb-2" aria-hidden="true">
                             {selectedCategory?.name}
                             <span className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full text-nowrap">
@@ -132,20 +143,10 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
                             ))}
                         </div>
                     </div>
-                    {/* Hero image — right side */}
-                    <div className="relative w-[42%] shrink-0">
-                        <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 600)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(min-width: 640px) 42vw, 1px" unoptimized
-                               className="object-scale-down object-top-right" />{/* object-cover lg:object-scale-down object-top-right */}
-                        {/* fade into banner bg */}
-                        {/*<div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r bg-amber-50 to-transparent pointer-events-none" />*/}
-                    </div>
-                </div>
 
-                {/* Mobile */}
-                <div className={`sm:hidden relative h-56 rounded-2xl overflow-hidden mb-4 ${selectedCategory.season === "SUMMER" ? "bg-summer" : "bg-winter"}`}>
-                    <Image src={optimizeCloudinaryUrl(selectedCategory.coverImage, 500)} alt={`Категорія ${selectedCategory.name}`} fill fetchPriority="high" loading="eager" sizes="(max-width: 639px) 100vw, 1px" unoptimized className="object-scale-down object-top-right" />{/* object-cover object-top */}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10" />
-                    <div className="absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
+                    {/* Mobile */}
+                    <div className="sm:hidden absolute inset-0 bg-linear-to-t from-black/50 via-black/30 to-black/10" />
+                    <div className="sm:hidden absolute inset-x-0 top-[10%] w-2/3 flex flex-col justify-between h-[75%] p-4">
                         <div className="flex flex-col items-start gap-2 mb-1.5">
                             <div className="text-xl font-bold text-white" aria-hidden="true">{selectedCategory?.name}</div>
                             <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-nowrap">

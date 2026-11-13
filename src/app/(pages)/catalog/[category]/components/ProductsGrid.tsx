@@ -78,9 +78,16 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
     ]
 
     const handleClick = (name: string, value: string) => {
+        if ((params.get(name) ?? (name === "view" ? "grid" : "Featured")) === value) return;
+
         const currentQuery = new URLSearchParams(params.toString());
 
         currentQuery.set(name, value);
+
+        if (name === "view") {
+            window.history.replaceState(null, "", `?${currentQuery.toString()}${window.location.hash}`);
+            return;
+        }
 
         router.replace(
             `/catalog/${category}?${currentQuery.toString()}`,

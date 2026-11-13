@@ -4,7 +4,7 @@ import {useRef, useState} from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import {FaHeart} from "react-icons/fa";
-import Image from "next/image";
+import BreakpointImage from "@/app/components/reusable/BreakpointImage";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import Link from "next/link";
 import type {IBanner} from "@/app/types";
@@ -155,8 +155,8 @@ const Hero = ({banners}: Props) => {
                                 </div>
 
                                 <div className="absolute inset-y-0 right-0 flex">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <BreakpointImage
+                                        media="(min-width: 1024px)"
                                         src={optimizeCloudinaryUrl(banner.image, 1500)}
                                         alt={""}
                                         fetchPriority={i === 0 ? "high" : "auto"}
@@ -180,16 +180,14 @@ const Hero = ({banners}: Props) => {
 
                             {/* ── Mobile ──────────────────────────────────────────────── */}
                             <div className="relative flex min-h-[450px] w-full lg:hidden">
-                                <Image
+                                <BreakpointImage
+                                    media="(width < 1024px)"
                                     src={optimizeCloudinaryUrl(banner.mobileImage || banner.image, 1500)}
                                     alt={""}
-                                    fill
-                                    unoptimized
                                     fetchPriority={i === 0 ? "high" : "auto"}
                                     loading={i === 0 ? "eager" : "lazy"}
-                                    sizes="(max-width: 1023px) 100vw, 1px"
                                     draggable={false}
-                                    className="object-cover object-center select-none"
+                                    className="absolute inset-0 h-full w-full object-cover object-center select-none"
                                 />
 
                                 <div className="absolute inset-0 bg-black/10" />

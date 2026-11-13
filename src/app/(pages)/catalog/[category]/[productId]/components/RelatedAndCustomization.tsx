@@ -1,3 +1,6 @@
+"use client";
+
+import {useEffect, useRef, useState} from "react";
 import CarouselWrapper from "@/app/components/reusable/CarouselWrapper";
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import type {IRelatedProduct} from "@/app/types";
@@ -10,6 +13,11 @@ type Props = {
 };
 
 const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColorCodes}: Props) => {
+    const relatedRef = useRef<HTMLElement>(null);
+    const customizationRef = useRef<HTMLElement>(null);
+    const [relatedVisible, setRelatedVisible] = useState(false);
+    const [customizationVisible, setCustomizationVisible] = useState(false);
+
     const { relatedProducts, customizationOptions } = related.reduce(
         (acc, product) => {
             if (product.category?.isDecoration) {
@@ -27,12 +35,34 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColo
         }
     );
 
+    useEffect(() => {
+        if (!("IntersectionObserver" in window)) {
+            const frame = requestAnimationFrame(() => {
+                setRelatedVisible(true);
+                setCustomizationVisible(true);
+            });
+            return () => cancelAnimationFrame(frame);
+        }
+
+        const observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                if (entry.target === relatedRef.current) setRelatedVisible(true);
+                if (entry.target === customizationRef.current) setCustomizationVisible(true);
+                observer.unobserve(entry.target);
+            }
+        });
+
+        if (relatedRef.current) observer.observe(relatedRef.current);
+        if (customizationRef.current) observer.observe(customizationRef.current);
+        return () => observer.disconnect();
+    }, [relatedProducts.length, customizationOptions.length]);
 
     return (
         <div className="flex flex-col w-full gap-10">
             {
                 relatedProducts.length > 0 &&
-                <section className="w-full relative">
+                <section ref={relatedRef} className="w-full relative">
                     <h2 className="text-base md:text-xl font-semibold text-gray-900 mb-3">
                         Часто купують разом
                     </h2>
@@ -49,6 +79,7 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColo
                             <div key={p.id} className="py-1 h-full">
                                 <ProductCard
                                     product={p}
+                                    loadMobileImages={relatedVisible}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}
                                     filterColorCodes={filterColorCodes}
                                 />
@@ -59,7 +90,7 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColo
             }
             {
                 customizationOptions.length > 0 &&
-                <section className="w-full relative">
+                <section ref={customizationRef} className="w-full relative">
                     <h2 className="text-base md:text-xl font-semibold text-gray-900 mb-3">
                         Варіанти кастомізації
                     </h2>
@@ -76,6 +107,7 @@ const RelatedAndCustomization = ({related, selectedCatalogColorCodes, filterColo
                             <div key={p.id} className="py-1 h-full">
                                 <ProductCard
                                     product={p}
+                                    loadMobileImages={customizationVisible}
                                     preferredCatalogColorCodes={selectedCatalogColorCodes}
                                     filterColorCodes={filterColorCodes}
                                 />

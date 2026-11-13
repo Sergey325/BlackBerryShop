@@ -97,6 +97,8 @@ const payload: unknown = await request.json(); // Validate before use.
 ## UI Components & Patterns
 
 - `DropDown.tsx` — custom select component: controlled/uncontrolled modes, keyboard navigation, outside-click-to-close, adaptive open direction, an `error` prop
+- Product gallery side thumbnails use `span` CSS backgrounds so Google does not select the 120px previews as search images (commit `fd403d2`). Keep this SEO fix; apply the background only at the desktop breakpoint to avoid mobile downloads. Main gallery photos remain HTML images with real URLs in `src`.
+- Product selection (`colorId`, `size`, `lining`) and catalog `view` use native `history.replaceState`, integrated with Next.js search params, because their data is already on the client. Catalog filters/search/sorting still require server navigation. Debounced search must skip unchanged URL values so mounting a category does not request it again.
 - `EmptyState` — reused in `error.tsx` and similar empty/error states
 - `TestimonialCard` — warm/handmade aesthetic, `react-icons/fa` plus inline SVG for decorative elements not available in icon packs
 - Seasonal particle effects on the catalog page: `SnowParticles`, `PetalParticles`, `SunRays`, `SunlightMotes` — implemented via **canvas**, not DOM/CSS animations (DOM-based versions had mobile compositing performance issues); shared `useParticleCanvas` hook
@@ -112,6 +114,9 @@ const payload: unknown = await request.json(); // Validate before use.
 
 ## Code Style Preferences
 
+- Prefer elegant, visually simple solutions that are easy to read, understand, and remember: the owner must maintain this code personally. Minimize the concepts and hidden dependencies they need to keep in mind.
+- Prefer simple local state and explicit props. Avoid adding context, configurable modes, or shared abstractions for a single use case.
+- If added complexity is necessary, explain what you propose to introduce, why the simpler solution is insufficient, and what concrete benefit justifies the extra complexity before implementing it.
 - Keep local tests in the root `tests/` directory. It is gitignored; do not include tests in commits.
 - Keep axios calls **inline**, don't extract them into separate hooks/services unless explicitly requested
 - Follow the TypeScript inference guidelines above; explicit annotations should add useful information or enforce a contract.

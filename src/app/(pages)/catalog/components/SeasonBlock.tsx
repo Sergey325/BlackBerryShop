@@ -1,4 +1,4 @@
-import Image from "next/image";
+import BreakpointImage from "@/app/components/reusable/BreakpointImage";
 import CategoryCard from "@/app/(pages)/catalog/components/CategoryCard";
 import {optimizeCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {getSeasonAnchor, type SeasonCollectionConfig} from "@/app/lib/seasonCollections";
@@ -43,15 +43,13 @@ export default function SeasonBlock({ season, eager = false }: Props) {
 
                     {/* Right — hero image, flush to the right edge */}
                     <div className="relative w-[45%] shrink-0">
-                        <Image
+                        <BreakpointImage
+                            media="(width < 640px)"
                             src={optimizeCloudinaryUrl(season.heroImage, 300)}
                             alt={season.label}
-                            fill
-                            unoptimized
                             fetchPriority={eager ? "high" : "auto"}
                             loading={eager ? "eager" : "lazy"}
-                            sizes="(max-width: 639px) 45vw, 1px"
-                            className="object-scale-down object-top-right"
+                            className="absolute inset-0 h-full w-full object-scale-down object-top-right"
                         />
                         {/*/!* Fade right edge *!/*/}
                         {/*<div*/}
@@ -97,15 +95,13 @@ export default function SeasonBlock({ season, eager = false }: Props) {
                     one on the left edge, one on the bottom.
                 */}
                 <div className="absolute top-0 right-0 h-[280px] lg:h-[400px] w-[60%]">
-                    <Image
+                    <BreakpointImage
+                        media="(min-width: 640px)"
                         src={optimizeCloudinaryUrl(season.heroImage, 500)}
                         alt={season.label}
-                        fill
-                        unoptimized
                         fetchPriority={eager ? "high" : "auto"}
                         loading={eager ? "eager" : "lazy"}
-                        sizes="(min-width: 640px) 60vw, 1px"
-                        className="object-scale-down object-top-right"
+                        className="absolute inset-0 h-full w-full object-scale-down object-top-right"
                     />
                     {/* ← fade into season bg */}
                     <div

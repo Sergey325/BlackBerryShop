@@ -1,8 +1,7 @@
 "use client"
 
-import React, {useEffect, useMemo, useState, useTransition} from "react";
+import React, {useCallback, useEffect, useState, useTransition} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
-import qs from "query-string";
 import {AiOutlineLoading} from "react-icons/ai";
 
 type Props = {
@@ -20,63 +19,51 @@ const InputFilter = ({price = false, placeholder = "", id, styles, type, debounc
     const router = useRouter()
     const [isPending, startTransition] = useTransition();
 
-    const initialValue = useMemo(() => {
-        return params.get(id) ?? "";
-    }, [params, id]);
+    const initialValue = params.get(id) ?? "";
+    const [input, setInput] = useState({value: initialValue, urlValue: initialValue});
+    // A URL change (Back, reset, navigation) takes precedence over an older draft.
+    const value = input.urlValue === initialValue ? input.value : initialValue;
+    if (input.urlValue !== initialValue) {
+        setInput({value: initialValue, urlValue: initialValue});
+    }
 
-    const [value, setValue] = useState(initialValue);
+    const changeUrl = useCallback((nextValue: string) => {
+        if (nextValue === initialValue) return;
 
-    const changeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let currentQuery = {};
-
-        if (params) {
-            currentQuery = qs.parse(params.toString())
+        const query = new URLSearchParams(params.toString());
+        if (nextValue) {
+            query.set(id, nextValue);
+        } else {
+            query.delete(id);
         }
-
-        const updatedQuery: any = {
-            ...currentQuery,
-            [e.target.id]: e.target.value
-        }
-
-        if (!e.target.value) {
-            delete updatedQuery[e.target.id];
-        }
-
-        const url = qs.stringifyUrl({
-            url: baseUrl,
-            query: updatedQuery
-        }, {skipNull: true})
+        const queryString = query.toString();
+        const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
         startTransition(() => {
             router.push(url)
         });
-    }
+    }, [baseUrl, id, initialValue, params, router]);
 
     useEffect(() => {
-        if (!debounced) return;
+        if (!debounced || value === initialValue) return;
 
         const timeout = setTimeout(() => {
-            changeUrl({
-                target: {
-                    id,
-                    value,
-                }
-            } as React.ChangeEvent<HTMLInputElement>);
+            changeUrl(value);
         }, 600);
 
         return () => clearTimeout(timeout);
-    }, [value]);
+    }, [changeUrl, debounced, initialValue, value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.includes("-")) {
-            setValue("");
+            setInput({value: "", urlValue: initialValue});
             return;
         }
 
-        setValue(e.target.value);
+        setInput({value: e.target.value, urlValue: initialValue});
 
         if (!debounced) {
-            changeUrl(e);
+            changeUrl(e.target.value);
         }
     };
 

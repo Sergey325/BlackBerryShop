@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState, type SyntheticEvent} from "react";
 import type {IProductCardData} from "@/app/types";
 import Image, {type ImageLoaderProps} from "next/image";
 import {MdOutlineShoppingCart} from "react-icons/md";
@@ -22,6 +22,7 @@ import {getResponsiveCloudinaryUrl} from "@/app/utils/optimizeCloudinaryImage";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 
 const CARD_IMAGE_WIDTHS = [192, 384, 640, 960];
+const DEFERRED_CAROUSEL_IMAGE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 const productCardImageLoader = ({src, width}: ImageLoaderProps) => {
     const targetWidth = CARD_IMAGE_WIDTHS.find(candidate => candidate >= width) ?? 960;
@@ -35,6 +36,7 @@ type Props = {
     colors?: boolean;
     preferredCatalogColorCodes?: string[];
     filterColorCodes?: string[];
+    loadMobileImages?: boolean;
 };
 
 const EMPTY_COLOR_CODES: string[] = [];
@@ -45,6 +47,7 @@ const ProductCard = ({
     colors = false,
     preferredCatalogColorCodes = EMPTY_COLOR_CODES,
     filterColorCodes = EMPTY_COLOR_CODES,
+    loadMobileImages = true,
 }: Props) => {
 
     const sortedProduct: IProductCardData = useMemo(
@@ -134,11 +137,13 @@ const ProductCard = ({
     const [loadedImageSrcs, setLoadedImageSrcs] = useState<Set<string>>(() => new Set<string>());
     const isImageLoading: boolean = !loadedImageSrcs.has(activeImageSrc);
 
-    const handleImageLoad = (imageSrc: string): void => {
+    // Capture also handles picture source changes; Next's onLoad handles images cached before hydration.
+    const handleImageLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+        if (event.currentTarget.currentSrc.startsWith("data:")) return;
         setLoadedImageSrcs((loadedSrcs: Set<string>): Set<string> => {
-            if (loadedSrcs.has(imageSrc)) return loadedSrcs;
+            if (loadedSrcs.has(activeImageSrc)) return loadedSrcs;
 
-            return new Set<string>(loadedSrcs).add(imageSrc);
+            return new Set<string>(loadedSrcs).add(activeImageSrc);
         });
     };
 
@@ -200,19 +205,23 @@ const ProductCard = ({
                     prefetch={false}
                     className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100/20 sm:w-36"
                 >
-                    <Image
-                        key={activeImageSrc}
-                        src={activeImageSrc}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 112px, 144px"
-                        loader={productCardImageLoader}
-                        draggable={false}
-                        onLoad={() => handleImageLoad(activeImageSrc)}
-                        className={`select-none object-cover transition-[opacity,transform] duration-500 ${
-                            isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-60 grayscale"
-                        }`}
-                    />
+                    <picture className="absolute inset-0">
+                        {!loadMobileImages && <source media="(width < 640px)" srcSet={DEFERRED_CAROUSEL_IMAGE} />}
+                        <Image
+                            key={activeImageSrc}
+                            src={activeImageSrc}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 640px) 112px, 144px"
+                            loader={productCardImageLoader}
+                            draggable={false}
+                            onLoad={handleImageLoad}
+                            onLoadCapture={handleImageLoad}
+                            className={`select-none object-cover transition-[opacity,transform] duration-500 ${
+                                isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-60 grayscale"
+                            }`}
+                        />
+                    </picture>
                     {isImageLoading && (
                         <div
                             className={"absolute inset-0 motion-safe:animate-pulse"}
@@ -348,19 +357,23 @@ const ProductCard = ({
             {/* Product image */}
             <div className="relative aspect-square w-full min-w-0 shrink-0 overflow-hidden bg-white">
                 <div className="absolute inset-1 overflow-hidden rounded-lg sm:inset-2">
-                    <Image
-                        key={activeImageSrc}
-                        src={activeImageSrc}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 300px"
-                        loader={productCardImageLoader}
-                        draggable={false}
-                        onLoad={() => handleImageLoad(activeImageSrc)}
-                        className={`object-cover transition-all duration-500 ease-out ${
-                            isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-55 grayscale"
-                        }`}
-                    />
+                    <picture className="absolute inset-0">
+                        {!loadMobileImages && <source media="(width < 640px)" srcSet={DEFERRED_CAROUSEL_IMAGE} />}
+                        <Image
+                            key={activeImageSrc}
+                            src={activeImageSrc}
+                            alt={product.name}
+                            fill
+                            sizes="(max-width: 640px) 50vw, 300px"
+                            loader={productCardImageLoader}
+                            draggable={false}
+                            onLoad={handleImageLoad}
+                            onLoadCapture={handleImageLoad}
+                            className={`object-cover transition-all duration-500 ease-out ${
+                                isImageLoading ? "opacity-0" : isAvailable ? "opacity-100 group-hover:scale-[1.04]" : "opacity-55 grayscale"
+                            }`}
+                        />
+                    </picture>
                     {isImageLoading && (
                         <div
                             className="absolute inset-0 bg-slate-100 motion-safe:animate-pulse"
