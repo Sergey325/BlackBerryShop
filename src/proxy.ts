@@ -43,7 +43,7 @@ export function proxy(request: NextRequest) {
     const requestedWidth = Number(request.nextUrl.searchParams.get("w"));
     const width = Number.isSafeInteger(requestedWidth) && requestedWidth > 0
         ? requestedWidth
-        : 640;
+        : 400;
     const targetWidth = LEGACY_IMAGE_WIDTHS.find(candidate => candidate >= width) ?? 960;
     const originalUrl = `https://res.cloudinary.com/dnoxhtgef/image/upload/${asset[1]}`;
 

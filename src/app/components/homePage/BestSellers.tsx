@@ -40,7 +40,7 @@ const BestSellers = ({products}: Props) => {
                 <CarouselWrapper itemClass="px-1 sm:px-2" carouselClass="py-2" responsive={carouselResponsive}>
                     {bestSellerProducts.map((p, i) => (
                         <div key={p.id+i} className="py-1 h-full">
-                            <ProductCard product={p}/>
+                            <ProductCard product={p} mobileImageWidth={240} showOriginalPrice={false}/>
                         </div>
                     ))}
                 </CarouselWrapper>

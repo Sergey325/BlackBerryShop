@@ -33,6 +33,8 @@ const productCardImageLoader = ({src, width}: ImageLoaderProps) => {
 type Props = {
     product: IProductCardData;
     list?: boolean;
+    showOriginalPrice?: boolean;
+    mobileImageWidth?: number;
     colors?: boolean;
     preferredCatalogColorCodes?: string[];
     filterColorCodes?: string[];
@@ -44,6 +46,8 @@ const EMPTY_COLOR_CODES: string[] = [];
 const ProductCard = ({
     product,
     list = false,
+    showOriginalPrice = true,
+    mobileImageWidth = 300,
     colors = false,
     preferredCatalogColorCodes = EMPTY_COLOR_CODES,
     filterColorCodes = EMPTY_COLOR_CODES,
@@ -206,7 +210,12 @@ const ProductCard = ({
                     className="relative w-24 shrink-0 self-stretch overflow-hidden rounded-xl bg-slate-100/20 sm:w-36"
                 >
                     <picture className="absolute inset-0">
-                        {!loadMobileImages && <source media="(width < 640px)" srcSet={DEFERRED_CAROUSEL_IMAGE} />}
+                        <source
+                            media="(width < 640px)"
+                            srcSet={loadMobileImages
+                                ? getResponsiveCloudinaryUrl(activeImageSrc, mobileImageWidth)
+                                : DEFERRED_CAROUSEL_IMAGE}
+                        />
                         <Image
                             key={activeImageSrc}
                             src={activeImageSrc}
@@ -296,7 +305,7 @@ const ProductCard = ({
 
                     <div className="mt-auto flex items-end justify-between gap-2 sm:pt-2">
                         <div className="min-w-0">
-                            {hasDiscount && (
+                            {hasDiscount && showOriginalPrice && (
                                 <p className="mb-1 text-xs text-slate-500 line-through">{product.price} грн</p>
                             )}
                             <p className="text-base font-semibold leading-none text-slate-950 sm:text-lg">
@@ -358,7 +367,12 @@ const ProductCard = ({
             <div className="relative aspect-square w-full min-w-0 shrink-0 overflow-hidden bg-white">
                 <div className="absolute inset-1 overflow-hidden rounded-lg sm:inset-2">
                     <picture className="absolute inset-0">
-                        {!loadMobileImages && <source media="(width < 640px)" srcSet={DEFERRED_CAROUSEL_IMAGE} />}
+                        <source
+                            media="(width < 640px)"
+                            srcSet={loadMobileImages
+                                ? getResponsiveCloudinaryUrl(activeImageSrc, mobileImageWidth)
+                                : DEFERRED_CAROUSEL_IMAGE}
+                        />
                         <Image
                             key={activeImageSrc}
                             src={activeImageSrc}
@@ -452,7 +466,7 @@ const ProductCard = ({
 
                 <div className={`${sortedProduct.colors.length > 1 ? "mt-1" : "mt-auto"} flex w-full items-end justify-between gap-2 `}>
                     <div className="min-w-0">
-                        {hasDiscount && (
+                        {hasDiscount && showOriginalPrice && (
                             <p className="mb-1 text-xs text-slate-500 line-through">{product.price} грн</p>
                         )}
                         <p className="text-sm font-semibold leading-none text-slate-950 sm:text-base">
