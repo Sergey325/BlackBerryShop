@@ -8,21 +8,43 @@ import type {IProductWithRelated, IRelatedProduct} from "@/app/types";
 async function queryProductById(id: number): Promise<IProductWithRelated | null> {
     const product = await prisma.product.findUnique({
         where: { id },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            slug: true,
+            price: true,
+            discount: true,
+            description: true,
+            hasLining: true,
             colors: {
-                include: {
+                select: {
+                    id: true,
+                    color: true,
+                    colorName: true,
+                    isBestSeller: true,
                     filterColors: {
-                        include: {
-                            catalogColor: true,
+                        select: {
+                            catalogColor: {
+                                select: {code: true, name: true, hex: true},
+                            },
                         },
                     },
-                    images: true,
+                    images: {
+                        select: {id: true, url: true, order: true},
+                    },
                     sizes: {
-                        orderBy: {id: "asc"}
+                        orderBy: {id: "asc"},
+                        select: {
+                            id: true,
+                            size: true,
+                            quantity: true,
+                            available: true,
+                            productColorId: true,
+                        },
                     },
                 },
             },
-            material: true,
+            material: {select: {name: true}},
             specificationOverrides: {
                 select: {
                     categorySpecificationId: true,
@@ -30,23 +52,23 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
                 },
             },
             category: {
-                include: {
+                select: {
+                    name: true,
+                    slug: true,
+                    season: true,
+                    isDecoration: true,
+                    productsDescription: true,
+                    sizeGuideImage: true,
                     specifications: {
-                        orderBy: {
-                            order: "asc",
-                        },
-                    },
-                    _count: {
-                        select: {
-                            products: true,
-                        },
+                        orderBy: {order: "asc"},
+                        select: {id: true, name: true, value: true},
                     },
                 },
             },
             relatedTo: {
                 where: availableRelatedProductWhere,
-                orderBy: { order: "asc" },
-                include: {
+                orderBy: {order: "asc"},
+                select: {
                     toProduct: {
                         select: relatedProductSelect,
                     },
@@ -80,7 +102,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
 
 const getCachedProductById = unstable_cache(
     queryProductById,
-    ["storefront-product-by-id-v3"],
+    ["storefront-product-by-id-v4"],
     {
         revalidate: 86400,
         tags: ["products"],

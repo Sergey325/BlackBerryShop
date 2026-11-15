@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import type {IProductColor, IProductWithRelated} from "@/app/types";
+import type {IProductDetailColor, IProductWithRelated} from "@/app/types";
 import {calculatePriceWithDiscount} from "@/app/utils/getTotalPrice";
 import Counter from "@/app/components/reusable/Counter";
 import Button from "@/app/components/reusable/Button";
@@ -21,7 +21,7 @@ import {buildCatalogItemId} from "@/app/lib/catalogItemId";
 
 type Props = {
     product: IProductWithRelated;
-    selectedProductColor: IProductColor;
+    selectedProductColor: IProductDetailColor;
     hasLining: boolean;
     isAvailable: boolean;
     liningPrice: number;
@@ -67,8 +67,8 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
             ? undefined
             : Math.max(0, selectedSizeObj.quantity - existingCartQuantity);
 
-    const sortedColors: IProductColor[] = useMemo(
-        (): IProductColor[] => sortColorsByAvailability(product.colors),
+    const sortedColors: IProductDetailColor[] = useMemo(
+        (): IProductDetailColor[] => sortColorsByAvailability(product.colors),
         [product.colors],
     );
 
@@ -82,7 +82,7 @@ const ChooseVariant = ({ product, selectedProductColor, hasLining, isAvailable, 
         window.history.replaceState(null, "", `?${qs.toString()}${window.location.hash}`);
     }, [colorIdFromUrl, params, searchParamsString, selectedProductColor.id]);
 
-    const handleColorChange = (colorItem: IProductColor) => {
+    const handleColorChange = (colorItem: IProductDetailColor) => {
         setCount(1);
         const qs = new URLSearchParams(window.location.search);
         qs.set("colorId", String(colorItem.id));

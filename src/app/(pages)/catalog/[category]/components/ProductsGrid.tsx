@@ -7,7 +7,7 @@ import InputFilter from "@/app/(pages)/catalog/[category]/components/InputFilter
 import ProductCard from "@/app/(pages)/catalog/[category]/components/ProductCard";
 import {useParams, useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useMemo, useState} from "react";
-import type {ICategory, IProduct} from "@/app/types";
+import type {ICategory, IProductCardData} from "@/app/types";
 import FiltersContent from "@/app/(pages)/catalog/[category]/components/FiltersContent";
 import {useClearFilters} from "@/app/hooks/useClearFilters";
 import EmptyState from "@/app/components/reusable/EmptyState";
@@ -17,7 +17,7 @@ import Button from "@/app/components/reusable/Button";
 
 
 type Props = {
-    products?: IProduct[];
+    products?: IProductCardData[];
     categories: ICategory[];
     selectedCategorySlug: string;
 };
@@ -42,7 +42,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
     const selectedColors: Set<string> = new Set(
         filterColorCodes.map((color) => color.toLowerCase())
     );
-    const visibleProducts: IProduct[] = (products ?? []).filter((product: IProduct) => {
+    const visibleProducts: IProductCardData[] = (products ?? []).filter((product: IProductCardData) => {
         if (selectedColors.size === 0) return true;
 
         return product.colors.some((productColor) =>
@@ -52,7 +52,7 @@ const ProductsGrid = ({products, categories, selectedCategorySlug}: Props) => {
         );
     });
     const productsRenderKey: string = `${params.toString()}::${visibleProducts
-        .map((product: IProduct) => product.id)
+        .map((product: IProductCardData) => product.id)
         .join(",")}`;
 
     const { clearFilters } = useClearFilters(`/catalog/${selectedCategorySlug}`);

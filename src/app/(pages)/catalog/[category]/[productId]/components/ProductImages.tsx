@@ -6,13 +6,13 @@ import "react-multi-carousel/lib/styles.css";
 import { useState, type CSSProperties } from "react";
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import "react-photo-view/dist/react-photo-view.css";
-import type {IProductColor} from "@/app/types";
+import type {IProductDetailColor} from "@/app/types";
 import { optimizeCloudinaryUrl } from "@/app/utils/optimizeCloudinaryImage";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 type Props = {
     productName: string;
-    productColor: IProductColor;
+    productColor: IProductDetailColor;
 };
 
 const responsive = {

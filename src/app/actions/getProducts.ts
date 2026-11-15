@@ -6,7 +6,7 @@ import {unstable_cache} from "next/cache";
 import {isProductColorAvailable} from "@/app/utils/productColorAvailability";
 import type {
     IHomeProduct,
-    IProduct,
+    IProductCardData,
     IProductCardColor,
     IProductSearchResult,
     IProductsParams,
@@ -57,7 +57,7 @@ function normalizeProductsParams(params: IProductsParams): IProductsParams {
 async function queryProducts(
     params: IProductsParams,
     bestSellersOnly: boolean
-): Promise<IProduct[]> {
+): Promise<IProductCardData[]> {
         const {title, category, sorting, priceMin, priceMax, size, material, color} = params;
 
         const where: Prisma.ProductWhereInput = {};
@@ -170,33 +170,46 @@ async function queryProducts(
         const products = await prisma.product.findMany({
             where,
             orderBy,
-            include: {
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                price: true,
+                discount: true,
                 colors: {
                     ...(bestSellersOnly && {where: {isBestSeller: true}}),
                     orderBy: [{position: "asc"}, {id: "asc"}],
-                    include: {
+                    select: {
+                        id: true,
+                        color: true,
+                        colorName: true,
+                        isBestSeller: true,
                         filterColors: {
-                            include: {
-                                catalogColor: true,
+                            select: {
+                                catalogColor: {
+                                    select: {code: true, name: true, hex: true},
+                                },
                             },
                         },
                         images: {
                             orderBy: {order: "asc"},
                             take: 1,
+                            select: {url: true},
                         },
-                        sizes: true,
-                    },
-                },
-                material: true,
-                category: {
-                    include: {
-                        specifications: true,
-                        _count: {
+                        sizes: {
                             select: {
-                                products: true,
+                                id: true,
+                                size: true,
+                                quantity: true,
+                                available: true,
+                                productColorId: true,
                             },
                         },
-                    }
+                    },
+                },
+                material: {select: {name: true}},
+                category: {
+                    select: {slug: true, season: true, isDecoration: true},
                 },
                 _count: {
                     select: {
@@ -222,7 +235,7 @@ async function queryProducts(
             ])
         );
 
-        const productsWithRelationFlags: IProduct[] = products.map((product): IProduct => {
+        const productsWithRelationFlags = products.map((product) => {
             const {_count, ...productData} = product;
 
             return {
@@ -280,7 +293,7 @@ async function queryProducts(
 
 const getCachedProducts = unstable_cache(
     queryProducts,
-    ["storefront-products-v3"],
+    ["storefront-products-v4"],
     {
         revalidate: PRODUCTS_CACHE_SECONDS,
         tags: ["products"],
@@ -421,7 +434,7 @@ const getCachedHomeBestSellerProducts = unstable_cache(
     }
 );
 
-export async function getProducts(params: IProductsParams = {}): Promise<IProduct[] | undefined> {
+export async function getProducts(params: IProductsParams = {}): Promise<IProductCardData[] | undefined> {
     try {
         return await getCachedProducts(normalizeProductsParams(params), false);
     } catch (error) {

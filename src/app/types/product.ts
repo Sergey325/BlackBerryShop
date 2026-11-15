@@ -50,7 +50,7 @@ export interface IProductCardColor {
     color: string;
     colorName: string;
     isBestSeller: boolean;
-    filterColors: IProductColorFilter[];
+    filterColors: {catalogColor: Pick<ICatalogColor, "code" | "name" | "hex">}[];
     images: Pick<IProductImage, "url">[];
     sizes: IProductSize[];
 }
@@ -111,7 +111,21 @@ export interface IProductSpecificationOverride {
     value: string;
 }
 
-export interface IProductWithRelated extends IProduct {
+export interface IProductDetailColor extends Omit<IProductCardColor, "images"> {
+    images: Pick<IProductImage, "id" | "url" | "order">[];
+}
+
+export interface IProductDetailCategory extends Pick<ICategory,
+    "name" | "slug" | "season" | "isDecoration" | "productsDescription" | "sizeGuideImage"
+> {
+    specifications: Pick<ICategory["specifications"][number], "id" | "name" | "value">[];
+}
+
+export interface IProductWithRelated extends IProductCardData {
+    description: string | null;
+    hasLining: boolean;
+    colors: IProductDetailColor[];
+    category: IProductDetailCategory | null;
     relatedTo: IRelatedProduct[];
     specificationOverrides: IProductSpecificationOverride[];
 }

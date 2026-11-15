@@ -5,7 +5,7 @@ import {useEffect, useLayoutEffect, useMemo, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import ChooseVariant from "@/app/(pages)/catalog/[category]/[productId]/components/ChooseVariant";
 import Accordion from "@/app/components/reusable/Accordion";
-import type {ICategory, IProductWithRelated} from "@/app/types";
+import type {IProductDetailCategory, IProductWithRelated} from "@/app/types";
 import RelatedAndCustomization from "@/app/(pages)/catalog/[category]/[productId]/components/RelatedAndCustomization";
 import Link from "next/link";
 import {isProductSizeAvailable} from "@/app/utils/productColorAvailability";
@@ -16,7 +16,7 @@ import {getCodPrepaymentDescription} from "@/app/lib/codPrepayment";
 type Props = {
     prepaymentPercent: number;
     product: IProductWithRelated
-    category: ICategory;
+    category: IProductDetailCategory;
     liningPrice: number;
 }
 
@@ -33,7 +33,7 @@ const ProductClient = ({ product, category, liningPrice, prepaymentPercent }: Pr
     const firstSentenceMatch: RegExpMatchArray | null = displayedDescription.match(/^[\s\S]*?[.!?](?=\s|$)/);
     const snippetDescription: string = firstSentenceMatch?.[0] ?? displayedDescription;
     const remainingDescription: string = displayedDescription.slice(snippetDescription.length);
-    const specifications: ICategory["specifications"] = useMemo(() => {
+    const specifications: IProductDetailCategory["specifications"] = useMemo(() => {
         const overrideBySpecificationId: Map<number, string> = new Map(
             product.specificationOverrides.map((override): [number, string] => [
                 override.categorySpecificationId,

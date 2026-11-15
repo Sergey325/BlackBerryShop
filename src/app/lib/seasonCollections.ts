@@ -15,7 +15,7 @@ export const SEASON_COLLECTIONS: SeasonCollectionConfig[] = [
         label: "Весна / Літо",
         icon: "☀️",
         desc: "Легкі та яскраві аксесуари для сонячних днів",
-        heroImage: "https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403242/BlackBerry/Banners/IMG_1613_hlahun.png",
+        heroImage: "https://res.cloudinary.com/dby8qzoac/image/upload/v1794739539/BlackBerry/Banners/IMG_1613_hlahun_qid93n.png",
         heroBg: "#fdf2f8",
     },
     {
@@ -23,7 +23,7 @@ export const SEASON_COLLECTIONS: SeasonCollectionConfig[] = [
         label: "Осінь / Зима",
         icon: "❄️",
         desc: "Теплі та затишні аксесуари для холодних днів",
-        heroImage: "https://res.cloudinary.com/dnoxhtgef/image/upload/v1785403241/BlackBerry/Banners/IMG_1604_efzqvf.png",
+        heroImage: "https://res.cloudinary.com/dby8qzoac/image/upload/v1794739547/BlackBerry/Banners/IMG_1604_efzqvf_zozxci.png",
         heroBg: "#ede9fe",
     },
 ];

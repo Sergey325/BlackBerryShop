@@ -1,6 +1,6 @@
-import type {IProductColor} from "@/app/types";
+import type {IProductCardColor} from "@/app/types";
 
-type ProductColorSwatch = Pick<IProductColor, "color" | "filterColors">;
+type ProductColorSwatch = Pick<IProductCardColor, "color" | "filterColors">;
 
 export function getProductColorBackground(productColor: ProductColorSwatch): string {
     const catalogHexes: string[] = Array.from(new Set(
