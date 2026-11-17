@@ -10,8 +10,6 @@ export function proxy(request: NextRequest) {
         return new NextResponse(null, {status: 403});
     }
 
-    if (request.nextUrl.pathname !== "/_next/image") return NextResponse.next();
-
     const src = request.nextUrl.searchParams.get("url");
 
     if (src === "/header-logo.png") {
@@ -57,6 +55,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-    // Keep robots.txt accessible so crawlers can discover the disallow rules.
-    matcher: "/((?!api(?:/|$)|_next/static|_next/webpack-hmr|robots\\.txt$).*)",
+    // Limit compute to legacy image redirects; site-wide bot rules belong in the firewall.
+    matcher: "/_next/image",
 };
