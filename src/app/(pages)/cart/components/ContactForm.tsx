@@ -19,17 +19,6 @@ export default function ContactForm({ value, onChange }: Props) {
         <div className="border border-primary/30 rounded-2xl p-6 flex flex-col gap-5 text-base bg-white shadow-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm md:text-[15px]">Ім&#39;я*</label>
-                    <input
-                        name="firstName"
-                        autoComplete="given-name"
-                        value={value.firstName}
-                        maxLength={25}
-                        onChange={(e) => update("firstName")(e.target.value)}
-                        className="border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition"
-                    />
-                </div>
-                <div className="flex flex-col gap-1">
                     <label className="text-sm md:text-[15px]">Прізвище*</label>
                     <input
                         name="lastName"
@@ -37,6 +26,17 @@ export default function ContactForm({ value, onChange }: Props) {
                         value={value.lastName}
                         maxLength={25}
                         onChange={(e) => update("lastName")(e.target.value)}
+                        className="border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition"
+                    />
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label className="text-sm md:text-[15px]">Ім&#39;я*</label>
+                    <input
+                        name="firstName"
+                        autoComplete="given-name"
+                        value={value.firstName}
+                        maxLength={25}
+                        onChange={(e) => update("firstName")(e.target.value)}
                         className="border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition"
                     />
                 </div>

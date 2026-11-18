@@ -234,7 +234,7 @@ const CartSummary = ({
                 <div className="flex justify-between items-center">
                     <span className="font-light text-sm text-gray-700 text-right">Замовник</span>
                     <span className="text-sm text-gray-800 font-medium max-w-70 overflow-hidden text-right">
-                        {`${contactData?.firstName} ${contactData?.lastName}`}
+                        {`${contactData?.lastName} ${contactData?.firstName}`}
                     </span>
                 </div>
                 <div className="flex justify-between items-center">
