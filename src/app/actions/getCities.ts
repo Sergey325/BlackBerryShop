@@ -1,30 +1,26 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import type {City} from "@/app/types";
 
-export async function getCities(query: string) {
-    try {
-        if (!query || query.length < 2) return [];
+const apostropheVariants = "’‘ʼ＇`´";
+const canonicalApostrophes = "'".repeat(apostropheVariants.length);
 
-        const cities = await prisma.$queryRaw<{ ref: string; name: string; area: string }[]>`
-            SELECT
-                ref,
-                name,
-                area,
-                similarity(name, ${query}) as score
+export async function getCities(query: unknown) {
+    if (typeof query !== "string" || query.length < 2) return [];
+
+    return prisma.$queryRaw<(City & {score: number})[]>`
+        WITH normalized_cities AS (
+            SELECT ref, name, area,
+                   translate(name, ${apostropheVariants}, ${canonicalApostrophes}) AS search_name
             FROM "NovaPoshtaCity"
-            WHERE
-                name ILIKE ${query + '%'}
-               OR similarity(name, ${query}) > 0.3
-            ORDER BY
-                CASE WHEN name ILIKE ${query + '%'} THEN 1 ELSE 2 END,
-                  score DESC
-            LIMIT 10
-        `;
-
-        return cities;
-    }
-    catch (e: any) {
-        throw new Error(e);
-    }
+        ), search AS (
+            SELECT translate(${query}, ${apostropheVariants}, ${canonicalApostrophes}) AS term
+        )
+        SELECT ref, name, area, similarity(search_name, term) AS score
+        FROM normalized_cities CROSS JOIN search
+        WHERE search_name ILIKE term || '%' OR similarity(search_name, term) > 0.3
+        ORDER BY CASE WHEN search_name ILIKE term || '%' THEN 1 ELSE 2 END, score DESC
+        LIMIT 10
+    `;
 }
