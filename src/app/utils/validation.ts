@@ -31,3 +31,9 @@ export function isValidUAPhone(phone: string) {
 export const validateName = (value: string) => {
     return /^[А-Яа-яІіЇїЄєҐґ'’ʼ -]+$/.test(value);
 };
+
+export const INVALID_EMAIL_MESSAGE = "Введіть коректну електронну адресу";
+
+export function isValidEmail(email: string) {
+    return /^[a-z\d!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z\d!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z\d](?:[a-z\d-]*[a-z\d])?\.)+[a-z\d](?:[a-z\d-]*[a-z\d])?$/i.test(email);
+}

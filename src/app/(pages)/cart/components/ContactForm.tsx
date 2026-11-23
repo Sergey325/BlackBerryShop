@@ -1,13 +1,16 @@
 import { IMaskInput } from "react-imask";
 import {ContactData} from "@/app/types";
+import {INVALID_EMAIL_MESSAGE} from "@/app/utils/validation";
 
 
 type Props = {
     value: ContactData;
     onChange: (data: ContactData) => void;
+    onEmailBlur: () => void;
+    emailError: boolean;
 };
 
-export default function ContactForm({ value, onChange }: Props) {
+export default function ContactForm({ value, onChange, onEmailBlur, emailError }: Props) {
     const update = (field: keyof ContactData) => (newValue: string) => {
         onChange({
             ...value,
@@ -53,14 +56,21 @@ export default function ContactForm({ value, onChange }: Props) {
 
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm md:text-[15px]">Email</label>
+                    <label htmlFor="checkout-email" className="text-sm md:text-[15px]">Email</label>
                     <input
+                        id="checkout-email"
+                        name="email"
+                        autoComplete="email"
                         value={value.email}
                         maxLength={50}
                         onChange={(e) => update("email")(e.target.value)}
+                        onBlur={onEmailBlur}
                         type="email"
-                        className="border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-gray-400 transition"
+                        aria-invalid={emailError}
+                        aria-describedby={emailError ? "checkout-email-error" : undefined}
+                        className={`border rounded-lg px-3 py-2 outline-none transition ${emailError ? "border-red-500" : "border-gray-200 focus:border-gray-400"}`}
                     />
+                    {emailError && <p id="checkout-email-error" className="text-sm text-red-600">{INVALID_EMAIL_MESSAGE}</p>}
                 </div>
             </div>
             <div className="flex flex-col gap-1">

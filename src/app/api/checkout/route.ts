@@ -4,6 +4,7 @@ import {calculateCodPrepayment} from "@/app/lib/codPrepayment";
 import {getCodPrepaymentPercent} from "@/app/lib/codPrepaymentConfig";
 import {PaymentMethod, PaymentSource, TrafficSource} from "@prisma/client";
 import {resolveCheckoutTrafficSource} from "@/app/lib/analytics/trafficSource";
+import {INVALID_EMAIL_MESSAGE, isValidEmail} from "@/app/utils/validation";
 import * as Sentry from "@sentry/nextjs";
 import {
     calculateCartPricing,
@@ -29,7 +30,7 @@ type CheckoutRequest = {
         firstName: string;
         lastName: string;
         phone: string;
-        email?: string;
+        email?: unknown;
         comment?: string;
     };
     delivery: {
@@ -81,6 +82,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         if (!contact || !delivery || !Array.isArray(items) || items.length === 0) {
             return NextResponse.json({error: "Некоректні дані замовлення"}, {status: 400});
+        }
+
+        const rawEmail = contact.email;
+        if (rawEmail != null && typeof rawEmail !== "string") {
+            return NextResponse.json({error: INVALID_EMAIL_MESSAGE}, {status: 400});
+        }
+        const email = rawEmail?.trim() ?? rawEmail;
+        if (email && !isValidEmail(email)) {
+            return NextResponse.json({error: INVALID_EMAIL_MESSAGE}, {status: 400});
         }
 
         if (paymentMethod !== PaymentMethod.MONOBANK && paymentMethod !== PaymentMethod.CASH_ON_DELIVERY) {
@@ -222,7 +232,7 @@ export async function POST(request: Request): Promise<NextResponse> {
                     firstName: contact.firstName,
                     lastName: contact.lastName,
                     phone: contact.phone,
-                    email: contact.email,
+                    email,
                     comment: contact.comment,
                     city: delivery.city,
                     area: delivery.area,

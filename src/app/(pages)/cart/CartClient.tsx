@@ -20,7 +20,7 @@ import ContactForm from "@/app/(pages)/cart/components/ContactForm";
 import CheckoutSection from "@/app/(pages)/cart/components/CheckoutSection";
 import toast from "react-hot-toast";
 import {calculatePriceWithDiscount, calculateTotalPrice} from "@/app/utils/getTotalPrice";
-import {isValidUAPhone, validateName} from "@/app/utils/validation";
+import {INVALID_EMAIL_MESSAGE, isValidEmail, isValidUAPhone, validateName} from "@/app/utils/validation";
 import {getCookie} from "@/app/utils/getCookie";
 import {trackMetaEvent} from "@/app/lib/analytics/meta";
 import {buildCatalogItemId} from "@/app/lib/catalogItemId";
@@ -229,6 +229,9 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
     const [contactData, setContactData] = useState({
         firstName: "", lastName: "", phone: "", email: "", comment: ""
     });
+    const [showEmailError, setShowEmailError] = useState(false);
+    const email = contactData.email.trim();
+    const invalidEmail = email !== "" && !isValidEmail(email);
 
     const totalPrice = useMemo(() => {
         const total = cart.items.reduce((sum, item) => {
@@ -296,6 +299,12 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
 
             return;
         }
+        else if (invalidEmail) {
+            setShowEmailError(true);
+            toast.error(INVALID_EMAIL_MESSAGE);
+            contactRef.current?.scrollIntoView({behavior: "smooth", block: "center"});
+            return;
+        }
         else if (!selectedCity || !selectedWarehouse) {
             toast.error("Введіть місто та виберіть відділення")
             deliveryRef.current?.scrollIntoView({
@@ -325,6 +334,7 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
                         firstName: contactData.firstName.trim(),
                         lastName: contactData.lastName.trim(),
                         phone: contactData.phone.replace(/\D/g, ""),
+                        email,
                     },
                     delivery: {
                         city: selectedCity.name,
@@ -408,7 +418,12 @@ const CartClient = ({prepaymentPercent}: {prepaymentPercent: number}) => {
             title: "Контактні дані",
             content:
                 <div ref={contactRef}>
-                    <ContactForm value={contactData} onChange={setContactData} />
+                    <ContactForm
+                        value={contactData}
+                        onChange={setContactData}
+                        onEmailBlur={() => setShowEmailError(true)}
+                        emailError={showEmailError && invalidEmail}
+                    />
                 </div>
         },
         {
