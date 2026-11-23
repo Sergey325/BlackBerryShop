@@ -2,6 +2,7 @@ import "server-only";
 
 import {createHash} from "node:crypto";
 import {PaymentMethod} from "@prisma/client";
+import {version as clientVersion} from "../../../package.json";
 
 const CHECKBOX_API_URL = "https://api.checkbox.ua/api/v1";
 const CHECKBOX_RECEIPT_URL = "https://check.checkbox.ua";
@@ -246,15 +247,45 @@ function getCheckboxCredentials(): {licenseKey: string; pinCode: string} {
     return {licenseKey, pinCode};
 }
 
+function getCheckboxValidationFields(body: unknown) {
+    if (!body || typeof body !== "object" || !("detail" in body) || !Array.isArray(body.detail)) {
+        return [];
+    }
+
+    return body.detail.slice(0, 10).flatMap((detail: unknown) => {
+        if (!detail || typeof detail !== "object" || !("loc" in detail) || !Array.isArray(detail.loc)) {
+            return [];
+        }
+
+        // Validation messages can echo submitted values. Keep only the field location and error type.
+        const location = detail.loc
+            .slice(0, 10)
+            .map((part: unknown) => {
+                if (typeof part === "number" && Number.isSafeInteger(part)) {
+                    return part;
+                }
+                return typeof part === "string" && /^[a-zA-Z_][\w-]{0,63}$/.test(part) ? part : "?";
+            })
+            .join(".");
+        const type = "type" in detail && typeof detail.type === "string" && /^[\w.]{1,64}$/.test(detail.type)
+            ? detail.type
+            : null;
+
+        return location ? [type ? `${location} (${type})` : location] : [];
+    });
+}
 
 async function checkboxRequest<T>(path: string, options: CheckboxRequestOptions = {}): Promise<T | null> {
     const {licenseKey} = getCheckboxCredentials();
+    const method = options.method ?? "GET";
 
     const response: Response = await fetch(`${CHECKBOX_API_URL}${path}`, {
-        method: options.method ?? "GET",
+        method,
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            "X-Client-Name": "BlackBerry Shop",
+            "X-Client-Version": clientVersion,
             "X-License-Key": licenseKey,
             ...(options.token
                 ? {Authorization: `Bearer ${options.token}`}
@@ -279,15 +310,17 @@ async function checkboxRequest<T>(path: string, options: CheckboxRequestOptions 
     }
 
     if (!response.ok) {
-        const message: string =
+        const message =
             typeof responseBody === "object" &&
             responseBody !== null &&
             "message" in responseBody &&
             typeof responseBody.message === "string"
                 ? responseBody.message
-                : `Checkbox API request failed with status ${response.status}`;
+                : response.statusText;
 
-        throw new CheckboxApiError(message, response.status);
+        const summary = `Checkbox ${method} ${path} returned ${response.status}`;
+        const fields = response.status === 422 ? getCheckboxValidationFields(responseBody) : [];
+        throw new CheckboxApiError([summary, message, fields.join(", ")].filter(Boolean).join(": "), response.status);
     }
 
     return responseBody as T;
