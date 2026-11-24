@@ -94,9 +94,9 @@ const ProductClient = ({ product, category, liningPrice, prepaymentPercent }: Pr
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
             <nav className="flex items-center gap-1.5 text-sm text-gray-400 self-start max-w-full">
-                <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
+                <Link href="/" prefetch={false} className="hover:text-gray-600 transition-colors">Головна</Link>
                 <span>›</span>
-                <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
+                <Link href="/catalog" prefetch={false} className="hover:text-gray-600 transition-colors">Каталог</Link>
                 <span>›</span>
                 <Link href={`/catalog/${category.slug}`} prefetch={false} className="hover:text-gray-600 transition-colors text-nowrap truncate">{category.name}</Link>
                 <span>›</span>

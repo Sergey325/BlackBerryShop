@@ -34,6 +34,13 @@ export const metadata: Metadata = {
         template: `%s | ${SITE_NAME}`,
     },
     description: DEFAULT_DESCRIPTION,
+    icons: {
+        icon: {
+            url: "/favicon.ico",
+            type: "image/x-icon",
+            sizes: "16x16 32x32 48x48 64x64 128x128 256x256",
+        },
+    },
 
     openGraph: {
         type: "website",
@@ -82,7 +89,7 @@ export default function RootLayout({
                     </main>
                 </Container>
                 <Analytics/>
-                <SpeedInsights/>
+                <SpeedInsights sampleRate={0.25}/>
                 <Footer/>
                 <Script id="facebook-pixel" strategy="afterInteractive">
                 {`

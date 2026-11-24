@@ -96,6 +96,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                     <div className="flex items-center tablet:gap-2 cursor-pointer bg-white">
                         <Link
                             href="/"
+                            prefetch={false}
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center tablet:gap-1 cursor-pointer bg-white"
                         >
@@ -117,9 +118,9 @@ export default function Header() {const pathname = usePathname();const [menuOpen
 
                     {/* Десктоп навигация */}
                     <nav className="hidden tablet:flex items-center text-base gap-8">
-                        <Link href="/" className="hover:-translate-y-0.5 hover:text-primary transition">Головна</Link>
+                        <Link href="/" prefetch={false} className="hover:-translate-y-0.5 hover:text-primary transition">Головна</Link>
                         <Link href="/catalog" className="hover:-translate-y-0.5 hover:text-primary transition">Каталог</Link>
-                        <Link href="/about" className="hover:-translate-y-0.5 hover:text-primary transition">Про нас</Link>
+                        <Link href="/about" prefetch={false} className="hover:-translate-y-0.5 hover:text-primary transition">Про нас</Link>
                         <ContactDropdown/>
                     </nav>
 
@@ -171,6 +172,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                                 <Link
                                     key={href}
                                     href={href}
+                                    prefetch={false}
                                     onClick={() => setMenuOpen(false)}
                                     aria-current={isActive ? "page" : undefined}
                                     className={`flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition ${

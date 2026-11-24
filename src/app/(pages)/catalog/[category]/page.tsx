@@ -91,9 +91,9 @@ const CategoryPage = async ({ params, searchParams }: Props) => {
 
                 {/* Breadcrumb — desktop */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <Link href="/" className="hover:text-gray-600 transition-colors">Головна</Link>
+                    <Link href="/" prefetch={false} className="hover:text-gray-600 transition-colors">Головна</Link>
                     <span>›</span>
-                    <Link href="/catalog" className="hover:text-gray-600 transition-colors">Каталог</Link>
+                    <Link href="/catalog" prefetch={false} className="hover:text-gray-600 transition-colors">Каталог</Link>
                     <span>›</span>
                     <span className="text-gray-700 text-nowrap truncate">{selectedCategory?.name}</span>
                 </nav>

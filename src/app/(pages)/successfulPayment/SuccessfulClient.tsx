@@ -70,29 +70,62 @@ const SuccessfulClient = ({id, publicToken, status: initialStatus, order}: Props
         clearCart();
     }, [status, clearCart, id, order.paymentMethod, order.totalAmount]);
 
-    useEffect((): (() => void) | undefined => {
+    useEffect(() => {
         if (status !== "PENDING" && !isWaitingForReceipt) {
             return;
         }
 
-        const interval: ReturnType<typeof setInterval> = setInterval((): void => {
-            void fetch(`/api/orders/status?token=${encodeURIComponent(publicToken)}`, {
-                cache: "no-store",
-            }).then(async (response: Response): Promise<void> => {
-                if (!response.ok) {
-                    return;
+        const controller = new AbortController();
+        const startedAt = Date.now();
+        let timer: ReturnType<typeof setTimeout>;
+        let inFlight = false;
+
+        function schedulePoll() {
+            if (controller.signal.aborted || document.hidden) return;
+
+            const elapsed = Date.now() - startedAt;
+            const delay = elapsed < 15_000 ? 2_000 : elapsed < 60_000 ? 5_000 : 30_000;
+            timer = setTimeout(poll, delay);
+        }
+
+        async function poll() {
+            if (document.hidden || inFlight) return;
+
+            inFlight = true;
+            try {
+                const response = await fetch(`/api/orders/status?token=${encodeURIComponent(publicToken)}`, {
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+                if (!response.ok) return;
+
+                const data: OrderStatusResponse = await response.json();
+                if (!controller.signal.aborted) {
+                    setStatus(data.status);
+                    setCheckboxReceiptStatus(data.checkboxReceiptStatus);
+                    setCheckboxReceiptUrl(data.checkboxReceiptUrl);
                 }
+            } catch {
+                // Temporary failures are retried by the next poll.
+            } finally {
+                inFlight = false;
+                schedulePoll();
+            }
+        }
 
-                const data: OrderStatusResponse = await response.json() as OrderStatusResponse;
-                setStatus(data.status);
-                setCheckboxReceiptStatus(data.checkboxReceiptStatus);
-                setCheckboxReceiptUrl(data.checkboxReceiptUrl);
-            }).catch((): void => {
-                // A temporary network failure is retried by the next polling cycle.
-            });
-        }, 2000);
+        function handleVisibilityChange() {
+            clearTimeout(timer);
+            if (!document.hidden) void poll();
+        }
 
-        return () => clearInterval(interval);
+        schedulePoll();
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            clearTimeout(timer);
+            controller.abort();
+        };
     }, [status, isWaitingForReceipt, publicToken]);
 
     if (status === "PENDING") {

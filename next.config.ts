@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
     allowedDevOrigins: ['suspense-unvocal-tripping.ngrok-free.dev'],
     // Resolve metadata before streaming so canonical links are in the initial <head>.
     htmlLimitedBots: /.*/,
+    async headers() {
+        return ["/favicon.ico", "/header-logo-small.webp"].map(source => ({
+            source,
+            headers: [{key: "Cache-Control", value: "public, max-age=604800"}],
+        }));
+    },
     images: {
         loader: "custom",
         loaderFile: "./src/app/utils/cloudinaryImageLoader.ts",

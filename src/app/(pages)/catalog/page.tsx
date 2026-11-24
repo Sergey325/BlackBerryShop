@@ -50,7 +50,7 @@ export default async function CatalogPage() {
                 <div className="py-6">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                    <Link href="/" className="hover:text-gray-600 transition-colors">
+                    <Link href="/" prefetch={false} className="hover:text-gray-600 transition-colors">
                         Головна
                     </Link>
                     <span>›</span>

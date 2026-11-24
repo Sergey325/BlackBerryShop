@@ -7,12 +7,12 @@ export default function Footer() {
 
     const navigation =
         <div className="flex flex-col gap-3 text-gray-400">
-            <Link href="/catalog" className="text-sm  hover:text-primary transition">Каталог</Link>
-            <Link href="/about" className="text-sm  hover:text-primary transition">Про нас</Link>
-            <Link href="/delivery" className="text-sm hover:text-primary transition">Доставка та оплата</Link>
-            <Link href="/exchange" className="text-sm hover:text-primary transition">Обмін та повернення</Link>
-            <Link href="/wholesale" className="text-sm hover:text-primary transition">Оптовим покупцям</Link>
-            <Link href="/offer" className="text-sm hover:text-primary transition">Договір публічної оферти</Link>
+            <Link href="/catalog" prefetch={false} className="text-sm  hover:text-primary transition">Каталог</Link>
+            <Link href="/about" prefetch={false} className="text-sm  hover:text-primary transition">Про нас</Link>
+            <Link href="/delivery" prefetch={false} className="text-sm hover:text-primary transition">Доставка та оплата</Link>
+            <Link href="/exchange" prefetch={false} className="text-sm hover:text-primary transition">Обмін та повернення</Link>
+            <Link href="/wholesale" prefetch={false} className="text-sm hover:text-primary transition">Оптовим покупцям</Link>
+            <Link href="/offer" prefetch={false} className="text-sm hover:text-primary transition">Договір публічної оферти</Link>
         </div>
 
     const contacts =
@@ -53,7 +53,7 @@ export default function Footer() {
 
                     {/* Логотип + описание */}
                     <div className="flex flex-col gap-4">
-                        <Link href="/" className="text-white text-2xl font-bold">
+                        <Link href="/" prefetch={false} className="text-white text-2xl font-bold">
                             Black Berry
                         </Link>
                         <p className="text-sm md:text-base leading-relaxed">
