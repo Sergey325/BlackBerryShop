@@ -112,6 +112,7 @@ export interface IProductSpecificationOverride {
 }
 
 export interface IProductDetailColor extends Omit<IProductCardColor, "images"> {
+    colorCode: string | null;
     images: Pick<IProductImage, "id" | "url" | "order">[];
 }
 

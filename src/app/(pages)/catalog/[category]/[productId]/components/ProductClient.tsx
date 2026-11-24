@@ -86,6 +86,11 @@ const ProductClient = ({ product, category, liningPrice, prepaymentPercent }: Pr
         ] as const;
     }, [legacyColorHex, product.colors, selectedColorId, selectedSize]);
 
+    const firstColorCode = selectedProductColor.colorCode?.match(/\d+/)?.[0];
+    const selectedCatalogColorCodes = firstColorCode
+        ? [firstColorCode]
+        : selectedProductColor.filterColors.map(filterColor => filterColor.catalogColor.code);
+
     return (
         <div className="max-w-[1366px] mx-auto flex flex-col items-center mt-6 gap-4">
             <nav className="flex items-center gap-1.5 text-sm text-gray-400 self-start max-w-full">
@@ -172,9 +177,7 @@ const ProductClient = ({ product, category, liningPrice, prepaymentPercent }: Pr
             <RelatedAndCustomization
                 related={product.relatedTo}
                 filterColorCodes={filterColorCodes}
-                selectedCatalogColorCodes={selectedProductColor.filterColors.map(
-                    (filterColor): string => filterColor.catalogColor.code
-                )}
+                selectedCatalogColorCodes={selectedCatalogColorCodes}
             />
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-xs flex flex-col w-full mt-5">

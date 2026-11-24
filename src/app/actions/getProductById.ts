@@ -21,6 +21,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
                     id: true,
                     color: true,
                     colorName: true,
+                    colorCode: true,
                     isBestSeller: true,
                     filterColors: {
                         select: {
@@ -102,7 +103,7 @@ async function queryProductById(id: number): Promise<IProductWithRelated | null>
 
 const getCachedProductById = unstable_cache(
     queryProductById,
-    ["storefront-product-by-id-v4"],
+    ["storefront-product-by-id-v5"],
     {
         revalidate: 86400,
         tags: ["products"],
