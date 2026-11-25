@@ -119,7 +119,7 @@ export default function Header() {const pathname = usePathname();const [menuOpen
                     {/* Десктоп навигация */}
                     <nav className="hidden tablet:flex items-center text-base gap-8">
                         <Link href="/" prefetch={false} className="hover:-translate-y-0.5 hover:text-primary transition">Головна</Link>
-                        <Link href="/catalog" className="hover:-translate-y-0.5 hover:text-primary transition">Каталог</Link>
+                        <Link href="/catalog" prefetch={false} className="hover:-translate-y-0.5 hover:text-primary transition">Каталог</Link>
                         <Link href="/about" prefetch={false} className="hover:-translate-y-0.5 hover:text-primary transition">Про нас</Link>
                         <ContactDropdown/>
                     </nav>

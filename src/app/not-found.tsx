@@ -16,6 +16,7 @@ export default function NotFound() {
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <Link
                     href="/catalog"
+                    prefetch={false}
                     className="rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-[#6e3382]"
                 >
                     До каталогу

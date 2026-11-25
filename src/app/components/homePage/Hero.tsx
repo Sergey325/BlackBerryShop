@@ -144,6 +144,7 @@ const Hero = ({banners}: Props) => {
                                         <Link
                                             draggable={false}
                                             href={banner.ctaHref || ""}
+                                            prefetch={false}
                                             className="mt-10 w-full max-w-[480px] bg-primary hover:bg-[#6e3382]
                                                 text-white px-6 py-3 rounded-full transition-colors cursor-pointer block text-center">
                                             {banner.ctaLabel}
@@ -224,6 +225,7 @@ const Hero = ({banners}: Props) => {
                                         banner.ctaHref && banner.ctaLabel &&
                                         <Link
                                             href={banner.ctaHref || ""}
+                                            prefetch={false}
                                             className="mt-auto sm:mt-0 w-full bg-primary px-6 py-3 text-center text-white transition-colors hover:bg-[#6e3382] sm:max-w-[400px] rounded-full cursor-pointer"
                                         >
                                             {banner.ctaLabel}

@@ -54,6 +54,7 @@ const SeasonCollections = (): JSX.Element => {
                     <Reveal key={season.id} delay={index * 120} className="h-full">
                         <Link
                             href={`/catalog#${getSeasonAnchor(season.id)}`}
+                            prefetch={false}
                             className="group relative isolate block h-full min-h-[190px] overflow-hidden rounded-3xl border border-black/5 shadow-xs transition-transform duration-500 hover:-translate-y-1 sm:min-h-[230px]"
                             style={{backgroundColor: season.heroBg}}
                         >

@@ -48,6 +48,7 @@ const Categories = ({ categories }: Props) => {
                     </h2>
                     <Link
                         href={`/catalog`}
+                        prefetch={false}
                         draggable={false}
                         className="hidden sm:flex items-center gap-1.5 text-base text-gray-600 hover:text-primary transition-transform cursor-pointer hover:translate-x-2">
                         Перейти до каталогу
@@ -58,6 +59,7 @@ const Categories = ({ categories }: Props) => {
                 <div className="sm:hidden flex justify-start mb-3">
                     <Link
                         href={`/catalog`}
+                        prefetch={false}
                         className="flex items-center gap-1.5 text-sm text-primary font-medium"
                     >
                         Перейти до каталогу

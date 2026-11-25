@@ -54,6 +54,7 @@ const FinalCatalogCta = ({className = ""}: Props): JSX.Element => {
 
                     <Link
                         href="/catalog"
+                        prefetch={false}
                         className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(130,61,154,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#6e3382] hover:shadow-[0_12px_26px_rgba(130,61,154,0.32)] sm:w-fit sm:text-base"
                     >
                         Перейти до каталогу
