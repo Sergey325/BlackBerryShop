@@ -89,6 +89,8 @@ export async function GET(): Promise<Response> {
                 },
                 category: {
                     isNot: null,
+                    // Temporary: remove this condition to include summer products in the feed again.
+                    is: {season: {not: "SUMMER"}},
                 },
                 colors: {
                     some: {
