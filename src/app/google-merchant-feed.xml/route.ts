@@ -1,11 +1,12 @@
 import {Prisma} from "@prisma/client";
 import prisma from "@/app/lib/prisma";
 import {
-    buildGoogleMerchantFeed,
+    streamGoogleMerchantFeed,
     GoogleMerchantFeedProduct,
 } from "@/app/lib/googleMerchantFeed";
 
-export const revalidate = 86400;
+// Next.js buffers route bodies for ISR, so stream this feed and cache it at the CDN.
+export const dynamic = "force-dynamic";
 
 const CACHE_CONTROL = "public, s-maxage=86400, stale-while-revalidate=3600";
 
@@ -107,9 +108,7 @@ export async function GET(): Promise<Response> {
             (row: GoogleMerchantProductRow): GoogleMerchantFeedProduct[] =>
                 row.category ? [{...row, category: row.category}] : [],
         );
-        const xml: string = buildGoogleMerchantFeed(products);
-
-        return new Response(xml, {
+        return new Response(streamGoogleMerchantFeed(products), {
             status: 200,
             headers: {
                 "Cache-Control": CACHE_CONTROL,

@@ -259,28 +259,46 @@ function buildItemXml(
     return `<item>\n${fields.map((field: string): string => `    ${field}`).join("\n")}\n</item>`;
 }
 
-export function buildGoogleMerchantFeed(products: GoogleMerchantFeedProduct[]): string {
-    const items: string[] = products.flatMap((product: GoogleMerchantFeedProduct): string[] =>
-        product.colors.flatMap((color): string[] =>
-            color.sizes.flatMap((size): string[] => {
-                const itemXml: string | null = buildItemXml(product, color, size);
-                return itemXml ? [itemXml] : [];
-            }),
-        ),
-    );
-    const channelFields: string[] = [
-        xmlElement("title", "Black Berry — Google Merchant Center"),
-        xmlElement("link", SITE_URL),
-        xmlElement("description", "Товари інтернет-магазину Black Berry"),
-    ];
-
-    return [
+function* buildFeedChunks(products: GoogleMerchantFeedProduct[]) {
+    yield [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">',
         "<channel>",
-        ...channelFields.map((field: string): string => `    ${field}`),
-        ...items.map((item: string): string => item.split("\n").map((line: string): string => `    ${line}`).join("\n")),
-        "</channel>",
-        "</rss>",
+        `    ${xmlElement("title", "Black Berry — Google Merchant Center")}`,
+        `    ${xmlElement("link", SITE_URL)}`,
+        `    ${xmlElement("description", "Товари інтернет-магазину Black Berry")}`,
+        "",
     ].join("\n");
+
+    for (const product of products) {
+        const items: string[] = [];
+
+        for (const color of product.colors) {
+            for (const size of color.sizes) {
+                const item = buildItemXml(product, color, size);
+                if (item) items.push(`    ${item.replaceAll("\n", "\n    ")}\n`);
+            }
+        }
+
+        if (items.length) yield items.join("");
+    }
+
+    yield "</channel>\n</rss>";
+}
+
+export function streamGoogleMerchantFeed(products: GoogleMerchantFeedProduct[]) {
+    const chunks = buildFeedChunks(products);
+    const encoder = new TextEncoder();
+
+    return new ReadableStream<Uint8Array>({
+        pull(controller) {
+            const chunk = chunks.next();
+            if (chunk.done) {
+                controller.close();
+                return;
+            }
+
+            controller.enqueue(encoder.encode(chunk.value));
+        },
+    });
 }
