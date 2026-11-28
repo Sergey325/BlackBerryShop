@@ -290,7 +290,7 @@ export function streamGoogleMerchantFeed(products: GoogleMerchantFeedProduct[]) 
     const chunks = buildFeedChunks(products);
     const encoder = new TextEncoder();
 
-    return new ReadableStream<Uint8Array>({
+    return new ReadableStream<Uint8Array<ArrayBuffer>>({
         pull(controller) {
             const chunk = chunks.next();
             if (chunk.done) {

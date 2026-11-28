@@ -80,7 +80,7 @@ type GoogleMerchantProductRow = Prisma.ProductGetPayload<{
     select: typeof googleMerchantProductSelect;
 }>;
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
     try {
         const rows: GoogleMerchantProductRow[] = await prisma.product.findMany({
             where: {
@@ -110,13 +110,25 @@ export async function GET(): Promise<Response> {
             (row: GoogleMerchantProductRow): GoogleMerchantFeedProduct[] =>
                 row.category ? [{...row, category: row.category}] : [],
         );
-        return new Response(streamGoogleMerchantFeed(products), {
-            status: 200,
-            headers: {
-                "Cache-Control": CACHE_CONTROL,
-                "Content-Type": "application/xml; charset=utf-8",
-            },
+        const xml = streamGoogleMerchantFeed(products);
+        const headers = new Headers({
+            "Vercel-CDN-Cache-Control": CACHE_CONTROL,
+            "Content-Type": "application/xml; charset=utf-8",
+            "Vary": "Accept-Encoding",
         });
+        const encodings = request.headers.get("accept-encoding")?.toLowerCase().split(",") ?? [];
+        const gzip = encodings.map(value => value.trim().split(/\s*;\s*/))
+            .find(([encoding]) => encoding === "gzip");
+
+        if (gzip && !gzip.slice(1).some(parameter => /^q\s*=\s*0(?:\.0*)?$/.test(parameter))) {
+            // Buffer only the compressed representation so it fits the CDN's response limit.
+            const compressed = await new Response(xml.pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+            headers.set("Content-Encoding", "gzip");
+            headers.set("Content-Length", String(compressed.byteLength));
+            return new Response(compressed, {headers});
+        }
+
+        return new Response(xml, {headers});
     } catch (error: unknown) {
         console.error("Failed to generate Google Merchant feed:", error);
 
